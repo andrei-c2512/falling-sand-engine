@@ -1,0 +1,9 @@
+{WithPlayer}
+true
+
+{WithPlant}
+true
+
+{WithWeapons}
+true
+

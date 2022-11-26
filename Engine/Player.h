@@ -1,0 +1,28 @@
+#pragma once
+#include "World.h"
+#include "Graphics.h"
+#include "Keyboard.h"
+class Player{
+public:
+	Player(Sprite& bodysprite  , Sprite& headsprite, World& world ,  float speed);
+	void UpdateMovement(Keyboard& kbd , float time);
+	void Draw(Graphics& gfx , Mouse& mouse);
+	void Move(Keyboard& kbd, float time);
+private:
+	void MoveX(float time);
+	void MoveY(float time);
+private:
+	RectI HitBox;
+
+	Sprite sBody;
+	Sprite sHead;
+
+	World& world;
+
+	Vec2D vel;
+	float Speed = 10.0f;
+
+	float Gravity = 15.0f;
+	float Friction = 0.5f;
+	float JumpPower = 10.0f;
+};
