@@ -6,25 +6,17 @@
 #include "Rng.h"
 #include "Button.h"
 #include "Weather.h"
+#include "Explosion.h"
 
-struct Explosion_verification {
-	Explosion_verification(size_t index0 , Action type0)
-		:type(type0) , index(index0)
-	{
-	}
-	size_t index;
-	Action type;
-};
 class Creator {
 public:
 	Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather);
 	void Spawn(Mouse& mouse , MouseLastFrameStats& previous_stats, Sandbox& sandbox , ParticleEffect& list);
-	void UseTools(Mouse& mouse , Sandbox& sandbox);
 	void DrawButtons(Graphics& gfx);
 	void DrawSpawnSurface(Graphics& gfx , Mouse& mouse);
 	bool CheckButtons(Mouse& mouse);
 	bool IsHoveringAButton(Mouse& mouse) const;
-	void ExplodeZone(Vec2I& pos ,ParticleEffect& list);
+
 	
 	std::vector<size_t> GetSpawnableElements(Mouse& mouse);
 
@@ -47,5 +39,5 @@ private:
 	std::vector<WeatherButton> WButtons;
 	std::vector<ElementButton> EButtons;
 
-
+	Explosion explosion;
 };

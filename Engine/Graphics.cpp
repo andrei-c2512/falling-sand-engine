@@ -364,61 +364,7 @@ std::wstring Graphics::Exception::GetExceptionType() const
 	return L"Chili Graphics Exception";
 }
 
-void Graphics::DrawRect0(Rect& rect, Color c)
-{
-	for (float y = rect.top; y < rect.top + rect.height; y++)
-	{
-		for (float x = rect.left; x < rect.left + rect.width; x++)
-			PutPixel(int(x), int(y), c);
-	}
-}
 
-void Graphics::DrawRect1(Rect& rect, int r, int g, int b)
-{
-	for (float y = rect.top; y < rect.top + rect.height; y++)
-	{
-		for (float x = rect.left; x < rect.left + rect.width; x++)
-			PutPixel(int(x), int(y), r, g, b);
-	}
-}
-void Graphics::DrawRectI(RectI& rect , Color c)
-{
-	for (float y = rect.top; y < rect.top + rect.height; y++)
-	{
-		for (float x = rect.left; x < rect.left + rect.width; x++)
-			PutPixel(int(x), int(y), c);
-	}
-}
 RectI Graphics::GetScreenRect() {
 	return RectI(Vec2I(0.0f, 0.0f), Vec2I(Graphics::ScreenWidth, Graphics::ScreenHeight));
-}
-
-void Graphics::DrawRect_Transparent(RectI& rect, Color c, Sprite& sprite , int transparency)
-{
-	float tFactor = float(transparency / 100.0f);
-	for (int y = rect.top; y < rect.top + rect.height; y++)
-	{
-		for (int x = rect.left; x < rect.left + rect.width; x++)
-		{
-			Color sColor = sprite.GetPixel(x, y);
-			int r = (c.GetR() + sColor.GetR()) * tFactor , b = (c.GetB() + sColor.GetB()) * tFactor,
-				g = (c.GetG() + sColor.GetG()) * tFactor;
-			PutPixel(int(x), int(y), r , g ,b );
-		}
-	}
-}
-
-void Graphics::DrawRect_Transparent(RectI& rect, Color c,int transparency)
-{
-	float tFactor = float(transparency / 100.0f);
-	for (int y = rect.top; y < rect.top + rect.height; y++)
-	{
-		for (int x = rect.left; x < rect.left + rect.width; x++)
-		{
-			Color sColor = pSysBuffer[y * ScreenWidth + x ];
-			int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
-				g = (c.GetG() + sColor.GetG()) * tFactor;
-			PutPixel(int(x), int(y), r, g, b);
-		}
-	}
 }

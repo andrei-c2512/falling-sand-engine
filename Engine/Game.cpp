@@ -29,7 +29,8 @@ Game::Game(MainWindow& wnd)
 	gfx(wnd),
 	Timer(),
 	sprite("dib.bmp"),
-	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather())
+	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather()),
+	World(particle_list)
 {
 }
 
@@ -55,9 +56,10 @@ void Game::UpdateModel()
 	if (!wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
 		World.UpdateTime(dt);
-		World.UpdateSandbox(wnd.kbd, dt);
+		World.UpdateSandbox(wnd.mouse , wnd.kbd, dt);
 	}
 	MouseStats.Update(wnd.mouse);
+
 }
 
 void Game::ComposeFrame()
@@ -75,6 +77,8 @@ void Game::ComposeFrame()
 	particle_list.Draw(gfx);
 	//gfx.ApplyBloom();
 
-	bench.End();
-	bench.UploadData();
+	bench.UploadTime();
+	bench.DrawFrameCounter(gfx);
+	//bench.End();
+	//bench.UploadData();
 }

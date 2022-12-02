@@ -77,7 +77,6 @@ public:
 	int  GetNextElem(const int index, Direction dir1) const;				     // returns the index of the element in that direction
 	int  GetNextElem(const int index, Direction dir1, Direction dir2) const;    // 
 
-	void Move(const int index1, const int index2);
 	std::pair<bool , int> SpreadFire(size_t index);
 
 	template<typename E>
@@ -89,7 +88,7 @@ public:
 
 		Element& elem1 = *world.GetElem(index);
 		int vel;
-
+		int FreeFall_cnt = 0;
 		if(int(dir1) >= 0 && int(dir1) <= 1 && dir2 == Direction::None)
 			vel = elem1.GetSpread();
 		else
@@ -129,7 +128,7 @@ public:
 				auto next_move = effect(CurInd, NextIndex, elem2);
 				if (next_move.move != World::MoveType::Swap)
 				{
-					return std::move(next_move);
+					return next_move;
 				}
 				if (world.GetElem(CurInd)->GetState() == State::Solid &&
 					elem2.GetState() == State::Plasma)
@@ -140,10 +139,13 @@ public:
 			}
 			else
 			{
-				if(origin == 0)
+				if (origin == 0)
+				{
 					movetype = World::MoveType::Static;
-
-				break;
+					break;
+				}
+				else
+					break;
 			}
 		}
 		

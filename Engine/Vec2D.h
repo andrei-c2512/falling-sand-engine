@@ -48,14 +48,22 @@ public:
 	{
  		return float((float(pos.y - y)) / (float(pos.x - x)));
 	}
-	double GetSin(Vec2_<T>& pos) const
+	float GetSin(Vec2_<T>& pos) const
 	{
-		double hyphotenuse = GetLenght(pos);
+		float hyphotenuse = GetLenght(pos);
 		return (-(y - pos.y)) / hyphotenuse;     //putting the minus because the screen isn't read in a cartezian method
 	}
-	double GetCos(Vec2_<T>& pos) const
+	float GetCos(Vec2_<T>& pos) const
 	{
-		double hyphotenuse = GetLenght(pos);
+		float hyphotenuse = GetLenght(pos);
+		return (-(x - pos.x)) / hyphotenuse;
+	}
+	float GetSin(Vec2_<T>& pos , float hyphotenuse) const
+	{
+		return (-(y - pos.y)) / hyphotenuse;
+	}
+	float GetCos(Vec2_<T>& pos , float hyphotenuse) const
+	{
 		return (-(x - pos.x)) / hyphotenuse;
 	}
 public:

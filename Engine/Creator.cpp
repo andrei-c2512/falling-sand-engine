@@ -1,9 +1,8 @@
 #include "Creator.h"
 #include "assert.h"
 Creator::Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather0)
-	:world(world), Chance(1 , 100),weather(weather0)
+	:world(world), Chance(1 , 100),weather(weather0),explosion(Explosion(world, 30))
 {
-
 	SpawnRadius = 15;
 	ToBeSpawned = Type::Steam;
 
@@ -83,8 +82,7 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 			if (mouse.LeftIsPressed())
 			{
 				auto MousePos = mouse.GetPos();
-				MousePos = world.ScreenToMatrixPos(MousePos);
-				ExplodeZone(MousePos , list);
+				explosion.ExplodeZone(MousePos , list);
 			}
 
 		}
@@ -253,13 +251,13 @@ void Creator::DrawSpawnSurface(Graphics& gfx , Mouse& mouse)
 		{
 			RectI rect = world.GetElem(n)->GetRect();
 
-			gfx.DrawRectI(rect, circle_color);
+			gfx.DrawRect(rect, circle_color);
 		}
 	}
 	else
 	{
 		RectI Zone = RectI(mouse.GetPos(), SpawnLoc);
-		gfx.DrawRectI_Border(Zone, Colors::Green);
+		gfx.DrawRect_Border(Zone, Colors::Green);
 	}
 
 }
@@ -312,191 +310,3 @@ std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse)
 
 	return Elements;
 }
-
-void Creator::ExplodeZone(Vec2I& center , ParticleEffect& list)
-{
-	int Radius = ExplosionRadius + DarkeningRadius;
-	RectI Zone = RectI(Radius * 2, Radius * 2,
-					Vec2I(center.x - Radius, center.y - Radius));
-
-	//explosion buffer
-	std::vector<Explosion_verification> eBuffer(Zone.width * Zone.height , 
-												Explosion_verification(0 , Action::None));
-
-	auto dim = world.GetSandboxDim();
-
-
-	Vec2I pos;
-	//top segment
-	for (int x = Zone.left; x < Zone.right(); x++)
-	{
-		pos = Vec2I( x , Zone.top );
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist < ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I( center.x + dist * cos , center.y + dist * sin );
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			if (world.GetElem(index)->GetType() != Type::Stone)
-			{
-				size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-				eBuffer[eIndex] = Explosion_verification(index ,Action::Explode);
-			}
-			else
-				break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-		
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	//bottom segment
-	for (int x = Zone.left; x < Zone.right(); x++)
-	{
-		pos = Vec2I( x , Zone.bottom());
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist <= ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if(index > 0 && index < dim.GetArea())
-				if (world.GetElem(index)->GetType() != Type::Stone)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
-				}
-				else
-					break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	//right segment
-	for (int y = Zone.top + 1; y < (Zone.bottom() - 1); y++)
-	{
-		pos = Vec2I( Zone.right() , y);
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist <= ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			if (world.GetElem(index)->GetType() != Type::Stone)
-			{
-				size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-				eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
-			}
-			else
-				break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	//left segment
-	for (int y = Zone.top + 1; y < Zone.bottom() - 1; y++)
-	{
-		pos = Vec2I( Zone.left , y );
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist <= ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			if (world.GetElem(index)->GetType() != Type::Stone)
-			{
-				size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-				eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
-			}
-			else
-				break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	for (auto& elem : eBuffer)
-	{
-		if (elem.type == Action::Explode)
-		{
-			world.GetElem(elem.index)->Explode(list);
-		}
-		else if (elem.type == Action::Darken)
-		{
-			world.GetElem(elem.index)->Darken(70);
-		}
-	}
-}
-

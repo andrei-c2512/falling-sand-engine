@@ -145,6 +145,7 @@
     <ClInclude Include="Creator.h" />
     <ClInclude Include="Dimensions.h" />
     <ClInclude Include="Effects.h" />
+    <ClInclude Include="Explosion.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="Player.h" />

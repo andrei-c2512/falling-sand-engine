@@ -6,8 +6,8 @@
 class Sandbox {
 public:
 	static constexpr int ChunkSize = 40;
-	Sandbox();
-	void UpdateSandbox(Keyboard& kbd , float time );
+	Sandbox(ParticleEffect& effect);
+	void UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time );
 	void DrawSandbox(Graphics& gfx , Mouse& mouse);
 	void ActivateChunk(int index);
 	// for testing

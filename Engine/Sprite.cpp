@@ -107,7 +107,7 @@ int Sprite::GetHeight() const {
 
 void Sprite::PutPixel(int x, int y, Color c)
 {
-	pColor[y * width + x] = c;
+	pColor[(y * width) + x] = c;
 }
 
 Color Sprite::GetPixel(int x, int y)

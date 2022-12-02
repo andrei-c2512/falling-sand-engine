@@ -68,15 +68,15 @@ void Element::Create(Type newtype)
 	case Type::Sand:
 		color = RandColor(&SandColorRange[0]);
 		BurnChance = 0;
-		Gravity = 2.0f;
-		Spread = 2.0f;
+		Gravity = 2;
+		Spread = 2;
 		state = State::Solid;
 		break;
 	case Type::Water:
 		color = Colors::Cyan;
 		BurnChance = 0;
 		Spread = 10.0f;
-		Gravity = 3.0f;
+		Gravity = 3;
 		state = State::Liquid;
 		break;
 	case Type::Stone:
@@ -167,16 +167,16 @@ void Element::DrawElement(Graphics& gfx , Sprite& sprite)
 			gfx.DrawRectI_Bloom(hBox, color);
 		}
 		else
-			gfx.DrawRectI(hBox, color);
+			gfx.DrawRect(hBox, color);
 	}
 }
 
-int Element::GetSpread() const {
-	return Spread;
+short Element::GetSpread() const {
+	return Spread + SpreadRange.GetVal();
 }
 
-int Element::GetGravity() const {
-	return Gravity;
+short Element::GetGravity() const {
+	return Gravity ;
 }
 bool Element::IsFlammable() const {
 	return BurnChance > 0;
@@ -381,10 +381,20 @@ std::pair<const State*, const State*> Element::GetConditions() const
 
 void Element::Explode(ParticleEffect& list)
 {
-	if (Chance.GetVal() <= 1)
+	if (Chance.GetVal() <= 20)
 	{
-		list.AddParticle(Particle(RectI(4, 4, Vec2I(hBox.left + XRange.GetVal(), hBox.top))
-			, RandColor(&FireColorRange[0]), Vec2D{ 0.0f , -4.0f }, Timer( 0.3f )));
+		short add = 0;
+		short ParticleSize = 4;
+		// make sure not to spawn beyond screen
+		do {
+			add = XRange.GetVal();
+		} while (hBox.left + add + 4 > Graphics::ScreenWidth);
+
+		auto particle = Particle(RectI(ParticleSize, ParticleSize, Vec2I(hBox.left + add, hBox.top))
+			, RandColor(&FireColorRange[0]), Vec2D{ 0.0f , -4.0f }, Timer(0.3f));
+
+		list.AddParticle(std::move(particle));
+
 	}
 
 	Create(Type::Empty);
@@ -392,11 +402,14 @@ void Element::Explode(ParticleEffect& list)
 
 void Element::Darken(int percentage)
 {
-	int r, g, b;
-	r = float(color.GetR()) * float(percentage) / 100.0f;
-	g = float(color.GetG()) * float(percentage) / 100.0f;
-	b = float(color.GetB()) * float(percentage) / 100.0f;
+	if (state == State::Solid)
+	{
+		unsigned char r, g, b;
+		r = float(color.GetR()) * float(percentage) / 100.0f;
+		g = float(color.GetG()) * float(percentage) / 100.0f;
+		b = float(color.GetB()) * float(percentage) / 100.0f;
 
-	if(r )
-	color = Color( r , g , b );
+		if (!(r < 30 && g < 30 && b < 30))
+			color = Color(r, g, b);
+	}
 }

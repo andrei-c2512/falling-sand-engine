@@ -2,17 +2,26 @@
 #include "World.h"
 #include "Graphics.h"
 #include "Keyboard.h"
+#include "Weapon.h"
+
 class Player{
 public:
 	Player(Sprite& bodysprite  , Sprite& headsprite, World& world ,  float speed);
+	void GiveWeapon(std::unique_ptr<Weapon> wp);
 	void UpdateMovement(Keyboard& kbd , float time);
 	void Draw(Graphics& gfx , Mouse& mouse);
 	void Move(Keyboard& kbd, float time);
+	void UseWeapon(Mouse& mouse , float time);
+	const Rect* pHitBox() const
+	{
+		return &HitBox;
+	}
 private:
 	void MoveX(float time);
 	void MoveY(float time);
 private:
-	RectI HitBox;
+	std::unique_ptr<Weapon> pWeapon;
+	Rect HitBox;
 
 	Sprite sBody;
 	Sprite sHead;

@@ -7,17 +7,18 @@
 #include "Rect.h"
 #include "assert.h"
 #include "Effects.h"
+#include <stdexcept>
 
 class World {
 public:
 	enum class MoveType {
-		Swap,
 		Conversion,
 		SetOnFire,
 		FireAura,
 		Static,
 		Special,
 		Create,
+		Swap,
 		Count
 	};
 public:
@@ -79,6 +80,18 @@ public:
 				break;
 			}
 		}
+		void SetOnFire(World& world)
+		{
+			world.GetElem(elem1)->SetOnFire();
+		}
+		void EmitAura(World& world)
+		{
+			world.GetElem(elem1)->Create(Type::FireAura);
+		}
+		void Spawn(World& world)
+		{
+			world.CreateElem(elem1, conversion);
+		}
 		size_t elem1 = 0;
 		int elem2 = -1;
 		MoveType move = MoveType::Static;
@@ -113,14 +126,14 @@ public:
 		const int height = BackGround.GetHeight();
 
 		Effects::Copy e{};
-	//	gfx.DrawSprite(0, 0, BackGround, RectI(width, height, Vec2I(0, 0)), Graphics::GetScreenRect(), e);
+
 		for (auto& n : Elements)
 		{
 			n.DrawElement(gfx , BackGround);
 		}
 	}
 
-	static constexpr int ElemSize = 4;
+	static constexpr int ElemSize = 5;
 
 	static constexpr int SandSinkChance = 75;
 	static constexpr int WoodFlamability = 50;
@@ -154,23 +167,24 @@ public:
 
 	void AddMoveToList(Move& move)
 	{
-		Move_List.emplace_back(move);
+		assert(move.move == MoveType::Swap);
+		Move_List.emplace_back(std::move(move));
 	}
 	void AddToFireList(Move& move)
 	{
-		Fire_list.emplace_back(move);
+		Fire_list.emplace_back(std::move(move));
 	}
 	void AddToFireAuraList(Move& move)
 	{
-		FireAura_list.emplace_back(move);
+		FireAura_list.emplace_back(std::move(move));
 	}
 	void AddToConversionList(Move& move)
 	{
-		Conversion_list.emplace_back(move);
+		Conversion_list.emplace_back(std::move(move));
 	}
 	void AddToSpawnList(Move& move) 
 	{
-		Spawn_list.emplace_back(move);
+		Spawn_list.emplace_back(std::move(move));
 	}
 	size_t GetFire_listSize() const
 	{
@@ -195,19 +209,19 @@ public:
 	{
 		for (auto& move : Fire_list)
 		{
-			move.CommitMove(*this);
+			move.SetOnFire(*this);
 		}
 		for (auto& move : FireAura_list)
 		{
-			move.CommitMove(*this);
+			move.EmitAura(*this);
 		}
 		for (auto& move : Conversion_list)
 		{
-			move.CommitMove(*this);
+			move.Spawn(*this);
 		}
 		for (auto& move : Spawn_list)
 		{
-			move.CommitMove(*this);
+			move.Spawn(*this);
 		}
 
 		for (auto& n : Elements)
@@ -218,9 +232,12 @@ public:
 			{
 				return move1.elem2 > move2.elem2;
 			});
-		for (size_t ind = 0; ind < Move_List.size(); )
+
+		for (int ind = 0; ind < Move_List.size(); )
 		{
-			size_t add = 1;
+			//im basically assuming there is no way 65000+ cells have the same place to go
+			short add = 0;
+
 			while (ind + add < Move_List.size())
 			{
 				if (Move_List[ind + add].elem2 == Move_List[ind].elem2)
@@ -230,12 +247,12 @@ public:
 			}
 			if (add == 1)
 			{
-				Move_List[ind].CommitMove(*this);
+				Move_List[ind].MoveElem(*this);
 			}
 			else
 			{
 				Pick.ChangeRange(ind, ind + add - 1);
-				Move_List[Pick.GetVal()].CommitMove(*this);
+				Move_List[Pick.GetVal()].MoveElem(*this);
 			}
 			ind += add;
 		}

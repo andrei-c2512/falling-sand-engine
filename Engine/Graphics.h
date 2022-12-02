@@ -65,6 +65,8 @@ public:
 	template <typename E>
 	void DrawSprite(int x, int y, Sprite& s, RectI SpritePortion, RectI& clip , E effect)
 	{
+		assert(WithinScreen(SpritePortion));
+
 		if (clip.left > x)
 		{
 			SpritePortion.left += std::abs(clip.left - x);
@@ -100,23 +102,61 @@ public:
 		}
 	}
 	static RectI GetScreenRect();
-	void DrawRect0(Rect& rect, Color c);
-	void DrawRect1(Rect& rect, int r , int g , int b);
-	void DrawRectI(RectI& rect , Color C);
-	void DrawRect_Transparent(RectI& rect, Color c, Sprite& sprite , int transparency);
-	void DrawRect_Transparent(RectI& rect, Color c, int transparency);
+
+	template <typename T>
+	void DrawRect(Rect_<T>& rect, Color c)
+	{
+		for (int y = int(rect.top); y < int(rect.top + rect.height); y++)
+		{
+			for (int x = rect.left; x < int(rect.left + rect.width); x++)
+				PutPixel(x, y, c);
+		}
+	}
+
+	template<typename T>
+	void DrawRect_Transparent(Rect_<T>& rect, Color c, Sprite& sprite, int transparency)
+	{
+		float tFactor = float(transparency / 100.0f);
+		for (int y = rect.top; y < rect.top + rect.height; y++)
+		{
+			for (int x = rect.left; x < rect.left + rect.width; x++)
+			{
+				Color sColor = sprite.GetPixel(x, y);
+				int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
+					g = (c.GetG() + sColor.GetG()) * tFactor;
+				PutPixel(int(x), int(y), r, g, b);
+			}
+		}
+	}
+
+	template<typename T>
+	void DrawRect_Transparent(Rect_<T>& rect, Color c, int transparency)
+	{
+		float tFactor = float(transparency / 100.0f);
+		for (int y = rect.top; y < rect.top + rect.height; y++)
+		{
+			for (int x = rect.left; x < rect.left + rect.width; x++)
+			{
+				Color sColor = pSysBuffer[y * ScreenWidth + x];
+				int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
+					g = (c.GetG() + sColor.GetG()) * tFactor;
+				PutPixel(int(x), int(y), r, g, b);
+			}
+		}
+	}
 
 	template<typename T>
 	static bool WithinScreen(Rect_<T>& rect){
-		return (rect.left > 0 && rect.left + rect.width < Graphics::ScreenWidth &&
-			rect.top > 0 && rect.top + rect.height < Graphics::ScreenHeight);
+		return (rect.left >= 0 && rect.left + rect.width <= Graphics::ScreenWidth &&
+			rect.top >= 0 && rect.top + rect.height <= Graphics::ScreenHeight);
 
 	}
-	void DrawRectI_Border(RectI& rect, Color c)
+	template <typename T>
+	void DrawRect_Border(Rect_<T>& rect, Color c)
 	{
-		for (int y = rect.top; y < rect.top + rect.height; y += 1)
+		for (int y = int(rect.top); y < int(rect.top + rect.height); y += 1)
 		{
-			for (int x = rect.left; x < rect.left + rect.width; x += 1)
+			for (int x = int(rect.left); x < int(rect.left + rect.width); x += 1)
 			{
 				if (y == rect.top)
 				{
@@ -137,25 +177,28 @@ public:
 	{
 		return pos.x >= 0 && pos.x <= ScreenWidth && pos.y >= 0 && pos.y <= ScreenHeight;
 	}
-	void DrawAngledSprite(int x, int y, Sprite& s, RectI& SpritePortion, Vec2I& pos)
-	{
-		const int StartX = SpritePortion.top - SpritePortion.width / 2;
-		const int StartY = SpritePortion.top - SpritePortion.height / 2;
 
-		const int StopY = SpritePortion.top + SpritePortion.height / 2;
-		const int StopX = SpritePortion.left + SpritePortion.width / 2;
+	template<typename T>
+	void DrawAngledSprite(int x, int y, Sprite& s, Rect_<T>& SpritePortion, Vec2I& pos)
+	{
+		const short StartX = SpritePortion.top - SpritePortion.width / 2;
+		const short StartY = SpritePortion.top - SpritePortion.height / 2;
+
+		const short StopY = SpritePortion.top + SpritePortion.height / 2;
+		const short StopX = SpritePortion.left + SpritePortion.width / 2;
 
 		RectI SRect = { SpritePortion.width , SpritePortion.height , Vec2I{x , y } };
 		Vec2I SCenter = SRect.GetCenter();
 
-		float sin = SCenter.GetSin(pos);
-		float cos = SCenter.GetCos(pos);
+		float hyphotenuse = SCenter.GetLenght(pos);
+		float sin = SCenter.GetSin(pos , hyphotenuse);
+		float cos = SCenter.GetCos(pos , hyphotenuse);
 
-		int hWidth = SpritePortion.width / 2;
-		int hHeight = SpritePortion.height / 2;
-		for (int sy = StartX; sy < StopY; sy++)
+		short hWidth = SpritePortion.width / 2;
+		short hHeight = SpritePortion.height / 2;
+		for (short sy = StartX; sy < StopY; sy++)
 		{
-			for (int sx = StartY; sx < StopX; sx++)
+			for (short sx = StartY; sx < StopX; sx++)
 			{
 				Color c = s.GetPixel(sx + hWidth, sy + hHeight);
 
@@ -212,6 +255,7 @@ public:
 
 			pSysBuffer[ind] = Color(r, g, b);
 		}
+		
 	}
 	void ResetBloom()
 	{

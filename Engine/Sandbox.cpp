@@ -1,11 +1,19 @@
 #include "Sandbox.h"
 #include "assert.h"
 
-Sandbox::Sandbox() 
-	:weather(world , WeatherType::Clear , 2), player(Sprite(Dimensions<int>(16, 20), Colors::Yellow), Sprite(Dimensions<int>(10, 10), Colors::Yellow)
-		, world, 2.0f)
+Sandbox::Sandbox(ParticleEffect& effect) 
+	:weather(world , WeatherType::Clear , 2), 
+	player(Sprite(Dimensions<int>(10, 20), Colors::Yellow), Sprite(Dimensions<int>(10, 10), Colors::Yellow)
+		, world, 10.0f)
 {
 	{
+		auto proj = std::make_unique<Explosive>(Explosive(Projectile(Rect(5, 5, Vec2D(5, 5)), world, 5.0f) , effect)) ;
+
+		std::unique_ptr<ExplosiveLauncher> wp = std::make_unique<ExplosiveLauncher>
+			(ExplosiveLauncher(player.pHitBox(), std::move(proj) , effect));
+		
+		player.GiveWeapon(std::move(wp));
+
 		auto dim = world.GetSandboxDim();
 		const int width = dim.width;
 		const int height = dim.height;
@@ -64,7 +72,7 @@ Sandbox::Sandbox()
 		
 	}
 }
-void Sandbox::UpdateSandbox(Keyboard& kbd , float time)
+void Sandbox::UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time)
 {
 	if (UpdateTimer.IsReady())
 	{
@@ -82,6 +90,7 @@ void Sandbox::UpdateSandbox(Keyboard& kbd , float time)
 		weather.UpdateMatrix();
 		
 		player.UpdateMovement(kbd , time);
+		player.UseWeapon(mouse , time);
 		UpdateTimer.ResetTimer();
 	}
 }

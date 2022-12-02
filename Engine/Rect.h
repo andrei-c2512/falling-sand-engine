@@ -42,7 +42,11 @@ public:
 		width(width0), height(height0)
 	{
 	}
-
+	Rect_(Dimensions<T> dim, Vec2_<T>& pos)
+		:left(pos.x), top(pos.y),
+		width(dim.width), height(dim.height)
+	{
+	}
 	 
     bool Collision(Rect_& rect) const
 	{
@@ -96,7 +100,7 @@ public:
 	Dimensions<T> GetDimensions() const {
 		return Dimensions<T>( width  , height );
 	}
-	Vec2_<T> GetCenter() const
+	Vec2_<T> GetCenter() 
 	{
 		return Vec2_<T>(left + width / 2, top + height / 2);
 	}

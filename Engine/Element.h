@@ -1,9 +1,9 @@
 #pragma once
-#include "Plant.h"
+
 #include <vector>
-#include "Projectile.h"
 #include "Rng.h"
 #include "ParticleEffect.h"
+
 enum class Type {
 	Water,
 	Sand,
@@ -82,16 +82,16 @@ public:
 												   {0 , 155 , 0 },
 												   {0 , 160 , 0} };
 
-	static constexpr int WoodBurnChance = 3;
+	static constexpr short WoodBurnChance = 3;
 
 	static constexpr State Conditions_liquid[] = {State::Empty , State::Plasma , State::Gas};
 	static constexpr State Conditions_solid[] = { State::Empty , State::Liquid , State::Gas , State::Plasma};
 	static constexpr State Conditions_gas[] = { State::Empty};
 public:
-	static constexpr int WaterSpread = 4;
-	static constexpr int SandSinkChance = 15;
-	static constexpr int SnowToWaterChance = 10;
-	static constexpr int SnowSinkChance = 10;
+	static constexpr short WaterSpread = 4;
+	static constexpr short SandSinkChance = 15;
+	static constexpr short SnowToWaterChance = 10;
+	static constexpr short SnowSinkChance = 10;
 
 	static constexpr int AcidDestroyChance = 30;
 public:
@@ -116,8 +116,8 @@ public:
 	void UpdateColorTime(float time);
 	void UpdateColor(); //if the elem is the type to change color periodically
 
-	int GetSpread() const;
-	int GetGravity() const;
+	short GetSpread() const;
+	short GetGravity() const;
 	Type GetType() const;
 	State GetState() const;
 	RectI GetRect() const;
@@ -157,9 +157,9 @@ private:
 
 	Color color;
 
-	int Spread;
-	int Gravity;
-	int BurnChance;
+	short Spread;
+	short Gravity;
+	short BurnChance;
 	float BurnDuration;
 
 	Timer LifeSpan;
@@ -171,5 +171,6 @@ private:
 	RNG Chance = { 1, 100 };
 	RNG RdLifeSpan_gas = { 10 , 15 };
 	RNG ColorRng = { 0 , 3 };
-	RNG XRange = { 0 , hBox.width };
+	RNG XRange = { 0 , hBox.width - 1};
+	mutable RNG SpreadRange = { -2 , 2 };
 };

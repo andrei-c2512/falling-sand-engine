@@ -24,14 +24,16 @@ void Player::Draw(Graphics& gfx , Mouse& mouse)
 		sBody.GetHeight(), Vec2I{ 0 , 0 }), Graphics::GetScreenRect() , e);
 
 
-	RectI Head = RectI(sHead.GetWidth(), sHead.GetHeight(), Vec2I(HitBox.pos()));
+	Rect Head = Rect(sHead.GetWidth(), sHead.GetHeight(), Vec2D(HitBox.pos()));
 
 	auto pos = Head.GetCenter();
 	auto MousePos = mouse.GetPos();
 	gfx.DrawAngledSprite(HitBox.left , HitBox.top, sHead, RectI(sHead.GetWidth(),
 		sHead.GetHeight(), Vec2I{ 0 , 0 }) , MousePos);
 
-	gfx.DrawRectI_Border(HitBox, Colors::Cyan);
+	gfx.DrawRect_Border(HitBox, Colors::Cyan);
+
+	pWeapon->DrawProjectiles(gfx, Colors::Red);
 }
 
 void Player::UpdateMovement(Keyboard& kbd , float time)
@@ -66,30 +68,56 @@ void Player::Move(Keyboard& kbd , float time)
 	
 }
 
-void Player::MoveX(float time )
+
+void Player::MoveX(float time)
 {
-	RectI ZoneX = { 0 , 0 , Vec2I{0 , 0} };
+	RectI ZoneX;
 
-	int AddX = vel.x * 60.0f * time;
-	if (int(AddX) % World::ElemSize > World::ElemSize / 2)
+	float AddX = std::abs(vel.x * 60.0f * time);
+
+	int Size = AddX;
+	if (int(AddX) % World::ElemSize != 0)
 	{
-		AddX += World::ElemSize - int(AddX) % World::ElemSize;
-		AddX = int(AddX);
+		Size += World::ElemSize - int(AddX) % World::ElemSize;
+		Size = int(Size);
 	}
 
-	if (AddX > 0.0f)
+	if (vel.x > 0.0f)
 	{
-		ZoneX = RectI(AddX, HitBox.height, Vec2I(HitBox.right(), HitBox.top));
+		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.right(), HitBox.top));
 	}
-	else if (AddX < 0.0f)
+	else if (vel.x <= 0.0f)
 	{
-		ZoneX = RectI(std::abs(AddX), HitBox.height, Vec2I(HitBox.left, HitBox.top));
+		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.left - Size, HitBox.top));
+	}
+
+	int StartX, EndX, Add;
+	std::function<bool(int, int)> Condition;
+	if (vel.x > 0.0f)
+	{
+		StartX = ZoneX.left;
+		EndX = ZoneX.right();
+		Add = World::ElemSize;
+		Condition = [](int nr1, int nr2)
+		{
+			return nr1 < nr2;
+		};
+	}
+	else
+	{
+		StartX = ZoneX.right();
+		EndX = ZoneX.left;
+		Add = -World::ElemSize;
+		Condition = [](int nr1, int nr2)
+		{
+			return nr1 > nr2;
+		};
 	}
 
 	auto dim = world.GetSandboxDim();
 	{
 		std::vector<Element> ElementsX;
-		for (int x = ZoneX.left; x < ZoneX.right(); x += World::ElemSize)
+		for (int x = StartX; Condition(x , EndX); x += Add)
 		{
 			bool Move = true;
 			for (int y = ZoneX.top; y < ZoneX.bottom(); y += World::ElemSize)
@@ -127,44 +155,88 @@ void Player::MoveX(float time )
 
 			if (Move)
 			{
-				int sign = std::abs(AddX) / AddX;
-				HitBox.left += sign * World::ElemSize;
+				float add;
+				if (AddX < World::ElemSize)
+				{
+					add = AddX;
+					int sign = std::abs(vel.x) / vel.x;
+					HitBox.left += sign * add;
+					break;
+				}
+				else
+				{
+					add = World::ElemSize;
+					AddX -= World::ElemSize;
+				}
+				int sign = std::abs(vel.x) / vel.x;
+				HitBox.left += sign * add;
 			}
 			ElementsX.clear();
 		}
 	}
-
+	//assert(AddX == 0.0f);
 	vel.x = 0.0f;
 }
 
 void Player::MoveY(float time)
 {
-	int AddY = vel.y * 60.0f * time;
+	float AddY;
 	if (vel.y == 0.0f)
 	{
-		AddY = Gravity;
+		AddY = Gravity * 60.0f * time;
 	}
+	else 
+		AddY = std::abs(vel.y * 60.0f * time);
 
-	if (int(AddY) % World::ElemSize > World::ElemSize / 2)
+	int Size = AddY;
+	if (int(AddY) % World::ElemSize != 0)
 	{
-		AddY = World::ElemSize - int(AddY) % World::ElemSize;
-		AddY = int(AddY);
+		Size += World::ElemSize - int(AddY) % World::ElemSize;
+		Size = int(AddY);
 	}
 	RectI ZoneY = { 0 , 0 , Vec2I{0 , 0} };
 
-	if (AddY > 0.0f)
+	if (vel.y >= 0.0f)
 	{
-		ZoneY = RectI(HitBox.width, AddY, Vec2I(HitBox.left, HitBox.bottom()));
+		ZoneY = RectI(HitBox.width, Size, Vec2I(HitBox.left, HitBox.bottom()));
 	}
-	else if (AddY < 0.0f)
+	else if (vel.y < 0.0f)
 	{
-		ZoneY = RectI(HitBox.width, std::abs(AddY), Vec2I(HitBox.left, HitBox.top + std::abs(AddY)));
+		ZoneY = RectI(HitBox.width, Size, Vec2I(HitBox.left, HitBox.top - Size));
 	}
 	auto dim = world.GetSandboxDim();
 
+
+	int StartY, EndY, Add;
+
+	std::function<bool(int , int)> Condition;
+	if (vel.y > 0.0f)
+	{
+		StartY = ZoneY.top;
+		EndY = ZoneY.bottom();
+		Add = World::ElemSize;
+
+		Condition = [=](int nr1 , int nr2)
+		{
+			return nr1 < nr2;
+		};
+	}
+	else
+	{
+		StartY = ZoneY.bottom();
+		EndY = ZoneY.top;
+		Add = -World::ElemSize;
+
+		Condition = [=](int nr1 , int nr2)
+		{
+			return nr1 > nr2;
+		};
+	}
+
+
 	{
 		std::vector<Element> ElementsY;
-		for (int y = ZoneY.top; y < ZoneY.bottom(); y += World::ElemSize)
+		for (int y = StartY; Condition(y , EndY) == true; y += Add)
 		{
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
@@ -177,7 +249,10 @@ void Player::MoveY(float time)
 					ElementsY.emplace_back(element);
 				}
 				else
+				{
 					Move = false;
+					break;
+				}
 			}
 
 			for (auto& n : ElementsY)
@@ -191,13 +266,42 @@ void Player::MoveY(float time)
 
 			if (Move)
 			{
-				int sign = std::abs(AddY) / AddY;
-				HitBox.top += sign * World::ElemSize;
+				float add;
+				int sign = 1;
+
+				if (vel.y != 0.0f)
+				{
+					sign = std::abs(vel.y) / vel.y;
+				}
+
+				if (AddY < World::ElemSize)
+				{
+					add = AddY;
+					AddY -= add;
+					HitBox.top += sign * add;
+					break;
+				}
+				else
+				{
+					add = World::ElemSize;
+					AddY -= World::ElemSize;
+				}
+				HitBox.top += sign * add;
 			}
 
 			ElementsY.clear();
 		}
 	}
-
+	//assert(AddY == 0.0f);
 	vel.y = 0.0f;
+
+}
+void Player::GiveWeapon(std::unique_ptr<Weapon> wp)
+{
+	pWeapon = std::move(wp);
+}
+
+void Player::UseWeapon(Mouse& mouse , float time)
+{
+	pWeapon->Update(mouse, time);
 }

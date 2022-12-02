@@ -1,8 +1,9 @@
 #include "Weapon.h"
 #include <cmath>
 #include <assert.h>
+#include <typeinfo>
 
-Weapon::Weapon(Rect* Owner0 , float speed0, int MaxRounds0, float rTime , float sTime )
+Weapon::Weapon( float speed0, int MaxRounds0, float rTime , float sTime )
 	:speed(speed0),
 	MaxRounds(MaxRounds0),
 	reload(rTime),
@@ -11,12 +12,6 @@ Weapon::Weapon(Rect* Owner0 , float speed0, int MaxRounds0, float rTime , float 
 	Initialized = false;
 	Rounds = 0;
 	BulletCnt = 0;
-
-	pProj = new Projectile[MaxRounds];
-	for (int i = 0; i < MaxRounds; i++)
-		pProj[i].InitProj(Rect(5, 5, Vec2D(NULL, NULL)) , Vec2D( 0.0f , 0.0f ) , true);
-
-	pOwner = Owner0;
 	Initialized = true;
 }
 
@@ -24,7 +19,7 @@ void Weapon::Shoot(const Mouse& mouse)
 {
 	if (mouse.LeftIsPressed() && reload.IsReady() && Rounds > 0)
 	{
-		int x = mouse.GetPosX() , y = mouse.GetPosY();
+		short x = mouse.GetPosX() , y = mouse.GetPosY();
 		if (shoot.IsReady())
 		{
 			assert(Rounds > 0);
@@ -35,11 +30,7 @@ void Weapon::Shoot(const Mouse& mouse)
 			vel /= dist;
 			vel *= speed;
 
-			pProj[BulletCnt].Launch(vel , pos);
-
-			BulletCnt++;
-			if (BulletCnt == MaxRounds)
-				BulletCnt = 0;
+			LaunchNewProj(vel, pos);
 
 			shoot.ResetTimer();
 			Rounds--;
@@ -50,10 +41,12 @@ void Weapon::Shoot(const Mouse& mouse)
 		}
 	}
 }
-void Weapon::BulLifeSpan(float time)
+void Weapon::Update_projectiles(float time)
 {
-	for (int i = 0; i < MaxRounds; i++)
-		pProj[i].Travel(time);
+	for (auto& proj : proj_list)
+	{
+		proj->Travel(time);
+	}
 }
 void Weapon::CoolDowns(float time)
 {
@@ -67,22 +60,36 @@ void Weapon::CoolDowns(float time)
 }
 void Weapon::DrawProjectiles(Graphics& gfx , Color c)
 {
-	for (int i = 0; i < MaxRounds; i++)
-		pProj[i].DrawProjectile(gfx,  c );
+	for (auto& proj : proj_list)
+	{
+		proj->DrawProjectile(gfx, c);
+	}
 }
 
 int Weapon::GetCapacity() const {
 	return MaxRounds;
 }
 
-Projectile* Weapon::GetpProj() const {
-	return pProj;
-}
 
 bool Weapon::IsInitialized() const {
 	return Initialized;
 }
 
-Rect* Weapon::GetpOwner() const {
+const Rect* Weapon::GetpOwner() const {
 	return pOwner;
+}
+
+void Weapon::Update(const Mouse& mouse, float time)
+{
+	CoolDowns(time);
+	Update_projectiles(time);
+	Shoot(mouse);
+}
+
+void ExplosiveLauncher::LaunchNewProj(Vec2D& vel, Vec2D& initpos)
+{
+	std::unique_ptr<Explosive> proj = std::make_unique<Explosive>(*InitProj);
+	proj->Launch(vel, initpos);
+	
+	proj_list.emplace_front(std::move(proj));
 }

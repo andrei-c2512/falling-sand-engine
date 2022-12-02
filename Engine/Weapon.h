@@ -1,71 +1,31 @@
 #pragma once
 #include "Mouse.h"
-#include "Rect.h"
 #include "Timer.h"
 #include "Projectile.h"
+#include <forward_list>
+#include <typeinfo>
+#include <memory>
+
 class Weapon {
 public:
 	Weapon() = default;
-	~Weapon() {
-		delete[] pProj;
-		pProj = nullptr;
-	}
-	Weapon(const Weapon& weapon)
-		:MaxRounds(weapon.MaxRounds), Rounds(weapon.Rounds),
-		BulletCnt(weapon.BulletCnt),
-		speed(weapon.speed),reload(weapon.reload),
-		shoot(weapon.shoot), pOwner(weapon.pOwner)
-	{
-		if (weapon.GetpProj() != nullptr)
-		{
-			pProj = new Projectile[weapon.MaxRounds];
-
-			for (int i = 0; i < weapon.MaxRounds; i++)
-			{
-				pProj[i] = weapon.pProj[i];
-			}
-		}
-		else
-			pProj = nullptr;
-
-	}
-	Weapon& operator=(const Weapon& weapon)
-	{
-		delete[] pProj;
-		pProj = nullptr;
-
-		if(weapon.GetpProj() != nullptr)
-		{
-			pProj = new Projectile[weapon.MaxRounds];
-
-			for (int i = 0; i < weapon.MaxRounds; i++)
-			{
-				pProj[i] = weapon.pProj[i];
-			}
-		}
-
-		MaxRounds = weapon.MaxRounds; Rounds = weapon.Rounds;
-		BulletCnt = weapon.BulletCnt; 
-		shoot = weapon.shoot; reload = weapon.reload;
-		speed = weapon.speed;
-		pOwner = weapon.pOwner;
-		return *this;
-	}
-	Weapon(Rect* Owner , float speed0 , int MaxRounds0 , float rTime , float sTime);
-	void DrawProjectiles(Graphics& gfx , Color c);
+	Weapon( float speed0, int MaxRounds0, float rTime, float sTime);
 	void Shoot(const Mouse& mouse);
+	void Update_projectiles(float time);
 	void CoolDowns(float time);
-	void BulLifeSpan(float time);
-	Rect* GetpOwner() const;
-public:
-	//getters
+	void DrawProjectiles(Graphics& gfx, Color c);
+
 	int GetCapacity() const;
+
 	bool IsInitialized() const;
-public:
-	Projectile* GetpProj() const;
-private:
-	Rect* pOwner;  // the player , probably
-	Projectile* pProj = nullptr;
+	const Rect* Weapon::GetpOwner() const;
+
+	virtual void LaunchNewProj(Vec2D& vel, Vec2D& initpos) = 0;
+
+	void Update(const Mouse& mouse, float time);
+protected:
+	const Rect* pOwner;  // the player , probably
+	std::forward_list<std::unique_ptr<Projectile>> proj_list;
 
 	int MaxRounds;
 	int Rounds;
@@ -76,4 +36,17 @@ private:
 
 	bool Initialized = false;
 	float speed;
+};
+
+class ExplosiveLauncher : public Weapon {
+public:
+	ExplosiveLauncher(const Rect* Owner0 ,std::unique_ptr<Explosive> proj, ParticleEffect& particle)
+		:InitProj(std::move(proj)),effect_list(particle), Weapon(5.0f , 10 , 1.0f , 0.5f) 
+	{
+		pOwner = Owner0;
+	}
+	void LaunchNewProj(Vec2D& vel , Vec2D& initpos) override;
+private:
+	std::unique_ptr<Explosive> InitProj;
+	ParticleEffect& effect_list;
 };

@@ -33,7 +33,7 @@ void Chunk::Evaluate_Moves(float time)
 					break;
 				case Type::Water:
 					move = GetNextMove_Liquid(index, SpecialBehaviour::Water{});
-					if (move.move != World::MoveType::Static)
+					if (move.move == World::MoveType::Swap)
 					{
 						world.AddMoveToList(move);
 						IsActive = true;
@@ -97,7 +97,7 @@ void Chunk::Evaluate_Moves(float time)
 					{
 						world.AddMoveToList(move);
 					}
-					Update_Gas(index, time);
+			
 					world.GetElem(index)->Update_Steam(time);
 					IsActive = true;
 					break;
@@ -131,6 +131,8 @@ void Chunk::Evaluate_Moves(float time)
 					break;
 				}
 			}
+
+
 		}
 		Active = IsActive;
 	
@@ -183,7 +185,7 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 void Chunk::DrawBorder(Graphics& gfx)
 {
 	if(Active)
-		gfx.DrawRectI_Border(PhysicalSize, Colors::Yellow);
+		gfx.DrawRect_Border(PhysicalSize, Colors::Yellow);
 }
 
 bool Chunk::InBounds(int index, World& world) const
@@ -214,11 +216,7 @@ int Chunk::GetNextElem(const int index, Direction dir1) const {
 }
 
 
-void Chunk::Move(const int index1, const int index2)
-{
-	world.GetWorld()[index1].SwapPositions(world.GetWorld()[index2]);
 
-}
 int Chunk::GetDelta(const int index, Direction dir , Dimensions<size_t> dim) {
 	int Delta = 0;
 	const int width = dim.width;
