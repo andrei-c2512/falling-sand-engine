@@ -41,7 +41,7 @@ protected:
 class ExplosiveLauncher : public Weapon {
 public:
 	ExplosiveLauncher(const Rect* Owner0 ,std::unique_ptr<Explosive> proj, ParticleEffect& particle)
-		:InitProj(std::move(proj)),effect_list(particle), Weapon(5.0f , 10 , 1.0f , 0.5f) 
+		:InitProj(std::move(proj)),effect_list(particle), Weapon(10.0f , 10 , 1.0f , 0.5f) 
 	{
 		pOwner = Owner0;
 	}

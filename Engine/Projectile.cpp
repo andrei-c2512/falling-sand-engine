@@ -190,7 +190,10 @@ void Projectile::MoveX(float time)
 				HitBox.left += sign * add;
 			}
 			else
+			{
 				Destroy();
+				break;
+			}
 			ElementsX.clear();
 		}
 	}
@@ -293,7 +296,10 @@ void Projectile::MoveY(float time)
 				HitBox.top += sign * add;
 			}
 			else
+			{
 				Destroy();
+				break;
+			}
 
 			ElementsY.clear();
 		}

@@ -98,7 +98,7 @@ namespace SpecialBehaviour
 		{
 			if (elem2.GetState() == State::Plasma)
 			{
-				return World::Move(ind1, ind2, World::MoveType::Conversion, Type::Steam);
+				return World::Move(ind1, int(ind2), World::MoveType::Conversion, Type::Steam);
 			}
 			return World::Move(World::MoveType::Swap);
 		}
@@ -114,7 +114,7 @@ namespace SpecialBehaviour
 			Type type = elem2.GetType(); 
 			if ((state != State::Empty && state != State::Plasma) && type != Type::Acid)
 			{
-				return World::Move(ind1, ind2, World::MoveType::Conversion, Type::Water);
+				return World::Move(ind1, int(ind2), World::MoveType::Conversion, Type::Water);
 			}
 			return World::Move(World::MoveType::Swap);
 		}

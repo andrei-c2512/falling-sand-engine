@@ -40,7 +40,7 @@ private:
 
 		float AddX = 60.0f * time * vel.x;
 		float AddY = 60.0f * time * vel.y;
-		RectI rect = RectI(HitBox.width, HitBox.height, Vec2I(HitBox.left + AddX, HitBox.top + AddY));
+		RectI rect = RectI(HitBox.width, HitBox.height, Vec2I(HitBox.left + int(AddX), HitBox.top + int(AddY)));
 
 		if (Graphics::WithinScreen(rect))
 		{

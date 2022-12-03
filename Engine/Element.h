@@ -10,7 +10,6 @@ enum class Type {
 	Stone,
 	Wood,
 	Fire,
-	FireAura,
 	Smoke,
 	Steam,
 	Snow,
@@ -18,6 +17,7 @@ enum class Type {
 	ToxicGas,
 	Empty,
 	Explosion,
+	FireAura,
 	Count
 };
 enum class State {
@@ -146,7 +146,14 @@ public:
 	std::pair<const State*, const State*> GetConditions() const;
 	void ResetStatus()
 	{
-		SwapCnt = 0;
+		Updated = false;
+	}
+	void Update()
+	{
+		Updated = true;
+	}
+	bool IsUpdated() const {
+		return Updated;
 	}
 private:
 	RectI hBox;
@@ -167,6 +174,8 @@ private:
 
 	size_t ChunkIndex = 0;
 	int SwapCnt = 0;
+
+	bool Updated = false;
 private:
 	RNG Chance = { 1, 100 };
 	RNG RdLifeSpan_gas = { 10 , 15 };

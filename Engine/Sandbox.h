@@ -30,7 +30,7 @@ public:
 		return weather;
 	}
 private:
-	World world;
+	World world = {Sprite("soreanus.bmp")};
 	Weather weather;
 	Dimensions<size_t> SandboxDim_InChunks;
 	Timer UpdateTimer;

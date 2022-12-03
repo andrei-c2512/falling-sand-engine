@@ -19,7 +19,7 @@
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
 #pragma once
-
+#include <algorithm>
 class Color
 {
 public:
@@ -98,6 +98,17 @@ public:
 	void SetB( unsigned char b )
 	{
 		dword = (dword & 0xFFFFFF00u) | b;
+	}
+	unsigned short Match(const Color& c) const
+	{
+		//I divide the lesser value to the higher and get a ratio that represents
+		//the percentage of the lower value matching to the higher one
+		//multiply it by 100 so that it is in the 1 - 100 range and not 0.01 - 1 
+		const unsigned short r_match = float(GetR()) / c.GetR() * 100.0f;
+		const unsigned short g_match = float(GetG()) / c.GetG() * 100.0f;
+		const unsigned short b_match = float(GetB()) / c.GetB() * 100.0f;
+		
+		return (r_match + g_match + b_match) / 3;
 	}
 };
 

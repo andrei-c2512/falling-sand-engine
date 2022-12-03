@@ -2,7 +2,7 @@
 #include "assert.h"
 
 Sandbox::Sandbox(ParticleEffect& effect) 
-	:weather(world , WeatherType::Clear , 2), 
+	:weather(world , WeatherType::Clear , size_t(2)), 
 	player(Sprite(Dimensions<int>(10, 20), Colors::Yellow), Sprite(Dimensions<int>(10, 10), Colors::Yellow)
 		, world, 10.0f)
 {

@@ -23,7 +23,7 @@ public:
 	Vec2_& operator*=(T val) {
 		return *this = *this * val;
 	}
-	double GetLenght(Vec2_<T>& point1)const  {
+	float GetLenght(Vec2_<T>& point1)const  {
 		const T x0 = x - point1.x;
 		const T y0 = y - point1.y;
 		return sqrt(x0 * x0 + y0 * y0);

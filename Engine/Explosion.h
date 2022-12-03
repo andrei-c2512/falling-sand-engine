@@ -64,7 +64,7 @@ public:
 			size_t dist = 0;
 			for (dist = 0; dist < ExplosionRadius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -78,7 +78,7 @@ public:
 			}
 			for (; dist <= Radius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -101,10 +101,10 @@ public:
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
 
-			size_t dist = 0;
+			int dist = 0;
 			for (dist = 0; dist <= ExplosionRadius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -118,7 +118,7 @@ public:
 			}
 			for (; dist <= Radius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -141,10 +141,10 @@ public:
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
 
-			size_t dist = 0;
+			int dist = 0;
 			for (dist = 0; dist <= ExplosionRadius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -158,7 +158,7 @@ public:
 			}
 			for (; dist <= Radius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -181,10 +181,10 @@ public:
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
 
-			size_t dist = 0;
+			int dist = 0;
 			for (dist = 0; dist <= ExplosionRadius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
@@ -198,7 +198,7 @@ public:
 			}
 			for (; dist <= Radius; dist++)
 			{
-				Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
+				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())

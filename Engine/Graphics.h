@@ -215,7 +215,7 @@ public:
 
 	void ChangePixel_Bloom(int x, int y, Color c)
 	{
-		size_t index = y * ScreenWidth + x;
+		int index = y * ScreenWidth + x;
 		Bloom.PutPixel(index, c);
 		PutPixel(index, c);
 	}

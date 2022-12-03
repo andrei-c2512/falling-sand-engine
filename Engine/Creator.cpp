@@ -37,7 +37,7 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 						if (Chance.GetVal() > 50)
 						{
 							if (world.CreateElem(n, ToBeSpawned) == true)
-								sandbox.ActivateChunk(n);
+								sandbox.ActivateChunk(int(n));
 						}
 					}
 					else

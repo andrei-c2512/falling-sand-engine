@@ -32,99 +32,59 @@ void Chunk::Evaluate_Moves(float time)
 				default:
 					break;
 				case Type::Water:
-					move = GetNextMove_Liquid(index, SpecialBehaviour::Water{});
-					if (move.move == World::MoveType::Swap)
-					{
-						world.AddMoveToList(move);
-						IsActive = true;
-					}
+					GetNextMove_Liquid(index, SpecialBehaviour::Water{});
+	
 					break;
 				case Type::Sand:
-					move = GetNextMove_MoveableSolid(index, SpecialBehaviour::Sand{});
-					if (move.move != World::MoveType::Static)
-					{
-						if (move.move != World::MoveType::Special)
-							world.AddMoveToList(move);
-
-						IsActive = true;
-					}
+					GetNextMove_MoveableSolid(index, SpecialBehaviour::Sand{});
 
 					break;
 				case Type::Fire:
-				{
-					move = GetNextMove_Fire(index);
-					if (move.move != World::MoveType::Static)
+					GetNextMove_Fire(index);
+					world.GetElem(index)-> Update_Fire(time);
+
+					IsActive = true;
+
+					if (Chance.GetVal() <= 30)
 					{
-						world.AddToFireList(move);
-					}
-					world.GetElem(index)->Update_Fire(time);
-				}
+						result = EmitFire_Aura(index);
 
-				IsActive = true;
-
-				if (Chance.GetVal() <= 30)
-				{
-					result = EmitFire_Aura(index);
-
-					if (result.size() > 0)
-					{
-						for (auto b = result.begin(), e = result.end(); e != b; b++)
+						if (result.size() > 0)
 						{
-							world.AddToFireAuraList(*b);
+							for (auto b = result.begin(), e = result.end(); e != b; b++)
+							{
+								world.AddToFireAuraList(*b);
+							}
 						}
 					}
-				}
-				break;
+					break;
 				case Type::FireAura:
 					world.GetElem(index)->Update_Fire(time);
 
-					IsActive = true;
-
 					break;
 				case Type::Smoke:
-					move = GetNextMove_Gas(index);
-					if (move.move != World::MoveType::Static)
-					{
-						world.AddMoveToList(move);
-					}
-					Update_Gas(index, time);
+					GetNextMove_Gas(index);
 
-					IsActive = true;
+					Update_Gas(index, time);
 					break;
 				case Type::Steam:
-					move = GetNextMove_Gas(index);
-					if (move.move != World::MoveType::Static)
-					{
-						world.AddMoveToList(move);
-					}
-			
+					GetNextMove_Gas(index);
+		
 					world.GetElem(index)->Update_Steam(time);
-					IsActive = true;
 					break;
 				case Type::Snow:
-					move = GetNextRandomMove(index, Direction::Down, SpecialBehaviour::Snow{});
-					if (move.move != World::MoveType::Static)
-					{
-						world.AddMoveToList(move);
-					}
-					IsActive = true;
+					GetNextRandomMove(index, Direction::Down, SpecialBehaviour::Snow{});
+
 					break;
 				case Type::Acid:
-					move = GetNextMove_Liquid(index, SpecialBehaviour::DoNothing{});
-					if (move.move != World::MoveType::Static)
-					{
-						world.AddMoveToList(move);
-						IsActive = true;
-					}
-					else
+					GetNextMove_Liquid(index, SpecialBehaviour::DoNothing{});
+					
+					if(Chance.GetVal() > 50)
 						Update_Acid(index);
 					break;
 				case Type::ToxicGas:
-					move = GetNextMove_Gas(index);
-					if (move.move != World::MoveType::Static)
-					{
-						world.AddMoveToList(move);
-					}
+					GetNextMove_Gas(index);
+
 					Update_Gas(index, time);
 
 					IsActive = true;
@@ -198,7 +158,7 @@ bool Chunk::InBounds(int index, World& world) const
 }
 
 
-int Chunk::GetNextElem(const int index, Direction dir1, Direction dir2) const
+int Chunk::GetNextElem(int index, Direction dir1, Direction dir2) const
 {
 	auto dim = world.GetSandboxDim();
 	const int Add1 = GetDelta(index, dir1 , dim);
@@ -209,7 +169,7 @@ int Chunk::GetNextElem(const int index, Direction dir1, Direction dir2) const
 	return NewInd;
 }
 
-int Chunk::GetNextElem(const int index, Direction dir1) const {
+int Chunk::GetNextElem(int index, Direction dir1) const {
 
 	return GetNextElem(index, dir1, Direction::None);
 
@@ -217,10 +177,10 @@ int Chunk::GetNextElem(const int index, Direction dir1) const {
 
 
 
-int Chunk::GetDelta(const int index, Direction dir , Dimensions<size_t> dim) {
+int Chunk::GetDelta(int index, Direction dir , Dimensions<size_t> dim) {
 	int Delta = 0;
-	const int width = dim.width;
-	const int height = dim.height;
+	const int width = int(dim.width);
+	const int height = int(dim.height);
 
 	switch (dir)
 	{
@@ -297,7 +257,7 @@ std::pair<bool , int> Chunk::SpreadFire(size_t index)
 
 	if (Pos_list.size() != 0)
 	{
-		RandSpread.ChangeRange(0, Pos_list.size() - 1);
+		RandSpread.ChangeRange(0, int(Pos_list.size()) - 1);
 
 		size_t WorldIndex = Pos_list[RandSpread.GetVal()];
 
@@ -312,38 +272,35 @@ std::pair<bool , int> Chunk::SpreadFire(size_t index)
 	}
 }
 
-World::Move Chunk::GetNextMove_Fire(size_t index)
+void Chunk::GetNextMove_Fire(size_t index)
 {
 	auto result = SpreadFire(index);
+
 	if (result.first == true)
 	{
 		World::Move move(std::move(result.second) , -1, World::MoveType::SetOnFire);
-		return move;
+		world.AddToFireList(std::move(move));
 	}
-	else
-	{
-		World::Move move(World::MoveType::Static);
-		return move;
-	}
+
 }
 
-World::Move Chunk::GetNextMove_Gas(size_t index)
+void Chunk::GetNextMove_Gas(size_t index)
 {
 	assert(world.GetWorld()[index].GetState() == State::Gas);
 
 	SpecialBehaviour::DoNothing e{};
+	auto elem = world.GetElem(index);
 
-	World::Move NextMove = GetNextMove(index, Direction::Up ,  e);
+	GetNextMove(index, Direction::Up ,  e);
 
-	if (NextMove.move == World::MoveType::Static)
+	if (elem->IsUpdated() == false)
 	{
-		NextMove = GetNextSideMove(index, Direction::Up ,e);
-		if (NextMove.move == World::MoveType::Static)
+		GetNextSideMove(index, Direction::Up ,e);
+		if (elem->IsUpdated() == false)
 		{
-			return GetNextSideMove(index,Direction::None, e);
+			GetNextSideMove(index,Direction::None, e);
 		}
 	}
-	return NextMove;
 }
 
 void Chunk::Update_Gas(size_t index, float time)
@@ -385,7 +342,7 @@ std::vector<World::Move> Chunk::EmitFire_Aura(size_t index)
 		for (size_t i = 1; i < FireSize; ++i)
 		{
 
-			const int NextIndex = WorldIndex - dim.width;
+			const int NextIndex = int(WorldIndex - dim.width);
 
 			if (NextIndex >= 0)
 			{

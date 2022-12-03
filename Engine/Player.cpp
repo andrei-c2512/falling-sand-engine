@@ -84,11 +84,11 @@ void Player::MoveX(float time)
 
 	if (vel.x > 0.0f)
 	{
-		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.right(), HitBox.top));
+		ZoneX = RectI(Size, int(HitBox.height), Vec2I(int(HitBox.right()), int(HitBox.top)));
 	}
 	else if (vel.x <= 0.0f)
 	{
-		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.left - Size, HitBox.top));
+		ZoneX = RectI(Size, int(HitBox.height), Vec2I(int(HitBox.left - Size), int(HitBox.top)));
 	}
 
 	int StartX, EndX, Add;
@@ -171,6 +171,8 @@ void Player::MoveX(float time)
 				int sign = std::abs(vel.x) / vel.x;
 				HitBox.left += sign * add;
 			}
+			else
+				break;
 			ElementsX.clear();
 		}
 	}
@@ -183,7 +185,7 @@ void Player::MoveY(float time)
 	float AddY;
 	if (vel.y == 0.0f)
 	{
-		AddY = Gravity * 60.0f * time;
+		AddY = -Gravity * 60.0f * time;
 	}
 	else 
 		AddY = std::abs(vel.y * 60.0f * time);
@@ -194,7 +196,7 @@ void Player::MoveY(float time)
 		Size += World::ElemSize - int(AddY) % World::ElemSize;
 		Size = int(AddY);
 	}
-	RectI ZoneY = { 0 , 0 , Vec2I{0 , 0} };
+	RectI ZoneY ;
 
 	if (vel.y >= 0.0f)
 	{
@@ -267,11 +269,11 @@ void Player::MoveY(float time)
 			if (Move)
 			{
 				float add;
-				int sign = 1;
+				short sign = 1;
 
 				if (vel.y != 0.0f)
 				{
-					sign = std::abs(vel.y) / vel.y;
+					sign = short(std::abs(vel.y) / vel.y);
 				}
 
 				if (AddY < World::ElemSize)
@@ -288,6 +290,8 @@ void Player::MoveY(float time)
 				}
 				HitBox.top += sign * add;
 			}
+			else
+				break;
 
 			ElementsY.clear();
 		}

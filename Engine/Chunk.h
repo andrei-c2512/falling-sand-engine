@@ -17,6 +17,7 @@ public:
 		Up,
 		None
 	};
+
 public:
 	struct NextMove {
 		NextMove(Direction newdir1)
@@ -72,24 +73,24 @@ public:
 	bool InBounds(int index, World& world) const;
 	void DrawBorder(Graphics& gfx);
 
-	static int  GetDelta(const int index, Direction direction , Dimensions<size_t> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
+	static int  GetDelta(int index, Direction direction , Dimensions<size_t> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
 
-	int  GetNextElem(const int index, Direction dir1) const;				     // returns the index of the element in that direction
-	int  GetNextElem(const int index, Direction dir1, Direction dir2) const;    // 
+	int  GetNextElem(int index, Direction dir1) const;				     // returns the index of the element in that direction
+	int  GetNextElem(int index, Direction dir1, Direction dir2) const;    // 
 
 	std::pair<bool , int> SpreadFire(size_t index);
 
 	template<typename E>
-	World::Move GetNextMove(const int index, Direction dir1 , Direction dir2 ,E effect = SpecialBehaviour::DoNothing{})
+	void GetNextMove(int index, Direction dir1 , Direction dir2 ,E effect = SpecialBehaviour::DoNothing{})
 	{
 		size_t CurInd = index;
 
 		World::MoveType movetype = World::MoveType::Swap;
 
 		Element& elem1 = *world.GetElem(index);
-		int vel;
-		int FreeFall_cnt = 0;
-		if(int(dir1) >= 0 && int(dir1) <= 1 && dir2 == Direction::None)
+		short vel;
+
+		if(short(dir1) >= 0 && short(dir1) <= 1 && dir2 == Direction::None)
 			vel = elem1.GetSpread();
 		else
 			vel = std::abs(elem1.GetGravity());
@@ -100,7 +101,7 @@ public:
 
 			{
 				if (dir2 == Direction::None && origin % 3 == 2 &&
-					int(dir1) >= 0 && int(dir1) <= 1)
+					short(dir1) >= 0 && short(dir1) <= 1)
 				{
 					Direction yDir;
 					if (elem1.GetGravity() > 0)
@@ -128,7 +129,7 @@ public:
 				auto next_move = effect(CurInd, NextIndex, elem2);
 				if (next_move.move != World::MoveType::Swap)
 				{
-					return next_move;
+					break;
 				}
 				if (world.GetElem(CurInd)->GetState() == State::Solid &&
 					elem2.GetState() == State::Plasma)
@@ -150,49 +151,44 @@ public:
 		}
 		
 		World::Move move = World::Move(std::move(index) , std::move(CurInd) , std::move(movetype));
-
-		return move;
+		if (move.move == World::MoveType::Swap)
+		{
+			world.AddMoveToList(move);
+			elem1.Update();
+		}
+		else if (move.move == World::MoveType::Create)
+		{
+			world.AddToSpawnList(move);
+			elem1.Update();
+		}
 	}
 
 	template<typename E> 
-	World::Move  GetNextMove(const int index, Direction dir1, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(const int index, Direction dir1, E effect = SpecialBehaviour::DoNothing{})
 	{
-		return GetNextMove(index, dir1, Direction::None,effect);
+		GetNextMove(index, dir1, Direction::None,effect);
 	}
 	template<typename E>
-	World::Move  GetNextMove(const int index, NextMove& nextmove, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(const int index, NextMove& nextmove, E effect = SpecialBehaviour::DoNothing{})
 	{
-		return GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
+		GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
 	}
 	template<typename E>
-	World::Move  GetNextSideMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void GetNextSideMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
 	{
+		bool Option = Rand.GetVal();
 
-		World::Move move (World::MoveType::Static);
+		GetNextMove(index, Direction(Option), effect);
+		auto elem = world.GetElem(index);
 
-		NextMove Move1 = { Direction::Left , dirY};
-		NextMove Move2 = { Direction::Right , dirY};
-
-		int Option = Rand.GetVal();
-		if (Option == 1)
+		if (elem->IsUpdated() == false)
 		{
-			std::swap(Move1, Move2);
+			GetNextMove(std::move(index), Direction(!Option), effect);
 		}
-
-		move = GetNextMove(index, std::move(Move1), effect);
-
-		if (move.move == World::MoveType::Static)
-		{
-			return GetNextMove(std::move(index), std::move(Move2), effect);
-		}
-		else
-			return move;
 	}
 	template<typename E>
-	World::Move  GetNextRandomMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextRandomMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
 	{
-		World::Move move(World::MoveType::Static);
-
 		NextMove Move1 = { Direction::Left , dirY };
 		NextMove Move2 = { Direction::Right , dirY };
 
@@ -202,50 +198,48 @@ public:
 		switch (Option)
 		{
 		case 1:
-			move = GetNextMove(std::move(index), std::move(Move1), std::move(effect));
+			GetNextMove(std::move(index), std::move(Move1), std::move(effect));
 			break;
 		case 2:
-			move = GetNextMove(std::move(index), std::move(Move2), std::move(effect));
+			GetNextMove(std::move(index), std::move(Move2), std::move(effect));
 			break;
 		case 3:
-			move = GetNextMove(std::move(index), std::move(dirY), std::move(effect));
+			GetNextMove(std::move(index), std::move(dirY), std::move(effect));
 			break;
 		}
-
-		return move;
 	}
 	template <typename E>
-	World::Move  GetNextMove_Liquid(size_t index, E effect = SpecialBehaviour::DoNothing)
+	void GetNextMove_Liquid(size_t index, E effect = SpecialBehaviour::DoNothing)
 	{
-		assert(world.GetWorld()[index].GetState() ==State::Liquid);
+		assert(world.GetWorld()[index].GetState() == State::Liquid);
 
-		World::Move move = GetNextMove(index, Direction::Down, effect);
+		auto elem = world.GetElem(index);
+		GetNextMove(index, Direction::Down, effect);
 
-		if (move.move == World::MoveType::Static)
+		if (elem->IsUpdated() == false)
 		{
-			move = GetNextSideMove(index, Direction::Down, effect);
-			if (move.move == World::MoveType::Static)
+			GetNextSideMove(index, Direction::Down, effect);
+			if (elem->IsUpdated() == false)
 			{
-				return GetNextSideMove(index, Direction::None, std::move(effect));
+			    GetNextSideMove(index, Direction::None, std::move(effect));
 			}
 		}
-		return move;
 	}
 	template <typename E>
-	World::Move	 GetNextMove_MoveableSolid(size_t index, E effect = SpecialBehaviour::DoNothing)
+	void GetNextMove_MoveableSolid(size_t index, E effect = SpecialBehaviour::DoNothing)
 	{
-		assert(world.GetWorld()[index].GetType() == Type::Sand);
+		assert(world.GetWorld()[index].GetState() == State::Solid);
 
-		World::Move move = GetNextMove(index, Direction::Down, effect);
+		GetNextMove(index, Direction::Down, effect);
 
-		if (move.move == World::MoveType::Static)
+		auto elem = world.GetElem(index);
+		if (elem->IsUpdated() == false)
 		{
-			return GetNextSideMove(index, Direction::Down, std::move(effect));
+			GetNextSideMove(index, Direction::Down, std::move(effect));
 		}
-		return move;
 	}
-	World::Move  GetNextMove_Fire(size_t index);
-	World::Move  GetNextMove_Gas(size_t index);
+	void GetNextMove_Fire(size_t index);
+	void GetNextMove_Gas(size_t index);
 	void Evaluate_Moves(float time);
 
 	void SetState(bool active);
@@ -259,7 +253,7 @@ private:
 	RNG Chance;
 	RNG RdMove;
 public:
-	std::vector<size_t> Chunk_matrix;
+	std::vector<int> Chunk_matrix;
 
 	RectI Size; // how many elements fit
 	RectI PhysicalSize;

@@ -99,13 +99,12 @@ public:
 	};
 public:
 	World()
-		:Chance(1 ,100), Pick(0 , 2)
 	{
 		SandboxDim.width = Graphics::ScreenWidth / ElemSize;
 		SandboxDim.height = Graphics::ScreenHeight / ElemSize;
 
-		const int width = SandboxDim.width;
-		const int height = SandboxDim.height;
+		const int width  = int(SandboxDim.width);
+		const int height = int(SandboxDim.height);
 
 		Elements = std::vector<Element>(width * height, Element(RectI(ElemSize, ElemSize, Vec2I(NULL, NULL))));
 
@@ -119,6 +118,65 @@ public:
 		}
 		//blur.Blur(BackGround);
 		
+	}
+	World(Sprite& sprite)
+	{
+		SandboxDim.width = Graphics::ScreenWidth / ElemSize;
+		SandboxDim.height = Graphics::ScreenHeight / ElemSize;
+
+		const int width = int(SandboxDim.width);
+		const int height = int(SandboxDim.height);
+
+		Elements = std::vector<Element>(width * height, Element(RectI(ElemSize, ElemSize, Vec2I(NULL, NULL))));
+
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				size_t index = y * width + x;
+
+				Color c = sprite.GetPixel((x * ElemSize), float(y * ElemSize));
+
+				Vec2D Pos = Vec2D(float(x * ElemSize), float(y * ElemSize));
+
+				auto type = ConvertPixel(c);
+	
+				Elements[index].Update(Pos);
+				Elements[index].Create(type);
+			}
+		}
+	}
+	Type ConvertPixel(Color& c)
+	{
+		std::vector<short> acurracy_list;
+		acurracy_list.resize(size_t(Type::Count) - 3);
+		//the last 3 elements are not really usefull to match/can't match
+
+		acurracy_list[0] = c.Match(Element::WaterColorRange   [0]);
+		acurracy_list[1] = c.Match(Element::SandColorRange    [0]);
+		acurracy_list[2] = c.Match(Element::StoneColorRange   [0]);
+		acurracy_list[3] = c.Match(Element::WoodColorRange    [0]);
+		acurracy_list[4] = c.Match(Element::FireColorRange    [0]);
+		acurracy_list[5] = c.Match(Element::SmokeColorRange   [0]);
+		acurracy_list[6] = c.Match(Element::SteamColorRange   [0]);
+		acurracy_list[7] = c.Match(Element::SnowColorRange    [0]);
+		acurracy_list[8] = c.Match(Element::AcidColorRange    [0]);
+		acurracy_list[9] = c.Match(Element::ToxicGasColorRange[0]);
+
+		struct {
+			unsigned char max = 0;
+			short index = 0;
+		} pick;
+		for (size_t ind = 0 ; ind < acurracy_list.size() ; ind++)
+		{
+			if (pick.max < acurracy_list[ind])
+			{
+				pick.max = acurracy_list[ind];
+				pick.index = short(ind);
+			}
+		}
+
+		return Type(pick.index);
 	}
 	void DrawWorld(Graphics& gfx)
 	{
@@ -269,7 +327,7 @@ public:
 	}
 	Vec2I IndexToPos(size_t index)
 	{
-		return Vec2I(index % SandboxDim.width , index / SandboxDim.width );
+		return Vec2I(int(index % SandboxDim.width) , int(index / SandboxDim.width ));
 	}
 	Vec2I ScreenToMatrixPos(Vec2I& pos)
 	{
@@ -289,11 +347,11 @@ public:
 	}
 	const std::vector<Element>& GetMatrix() const
 	{
-		return Elements;
+		return Elements; 
 	}
 public:
-	RNG Chance;
-	RNG Pick;
+	RNG Chance = { 1 , 100};
+	RNG Pick   = { 0 , 2 };
 private:
 	Dimensions<size_t> SandboxDim;
 	std::vector<Element> Elements;
