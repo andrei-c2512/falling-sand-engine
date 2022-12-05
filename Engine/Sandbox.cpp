@@ -3,7 +3,7 @@
 
 Sandbox::Sandbox(ParticleEffect& effect) 
 	:weather(world , WeatherType::Clear , size_t(2)), 
-	player(Sprite(Dimensions<int>(10, 20), Colors::Yellow), Sprite(Dimensions<int>(10, 10), Colors::Yellow)
+	player(Sprite(Dimensions<short>(10, 20), Colors::Yellow), Sprite(Dimensions<short>(10, 10), Colors::Yellow)
 		, world, 10.0f)
 {
 	{
@@ -68,7 +68,7 @@ Sandbox::Sandbox(ParticleEffect& effect)
 			}
 		}
 
-		UpdateTimer = { 0.000001f };
+		UpdateTimer = { 0.016f };
 		
 	}
 }
@@ -127,7 +127,7 @@ void Sandbox::UpdateChunkActivation()
 
 	for (size_t i = 0; i < world.GetMove_ListSize(); i++)
 	{
-		ActivateNeededChunks(List[i].elem1);
+		ActivateNeededChunks(List[i].index1);
 	}
 
 	auto List1 = world.GetFire_list();

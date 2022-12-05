@@ -147,7 +147,7 @@ void Projectile::MoveX(float time)
 			for (int y = ZoneX.top; y < ZoneX.bottom(); y += World::ElemSize)
 			{
 
-				size_t ind = world.GetElemScr(Vec2I(x, y));
+				size_t ind = world.GetElemIndScr(Vec2I(x, y));
 				if (ind > 0 && ind < dim.GetArea())
 				{
 					Element& element = *world.GetElem(ind);
@@ -257,7 +257,7 @@ void Projectile::MoveY(float time)
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
 			{
-				size_t ind = world.GetElemScr(Vec2I(x, y));
+				size_t ind = world.GetElemIndScr(Vec2I(x, y));
 				if (ind > 0 && ind < dim.GetArea())
 				{
 					Element& element = *world.GetElem(ind);

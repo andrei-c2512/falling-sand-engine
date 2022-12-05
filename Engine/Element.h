@@ -4,6 +4,8 @@
 #include "Rng.h"
 #include "ParticleEffect.h"
 
+extern RNG Chance;
+
 enum class Type {
 	Water,
 	Sand,
@@ -78,15 +80,15 @@ public:
 	static constexpr Color AcidColorRange[3] = { { 0 , 150 , 0 },
 												  {0 , 155 , 0 },
 												  {0 , 160 , 0} };
-	static constexpr Color ToxicGasColorRange[3] = {{0 , 150 , 0},
+	static constexpr Color ToxicGasColorRange[3] = { {0 , 150 , 0},
 												   {0 , 155 , 0 },
 												   {0 , 160 , 0} };
 
 	static constexpr short WoodBurnChance = 3;
 
-	static constexpr State Conditions_liquid[] = {State::Empty , State::Plasma , State::Gas};
-	static constexpr State Conditions_solid[] = { State::Empty , State::Liquid , State::Gas , State::Plasma};
-	static constexpr State Conditions_gas[] = { State::Empty};
+	static constexpr State Conditions_liquid[] = { State::Empty , State::Plasma , State::Gas };
+	static constexpr State Conditions_solid[] = { State::Empty , State::Liquid , State::Gas , State::Plasma };
+	static constexpr State Conditions_gas[] = { State::Empty };
 public:
 	static constexpr short WaterSpread = 4;
 	static constexpr short SandSinkChance = 15;
@@ -96,13 +98,13 @@ public:
 	static constexpr int AcidDestroyChance = 30;
 public:
 	Element(RectI& rect);
-	void DrawElement(Graphics& gfx , Sprite& background);
+	void DrawElement(Graphics& gfx, Sprite& background);
 	void Update(Vec2D newpos);
 	void SetVel(Vec2D newvel);
 	void SwapPositions(Element& elem);
 	void SwapPositions_Gas(Element& elem);
-	
-	void MergeElem(Element& elem , Type merging);
+
+	void MergeElem(Element& elem, Type merging);
 
 	void Explode(ParticleEffect& list);
 	void Darken(int percentage);
@@ -116,13 +118,13 @@ public:
 	void UpdateColorTime(float time);
 	void UpdateColor(); //if the elem is the type to change color periodically
 
-	short GetSpread() const;
-	short GetGravity() const;
+	char GetSpread() const;
+	char GetGravity() const;
 	Type GetType() const;
 	State GetState() const;
 	RectI GetRect() const;
 	Vec2D GetVel() const;
-	int GetBurnChance() const;
+	unsigned char GetBurnChance() const;
 	bool IsFlammable() const;
 	bool IsEmpty() const;
 
@@ -134,7 +136,9 @@ public:
 	void SetColor(Color c);
 	void SetLifeSpan(Timer& timer);
 	void SetColorTimer(Timer& timer);
-	void SetSpread(int Speed);
+
+	void SetSpread(char spread);
+	void SetGravity(char gravity);
 
 	bool Update_Fire(float time);
 	bool CaughtOnFire();
@@ -164,22 +168,20 @@ private:
 
 	Color color;
 
-	short Spread;
-	short Gravity;
-	short BurnChance;
+	short MoveFactors;
+
+	unsigned char BurnChance;
 	float BurnDuration;
 
 	Timer LifeSpan;
 	Timer ChangeColor;
 
 	size_t ChunkIndex = 0;
-	int SwapCnt = 0;
 
 	bool Updated = false;
 private:
-	RNG Chance = { 1, 100 };
 	RNG RdLifeSpan_gas = { 10 , 15 };
 	RNG ColorRng = { 0 , 3 };
-	RNG XRange = { 0 , hBox.width - 1};
+	RNG XRange = { 0 , hBox.width - 1 };
 	mutable RNG SpreadRange = { -2 , 2 };
 };

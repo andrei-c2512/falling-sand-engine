@@ -9,7 +9,7 @@ Sprite::Sprite(int width0, int height0)
 {
 	pColor.resize(width * height);
 }
-Sprite::Sprite(const Dimensions<int>& dim, Color c)
+Sprite::Sprite(const Dimensions<short>& dim, Color c)
 {
 	width = dim.width; height = dim.height;
 	pColor.resize(width * height);
@@ -119,7 +119,7 @@ Rect Sprite::GetRect() const {
 	return Rect(width, height, Vec2D(0.0f, 0.0f));
 }
 
-Sprite::Sprite(const Dimensions<int>& dim, std::vector<Color>& pcolor)
+Sprite::Sprite(const Dimensions<short>& dim, std::vector<Color>& pcolor)
 {
 	pColor = pcolor;
 	width = dim.width;

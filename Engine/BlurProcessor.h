@@ -20,7 +20,7 @@ public:
 
 		for (int x = 0; x < diameter; x++)
 		{
-			kernel[x] = (255 * (kernelFloat[x] / kernelFloat[diameter / 2]));
+			kernel[x] = unsigned int(255 * (kernelFloat[x] / kernelFloat[diameter / 2]));
 		}
 		for (int x = 0; x < diameter; x++)
 		{
@@ -68,10 +68,10 @@ public:
 
 				const Color new_color = Color(r, g, b);
 
-				pColor[(y / scale) * new_width + x / scale] = new_color;
+				pColor[size_t((y / scale) * new_width + x / scale)] = new_color;
 			}
 		}
-		return Sprite(Dimensions<int>(new_width, new_height), pColor);
+		return Sprite(Dimensions<short>(new_width, new_height), pColor);
 	}
 	void UpSize()
 	{
@@ -91,12 +91,12 @@ public:
 					for (int x0 = x * ScaleSize; x0 < int(x * ScaleSize + ScaleSize); x0++)
 					{
 						const Color c = downBuffer.GetPixel(x, y);
-						pColor[(y0 ) * new_width + x0 ] = c;
+						pColor[size_t((y0 ) * new_width + x0) ] = c;
 					}
 				}
 			}
 		}
-		bloomed_sprite = Sprite(Dimensions<int>(new_width, new_height), pColor);
+		bloomed_sprite = Sprite(Dimensions<short>(new_width, new_height), pColor);
 	}
 	void HorizontalPass()
 	{
@@ -144,7 +144,7 @@ public:
 		UpSize();
 	}
 private:
-	unsigned int ScaleSize = 10u;
+	unsigned int ScaleSize = 20u;
 	static constexpr int diameter = 8;
 	unsigned int kernel[diameter];
 	unsigned int sumKernel = 0;

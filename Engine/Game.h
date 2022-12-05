@@ -57,6 +57,10 @@ private:
 	MouseLastFrameStats MouseStats;
 	ParticleEffect particle_list;
 	Bench bench;
+
+	Vec2I SpeedButton_pos = Vec2I(Graphics::ScreenWidth - 60 , 60);
+	GameSpeedButton GameSpeed_button = { Colors::Gray , Colors::White ,
+		RectI(30 , 60 , Vec2I(SpeedButton_pos)) };
 	/********************************/
 	/*  User Variables              */
 	/********************************/

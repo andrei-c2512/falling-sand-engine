@@ -2,38 +2,33 @@
 #include "Element.h"
 #include "World.h"
 
+extern RNG Chance;
+
 namespace SpecialBehaviour
 {
-
-	
 	class Rd_Cond {
 	public:
 		Rd_Cond(Type type0 , int chance)
 			:type(type0),
-			Chance(chance)
+			win_chance(chance)
 		{
 		}
 		bool LotteryWon()
 		{
-			return rng.GetVal() <= Chance;
+			return Chance.GetVal() <= win_chance;
 		}
 		bool operator()(size_t& ind1, size_t& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == type)
 			{
-				if (LotteryWon() == false)
-				{
-					return true;
-				}
-				else
-					return false;
+				return !LotteryWon();
 			}
 			return false; //aka you passed the test
 		}
 	private:
 		Type type;
-		int Chance;
-		RNG rng = { 1, 100 };
+		int win_chance;
+		//RNG rng = { 1, 100 };
 	};
 
 	class DoNothing
@@ -59,8 +54,7 @@ namespace SpecialBehaviour
 			}
 			return World::Move{ World::MoveType::Swap };
 		}
-	private:
-		RNG Chance = { 1 , 100 };
+
 	};
 	class Snow {
 	public:
@@ -88,8 +82,6 @@ namespace SpecialBehaviour
 			}
 			return World::Move(World::MoveType::Swap);
 		}
-	private:
-		RNG Chance = { 1 , 100 };
 	};
 
 	class Water {
@@ -102,8 +94,6 @@ namespace SpecialBehaviour
 			}
 			return World::Move(World::MoveType::Swap);
 		}
-	private:
-		RNG Chance = { 1 , 100 };
 	};
 
 	class Acid {
@@ -118,7 +108,5 @@ namespace SpecialBehaviour
 			}
 			return World::Move(World::MoveType::Swap);
 		}
-	private:
-		RNG Chance = { 1 , 100 };
 	};
 }

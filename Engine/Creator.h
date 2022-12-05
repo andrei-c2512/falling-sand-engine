@@ -7,7 +7,7 @@
 #include "Button.h"
 #include "Weather.h"
 #include "Explosion.h"
-
+#include <map>
 class Creator {
 public:
 	Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather);
@@ -16,7 +16,6 @@ public:
 	void DrawSpawnSurface(Graphics& gfx , Mouse& mouse);
 	bool CheckButtons(Mouse& mouse);
 	bool IsHoveringAButton(Mouse& mouse) const;
-
 	
 	std::vector<size_t> GetSpawnableElements(Mouse& mouse);
 
@@ -38,6 +37,7 @@ private:
 
 	std::vector<WeatherButton> WButtons;
 	std::vector<ElementButton> EButtons;
+	std::map<Type, std::string> ElemName_map;
 
 	Explosion explosion;
 };

@@ -3,15 +3,15 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Dimensions.h"
-template <typename T>
+template <typename T , typename D>
 class Rect_ {
 public:
 	Rect_() = default;
 	Rect_(T left0, T top0, T right0, T bottom0)
 		:left(left0),
 		top(top0),
-		width(T(std::abs(right0 - left0))),
-		height(T(std::abs(top0 - bottom0)))
+		width(D(std::abs(right0 - left0))),
+		height(D(std::abs(top0 - bottom0)))
 	{
 	}
 
@@ -37,12 +37,12 @@ public:
 
 	}
 
-	Rect_(T width0, T height0, Vec2_<T>& pos)
+	Rect_(D width0, D height0, Vec2_<T>& pos)
 		:left(pos.x), top(pos.y),
 		width(width0), height(height0)
 	{
 	}
-	Rect_(Dimensions<T> dim, Vec2_<T>& pos)
+	Rect_(Dimensions<D> dim, Vec2_<T>& pos)
 		:left(pos.x), top(pos.y),
 		width(dim.width), height(dim.height)
 	{
@@ -76,7 +76,7 @@ public:
 			Vec2_<T>(T(left * number), T(top * number)));
 	}
 
-	void SwapPositions(Rect_<T>& rect)
+	void SwapPositions(Rect_& rect)
 	{
 		Vec2I pos = { left , top };
 		left = rect.left;
@@ -97,20 +97,30 @@ public:
 	Vec2_<T> pos()const {
 		return Vec2_<T>(left, top);
 	}
-	Dimensions<T> GetDimensions() const {
-		return Dimensions<T>( width  , height );
+	Dimensions<D> GetDimensions() const {
+		return Dimensions<D>( D(width)  , D(height) );
 	}
 	Vec2_<T> GetCenter() 
 	{
 		return Vec2_<T>(left + width / 2, top + height / 2);
 	}
+	Vec2_<T> GetPos()
+	{
+		return Vec2<T>_(left, top);
+	}
+
+	void SetPos(Vec2_<T> newpos)
+	{
+		left = newpos.left;
+		top = newpos.top
+	}
 public:
 	T left = T(0);
 	T top = T(0);
 	 
-	T width = T(0);
-	T height = T(0);
+	D width = D(0);
+	D height = D(0);
 };
 
-typedef Rect_<float> Rect;
-typedef Rect_<int> RectI;
+typedef Rect_<float ,short> Rect;
+typedef Rect_<int   ,short> RectI;

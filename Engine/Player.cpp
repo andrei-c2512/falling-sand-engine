@@ -123,7 +123,7 @@ void Player::MoveX(float time)
 			for (int y = ZoneX.top; y < ZoneX.bottom(); y += World::ElemSize)
 			{
 
-				size_t ind = world.GetElemScr(Vec2I(x, y));
+				size_t ind = world.GetElemIndScr(Vec2I(x, y));
 				if (ind > 0 && ind < dim.GetArea())
 				{
 					Element& element = *world.GetElem(ind);
@@ -185,7 +185,7 @@ void Player::MoveY(float time)
 	float AddY;
 	if (vel.y == 0.0f)
 	{
-		AddY = -Gravity * 60.0f * time;
+		AddY = Gravity * 60.0f * time;
 	}
 	else 
 		AddY = std::abs(vel.y * 60.0f * time);
@@ -243,7 +243,7 @@ void Player::MoveY(float time)
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
 			{
-				size_t ind = world.GetElemScr(Vec2I(x, y));
+				size_t ind = world.GetElemIndScr(Vec2I(x, y));
 				if (ind > 0 && ind < dim.GetArea())
 				{
 					Element& element = *world.GetElem(ind);

@@ -18,6 +18,23 @@ Creator::Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather
 		int x = WeatherButtonPos.x + i * (ElementButton::dim + space);
 		WButtons.emplace_back(Vec2I{ x , WeatherButtonPos.y }, WeatherType(i));
 	}
+
+	//elem name list
+	ElemName_map.emplace(Type::Empty   , "Empty"   );
+	ElemName_map.emplace(Type::Water   , "Water"   );
+	ElemName_map.emplace(Type::Sand    , "Sand"    );
+	ElemName_map.emplace(Type::Fire    , "Fire"    );
+	ElemName_map.emplace(Type::FireAura, "FireAura");
+	ElemName_map.emplace(Type::Steam   , "Steam"   );
+	ElemName_map.emplace(Type::Snow    , "Snow"    );
+	ElemName_map.emplace(Type::Smoke   , "Smoke"   );
+	ElemName_map.emplace(Type::ToxicGas, "ToxicGas");
+	ElemName_map.emplace(Type::Acid    , "Acid"    );
+	ElemName_map.emplace(Type::Wood    , "Wood"    );
+	ElemName_map.emplace(Type::Stone   , "Stone"   );
+
+
+
 }
 
 
@@ -130,7 +147,7 @@ bool Creator::CheckButtons(Mouse& mouse)
 
 void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 {
-	Vec2_<size_t> MousePos = Vec2_<size_t>( mouse.GetPosX() , mouse.GetPosY() );
+	Vec2_<int> MousePos = Vec2_<int>( mouse.GetPosX() , mouse.GetPosY() );
 	bool WithinScreen = (MousePos.x >= 0 && MousePos.x < Graphics::ScreenWidth) &&
 		(MousePos.y >= 0 && MousePos.y < Graphics::ScreenHeight);
 
@@ -141,7 +158,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 		auto dim0 = world.GetSandboxDim();
 
 		const int index = WorldPos.y * dim0.width + WorldPos.x;
-		Type type = world.GetElem(index)->GetType();
+		Type type = world.GetElem(world.ScreenToMatrixPos(MousePos))->GetType();
 
 		int Space = 10;
 
@@ -158,43 +175,8 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 			ElemCounter[index]++;
 		}
 
-		std::string ElemName = " ";
-		switch (type)
-		{
-		case Type::Empty:
-			ElemName = "Empty";
-			break;
-		case Type::Wood:
-			ElemName = "Wood";
-			break;
-		case Type::Fire:
-			ElemName = "Fire";
-			break;
-		case Type::Stone:
-			ElemName = "Stone";
-			break;
-		case Type::Smoke:
-			ElemName = "Smoke";
-			break;
-		case Type::Sand:
-			ElemName = "Sand";
-			break;
-		case Type::Water:
-			ElemName = "Water";
-			break;
-		case Type::Snow:
-			ElemName = "Snow";
-			break;
-		case Type::Steam:
-			ElemName = "Steam";
-			break;
-		case Type::ToxicGas:
-			ElemName = "ToxicGas";
-			break;
-		case Type::Acid:
-			ElemName = "Acid";
-			break;
-		}
+		std::string ElemName = ElemName_map[type];
+
 		const std::string count = std::to_string(ElemCounter[int(type)]);
 
 		InfoPos.x = Graphics::ScreenWidth - ElemName.size() * dim1.width - Space - (count.length() + 2) * dim1.width;

@@ -61,7 +61,7 @@ public:
 
 		if (FrameTimer.IsReady())
 		{
-			Frames = 1.0f / BuildTime;
+			Frames = int(1.0f / BuildTime);
 			FrameTimer.ResetTimer();
 		}
 
@@ -79,7 +79,7 @@ private:
 	Font font = { "Fixedsys16x28.bmp" };
 
 
-	bool Running = true;
+	bool  Running = true;
 	float BuildTime = 0;
 	float LastBuild = 0;
 
@@ -87,7 +87,7 @@ private:
 	float maximum = 0;
 	float average = 0;
 
-	int Frames = 0;
+	int   Frames = 0;
 	Timer FrameTimer = { 0.5f};
-	int nMeasurements = 0;
+	int   nMeasurements = 0;
 };

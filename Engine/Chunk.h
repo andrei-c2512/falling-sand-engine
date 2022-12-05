@@ -8,6 +8,8 @@
 #include <functional>
 #include <assert.h>
 
+extern RNG Chance;
+
 class Chunk {
 public:
 	enum class Direction {
@@ -48,7 +50,6 @@ public:
 		Rand(0 , 1),
 		RandSpread(0 , 1),
 		RandFire(1,4),
-		Chance(1, 100),
 		RdMove(1,3)
 	{
 		Active = false;
@@ -70,38 +71,38 @@ public:
 	std::vector<World::Move> EmitFire_Aura(size_t index);
 	void Update_Gas(size_t index, float time);
 	void Update_Acid(size_t index);
-	bool InBounds(int index, World& world) const;
+	bool InBounds(size_t index, World& world) const;
 	void DrawBorder(Graphics& gfx);
 
 	static int  GetDelta(int index, Direction direction , Dimensions<size_t> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
 
-	int  GetNextElem(int index, Direction dir1) const;				     // returns the index of the element in that direction
-	int  GetNextElem(int index, Direction dir1, Direction dir2) const;    // 
+	int  GetNextElem(size_t index, Direction dir1) const;				     // returns the index of the element in that direction
+	int  GetNextElem(size_t index, Direction dir1, Direction dir2) const;    // 
 
 	std::pair<bool , int> SpreadFire(size_t index);
 
 	template<typename E>
-	void GetNextMove(int index, Direction dir1 , Direction dir2 ,E effect = SpecialBehaviour::DoNothing{})
+	void GetNextMove(size_t index, Direction dir1 , Direction dir2 ,E effect = SpecialBehaviour::DoNothing{})
 	{
 		size_t CurInd = index;
 
 		World::MoveType movetype = World::MoveType::Swap;
 
 		Element& elem1 = *world.GetElem(index);
-		short vel;
+		unsigned char vel;
 
 		if(short(dir1) >= 0 && short(dir1) <= 1 && dir2 == Direction::None)
 			vel = elem1.GetSpread();
 		else
 			vel = std::abs(elem1.GetGravity());
 
-		for (int origin = 0; origin < vel; origin++)
+		for (unsigned char origin = 0; origin < vel; origin++)
 		{
 			size_t NextIndex;
 
 			{
-				if (dir2 == Direction::None && origin % 3 == 2 &&
-					short(dir1) >= 0 && short(dir1) <= 1)
+				if (dir2 == Direction::None && origin % 6 == 5 &&
+					unsigned char(dir1) >= 0 && unsigned char(dir1) <= 1)
 				{
 					Direction yDir;
 					if (elem1.GetGravity() > 0)
@@ -111,15 +112,15 @@ public:
 					else
 						yDir = Direction::Up;
 
-					NextIndex = GetNextElem(CurInd, dir1, yDir);
-					Element& elem = *world.GetElem(NextIndex);
-					if (!elem1.CanMove(elem))
+					int new_index = GetNextElem(CurInd, dir1, yDir);
+					Element& elem = *world.GetElem(new_index);
+					if (elem1.CanMove(elem))
 					{
-						NextIndex = GetNextElem(CurInd, dir1, dir2);
+						break;
 					}
 				}
-				else
-					NextIndex = GetNextElem(CurInd, dir1, dir2);
+
+				NextIndex = GetNextElem(CurInd, dir1, dir2);
 			}
 
 			Element& elem2 = *world.GetElem(NextIndex);
@@ -164,44 +165,40 @@ public:
 	}
 
 	template<typename E> 
-	void  GetNextMove(const int index, Direction dir1, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(size_t index, Direction dir1, E effect = SpecialBehaviour::DoNothing{})
 	{
 		GetNextMove(index, dir1, Direction::None,effect);
 	}
 	template<typename E>
-	void  GetNextMove(const int index, NextMove& nextmove, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(size_t index, NextMove& nextmove, E effect = SpecialBehaviour::DoNothing{})
 	{
 		GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
 	}
 	template<typename E>
-	void GetNextSideMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void GetNextSideMove(size_t index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
 	{
 		bool Option = Rand.GetVal();
 
-		GetNextMove(index, Direction(Option), effect);
+		GetNextMove(index, Direction(Option) , dirY, effect);
 		auto elem = world.GetElem(index);
 
 		if (elem->IsUpdated() == false)
 		{
-			GetNextMove(std::move(index), Direction(!Option), effect);
+			GetNextMove(std::move(index), Direction(~Option) , dirY, effect);
 		}
 	}
 	template<typename E>
-	void  GetNextRandomMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextRandomMove(size_t index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
 	{
-		NextMove Move1 = { Direction::Left , dirY };
-		NextMove Move2 = { Direction::Right , dirY };
-
-
 		int Option = RdMove.GetVal();
 
 		switch (Option)
 		{
 		case 1:
-			GetNextMove(std::move(index), std::move(Move1), std::move(effect));
+			GetNextMove(std::move(index), NextMove(Direction::Left, dirY), std::move(effect));
 			break;
 		case 2:
-			GetNextMove(std::move(index), std::move(Move2), std::move(effect));
+			GetNextMove(std::move(index), NextMove(Direction::Right, dirY), std::move(effect));
 			break;
 		case 3:
 			GetNextMove(std::move(index), std::move(dirY), std::move(effect));
@@ -250,7 +247,6 @@ private:
 	RNG Rand;
 	RNG RandSpread;
 	RNG RandFire;
-	RNG Chance;
 	RNG RdMove;
 public:
 	std::vector<int> Chunk_matrix;

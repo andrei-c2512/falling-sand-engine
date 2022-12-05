@@ -47,12 +47,14 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	bench.Start();
-	const float dt = Timer.DeltaTime();
+	GameSpeed_button.Go(wnd.mouse);
+	const float Speed = GameSpeed_button.GetSpeed();
+	const float dt = Timer.DeltaTime() * Speed;
 
 	particle_list.Update(dt);
-	Builder.Spawn(wnd.mouse , MouseStats , World , particle_list);
+	if(GameSpeed_button.IsHovered(wnd.mouse) == false)
+		Builder.Spawn(wnd.mouse , MouseStats , World , particle_list);
 	Builder.CheckButtons(wnd.mouse);
-
 	if (!wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
 		World.UpdateTime(dt);
@@ -75,10 +77,15 @@ void Game::ComposeFrame()
 
 	//FPS.DrawFrameCounter(gfx, dt);
 	particle_list.Draw(gfx);
-	//gfx.ApplyBloom();
+
+	bench.DrawFrameCounter(gfx);
+	GameSpeed_button.Draw(gfx);
+	/////////////////////////////////////////////////////////
+	gfx.ApplyBloom();
 
 	bench.UploadTime();
 	bench.DrawFrameCounter(gfx);
+
 	//bench.End();
 	//bench.UploadData();
 }

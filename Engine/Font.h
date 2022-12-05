@@ -14,9 +14,9 @@ public:
 	static constexpr int Columns = 32;
 	static constexpr int Rows = 3;
 
-	Dimensions<size_t> GetLetterDim() const;
+	Dimensions<int> GetLetterDim() const;
 private:
-	Dimensions<size_t> LetterDim = { 0 , 0};
+	Dimensions<int> LetterDim = { 0 , 0};
 	Sprite SpriteSheet;
 	std::vector<RectI> Letters;
 

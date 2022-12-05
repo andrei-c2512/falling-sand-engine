@@ -44,6 +44,6 @@ void Font::DrawWords(std::string text, Graphics& gfx , Vec2I pos)
 	}
 }
 
-Dimensions<size_t> Font::GetLetterDim() const {
+Dimensions<int> Font::GetLetterDim() const {
 	return LetterDim;
 }

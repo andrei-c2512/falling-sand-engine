@@ -103,8 +103,8 @@ public:
 	}
 	static RectI GetScreenRect();
 
-	template <typename T>
-	void DrawRect(Rect_<T>& rect, Color c)
+	template <typename T, typename D>
+	void DrawRect(Rect_<T , D>& rect, Color c)
 	{
 		for (int y = int(rect.top); y < int(rect.top + rect.height); y++)
 		{
@@ -113,8 +113,8 @@ public:
 		}
 	}
 
-	template<typename T>
-	void DrawRect_Transparent(Rect_<T>& rect, Color c, Sprite& sprite, int transparency)
+	template<typename T, typename D>
+	void DrawRect_Transparent(Rect_<T , D>& rect, Color c, Sprite& sprite, int transparency)
 	{
 		float tFactor = float(transparency / 100.0f);
 		for (int y = rect.top; y < rect.top + rect.height; y++)
@@ -129,8 +129,8 @@ public:
 		}
 	}
 
-	template<typename T>
-	void DrawRect_Transparent(Rect_<T>& rect, Color c, int transparency)
+	template<typename T, typename D>
+	void DrawRect_Transparent(Rect_<T , D> rect, Color c, int transparency)
 	{
 		float tFactor = float(transparency / 100.0f);
 		for (int y = rect.top; y < rect.top + rect.height; y++)
@@ -145,14 +145,14 @@ public:
 		}
 	}
 
-	template<typename T>
-	static bool WithinScreen(Rect_<T>& rect){
+	template<typename T, typename D>
+	static bool WithinScreen(Rect_<T  , D>& rect){
 		return (rect.left >= 0 && rect.left + rect.width <= Graphics::ScreenWidth &&
 			rect.top >= 0 && rect.top + rect.height <= Graphics::ScreenHeight);
 
 	}
-	template <typename T>
-	void DrawRect_Border(Rect_<T>& rect, Color c)
+	template <typename T , typename D>
+	void DrawRect_Border(Rect_<T , D>& rect, Color c)
 	{
 		for (int y = int(rect.top); y < int(rect.top + rect.height); y += 1)
 		{
@@ -178,8 +178,8 @@ public:
 		return pos.x >= 0 && pos.x <= ScreenWidth && pos.y >= 0 && pos.y <= ScreenHeight;
 	}
 
-	template<typename T>
-	void DrawAngledSprite(int x, int y, Sprite& s, Rect_<T>& SpritePortion, Vec2I& pos)
+	template<typename T ,  typename D>
+	void DrawAngledSprite(int x, int y, Sprite& s, Rect_<T , D>& SpritePortion, Vec2I& pos)
 	{
 		const short StartX = SpritePortion.top - SpritePortion.width / 2;
 		const short StartY = SpritePortion.top - SpritePortion.height / 2;

@@ -97,6 +97,23 @@ public:
 		MoveType move = MoveType::Static;
 		Type conversion = Type::Empty;
 	};
+	struct Swap {
+		Swap(int ind1 , int ind2)
+			:index1(ind1) , index2(ind2)
+		{}
+		int index1;
+		int index2;
+		void operator()(World& world)
+		{
+			assert(elem2 != -1);
+
+			Element& elem_1 = *world.GetElem(index1);
+			Element& elem_2 = *world.GetElem(index2);
+
+			elem_1.SwapPositions(elem_2);
+		}
+		
+	};
 public:
 	World()
 	{
@@ -135,7 +152,7 @@ public:
 			{
 				size_t index = y * width + x;
 
-				Color c = sprite.GetPixel((x * ElemSize), float(y * ElemSize));
+				Color c = sprite.GetPixel((x * ElemSize), (y * ElemSize));
 
 				Vec2D Pos = Vec2D(float(x * ElemSize), float(y * ElemSize));
 
@@ -171,7 +188,7 @@ public:
 		{
 			if (pick.max < acurracy_list[ind])
 			{
-				pick.max = acurracy_list[ind];
+				pick.max   = unsigned char(acurracy_list[ind]);
 				pick.index = short(ind);
 			}
 		}
@@ -191,7 +208,7 @@ public:
 		}
 	}
 
-	static constexpr int ElemSize = 5;
+	static constexpr int ElemSize = 2;
 
 	static constexpr int SandSinkChance = 75;
 	static constexpr int WoodFlamability = 50;
@@ -325,6 +342,11 @@ public:
 	{
 		return &Elements[index];
 	}
+	Element* GetElem(Vec2I& pos)
+	{
+		return &Elements[pos.y * SandboxDim.width + pos.x];
+	}
+
 	Vec2I IndexToPos(size_t index)
 	{
 		return Vec2I(int(index % SandboxDim.width) , int(index / SandboxDim.width ));
@@ -337,13 +359,13 @@ public:
 	{
 		return pos.y * SandboxDim.width + pos.x;
 	}
-	size_t GetElem(Vec2I& pos)
+	size_t GetElemIndex(Vec2I& pos) const
 	{
 		return pos.y * SandboxDim.width + pos.x;
 	}
-	size_t GetElemScr(Vec2I& screenpos)
+	size_t GetElemIndScr(Vec2I& screenpos)
 	{
-		return GetElem(ScreenToMatrixPos(screenpos));
+		return GetElemIndex(ScreenToMatrixPos(screenpos));
 	}
 	const std::vector<Element>& GetMatrix() const
 	{

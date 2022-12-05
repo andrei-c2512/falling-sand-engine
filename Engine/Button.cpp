@@ -26,7 +26,7 @@ void Button::Draw(Graphics& gfx)
 
 void ElementButton::SelectSprite()
 {
-	auto dimensions = Dimensions<int>(dim, dim);
+	auto dimensions = Dimensions<short>(dim, dim);
 	switch (type) {
 	case Type::Water:
 		sprite = Sprite(dimensions, Colors::Cyan );
@@ -63,7 +63,7 @@ void ElementButton::SelectSprite()
 
 void WeatherButton::SelectSprite()
 {
-	auto dimensions = Dimensions<int>(dim, dim);
+	auto dimensions = Dimensions<short>(dim, dim);
 	switch (type) {
 	case WeatherType::Clear:
 		sprite = Sprite(dimensions, Colors::Yellow);
@@ -105,4 +105,47 @@ Type ElementButton::GetType() const
 bool Button::IsHovered(Mouse& mouse) const
 {
 	return HitBox.PointInRect(mouse.GetPos());
+}
+
+void GameSpeedButton::Update(Mouse& mouse)
+{
+	assert(IsPressed(mouse));
+	auto MouseY = mouse.GetPosY();
+	
+	last_pressY = HitBox.bottom() - MouseY;
+	DetermineSpeed();
+
+}
+
+void GameSpeedButton::DetermineSpeed()
+{
+	//distance from the center , where the default value is established
+	int dist =  last_pressY - BaseY ;
+
+	float add = float(dist) * IncreaseFactor;
+
+	Speed = BaseSpeed + add;
+	if (Speed < 0.0f)
+	{
+		Speed = 0.0f;
+	}
+}
+
+float GameSpeedButton::GetSpeed() const {
+	return Speed;
+}
+
+void GameSpeedButton::Go(Mouse& mouse) {
+	if (IsPressed(mouse))
+	{
+		Update(mouse);
+	}
+}
+
+void GameSpeedButton::Draw(Graphics& gfx)
+{
+	gfx.DrawRect(RectI(HitBox.width, HitBox.height - last_pressY, Vec2I(HitBox.left, HitBox.top)),
+		default_color);
+	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(HitBox.left, HitBox.top + (HitBox.height - last_pressY))),
+		filler_color);
 }

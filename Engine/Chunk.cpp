@@ -103,7 +103,7 @@ void Chunk::Evaluate_Moves(float time)
 
 std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 {
-	assert(Active);
+	//assert(Active);
 	if (Active == false)
 		Active = true;
 
@@ -111,7 +111,7 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 	auto dim = world.GetSandboxDim();
 
 	NextMove Dir(Direction::None, Direction::None);
-	Vec2_<size_t> pos = { index % dim.width , index / dim.width };
+	Vec2_<int> pos = Vec2I( index % dim.width , index / dim.width );
 
 	int Spread = world.GetElem(index)->GetSpread();
 
@@ -148,17 +148,17 @@ void Chunk::DrawBorder(Graphics& gfx)
 		gfx.DrawRect_Border(PhysicalSize, Colors::Yellow);
 }
 
-bool Chunk::InBounds(int index, World& world) const
+bool Chunk::InBounds(size_t index, World& world) const
 {
 	auto dim = world.GetSandboxDim();
-	const Vec2_<size_t> Vec2I = { index / dim.width , index % dim.width };
+	const Vec2_<int> pos = Vec2I( int(index / dim.width) , int(index % dim.width ));
 
-	return Vec2I.x >= Size.left && Vec2I.x <= Size.left + Size.width &&
-		Vec2I.y >= Size.top && Vec2I.y <= Size.top + Size.height;
+	return pos.x >= Size.left && pos.x <= Size.left + Size.width &&
+		pos.y >= Size.top && pos.y <= Size.top + Size.height;
 }
 
 
-int Chunk::GetNextElem(int index, Direction dir1, Direction dir2) const
+int Chunk::GetNextElem(size_t index, Direction dir1, Direction dir2) const
 {
 	auto dim = world.GetSandboxDim();
 	const int Add1 = GetDelta(index, dir1 , dim);
@@ -169,7 +169,7 @@ int Chunk::GetNextElem(int index, Direction dir1, Direction dir2) const
 	return NewInd;
 }
 
-int Chunk::GetNextElem(int index, Direction dir1) const {
+int Chunk::GetNextElem(size_t index, Direction dir1) const {
 
 	return GetNextElem(index, dir1, Direction::None);
 
