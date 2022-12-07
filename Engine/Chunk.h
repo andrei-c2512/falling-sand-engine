@@ -19,7 +19,10 @@ public:
 		Up,
 		None
 	};
-
+	enum class Order {
+		Ascending,
+		Descending
+	};
 public:
 	struct NextMove {
 		NextMove(Direction newdir1)
@@ -82,7 +85,7 @@ public:
 	std::pair<bool , int> SpreadFire(size_t index);
 
 	template<typename E>
-	void GetNextMove(size_t index, Direction dir1 , Direction dir2 ,E effect = SpecialBehaviour::DoNothing{})
+	void GetNextMove(size_t index, Direction dir1 , Direction dir2 ,E effect)
 	{
 		size_t CurInd = index;
 
@@ -92,9 +95,9 @@ public:
 		unsigned char vel;
 
 		if(short(dir1) >= 0 && short(dir1) <= 1 && dir2 == Direction::None)
-			vel = elem1.GetSpread();
+			vel = effect.spread;
 		else
-			vel = std::abs(elem1.GetGravity());
+			vel = std::abs(effect.gravity);
 
 		for (unsigned char origin = 0; origin < vel; origin++)
 		{
@@ -105,7 +108,7 @@ public:
 					unsigned char(dir1) >= 0 && unsigned char(dir1) <= 1)
 				{
 					Direction yDir;
-					if (elem1.GetGravity() > 0)
+					if (effect.gravity > 0)
 					{
 						yDir = Direction::Down;
 					}
@@ -127,15 +130,18 @@ public:
 
 			if (elem1.CanMove(elem2))
 			{
-				auto next_move = effect(CurInd, NextIndex, elem2);
-				if (next_move.move != World::MoveType::Swap)
+				auto next_move = effect(world ,index, NextIndex, elem2);
+				//basically this is a function that verrifies the special encounters of an element
+				//ex: snow turns to water when meeting fire
+				if (effect(world, index, NextIndex, elem2))
 				{
-					break;
+					elem1.Update();
+					goto END;
 				}
-				if (world.GetElem(CurInd)->GetState() == State::Solid &&
+				if (elem1.GetState() == State::Solid &&
 					elem2.GetState() == State::Plasma)
 				{
-					world.AddToSpawnList(World::Move{ NextIndex , World::MoveType::Create , Type::Empty });
+					world.AddToSpawnList(World::Spawn( NextIndex  , Type::Empty ));
 				}
 				CurInd = NextIndex;
 			}
@@ -143,39 +149,33 @@ public:
 			{
 				if (origin == 0)
 				{
-					movetype = World::MoveType::Static;
-					break;
+					goto END;
 				}
-				else
-					break;
+				break;
 			}
 		}
 		
-		World::Move move = World::Move(std::move(index) , std::move(CurInd) , std::move(movetype));
-		if (move.move == World::MoveType::Swap)
+		world.AddMoveToList(World::Swap(index , CurInd));
+		elem1.Update();
+
+	END:
 		{
-			world.AddMoveToList(move);
-			elem1.Update();
 		}
-		else if (move.move == World::MoveType::Create)
-		{
-			world.AddToSpawnList(move);
-			elem1.Update();
-		}
+		//end of the program lol
 	}
 
 	template<typename E> 
-	void  GetNextMove(size_t index, Direction dir1, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(size_t index, Direction dir1, E effect)
 	{
 		GetNextMove(index, dir1, Direction::None,effect);
 	}
 	template<typename E>
-	void  GetNextMove(size_t index, NextMove& nextmove, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(size_t index, NextMove& nextmove, E effect )
 	{
 		GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
 	}
 	template<typename E>
-	void GetNextSideMove(size_t index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void GetNextSideMove(size_t index, Direction dirY , E effect )
 	{
 		bool Option = Rand.GetVal();
 
@@ -188,7 +188,7 @@ public:
 		}
 	}
 	template<typename E>
-	void  GetNextRandomMove(size_t index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextRandomMove(size_t index, Direction dirY , E effect)
 	{
 		int Option = RdMove.GetVal();
 
@@ -206,7 +206,7 @@ public:
 		}
 	}
 	template <typename E>
-	void GetNextMove_Liquid(size_t index, E effect = SpecialBehaviour::DoNothing)
+	void GetNextMove_Liquid(size_t index, E effect)
 	{
 		assert(world.GetWorld()[index].GetState() == State::Liquid);
 
@@ -223,7 +223,7 @@ public:
 		}
 	}
 	template <typename E>
-	void GetNextMove_MoveableSolid(size_t index, E effect = SpecialBehaviour::DoNothing)
+	void GetNextMove_MoveableSolid(size_t index, E effect )
 	{
 		assert(world.GetWorld()[index].GetState() == State::Solid);
 
@@ -235,9 +235,27 @@ public:
 			GetNextSideMove(index, Direction::Down, std::move(effect));
 		}
 	}
+	template <typename E>
+	void GetNextMove_Gas(size_t index , E effect)
+	{
+		assert(world.GetWorld()[index].GetState() == State::Gas);
+
+		auto elem = world.GetElem(index);
+
+		GetNextMove(index, Direction::Up, effect);
+
+		if (elem->IsUpdated() == false)
+		{
+			GetNextSideMove(index, Direction::Up, effect);
+			if (elem->IsUpdated() == false)
+			{
+				GetNextSideMove(index, Direction::None, effect);
+			}
+		}
+	}
 	void GetNextMove_Fire(size_t index);
-	void GetNextMove_Gas(size_t index);
-	void Evaluate_Moves(float time);
+	
+	void Evaluate_Moves(float time , Order order);
 
 	void SetState(bool active);
 	void Necessary_Activation();

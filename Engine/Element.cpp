@@ -9,8 +9,6 @@ Element::Element(RectI& rect)
 	type = Type::Empty;
 	state = State::Empty;
 	vel = { 1.0f , 1.0f };
-	SetGravity(1);
-	SetSpread(1);
 	BurnChance = 0;
 	ChangeColor = { 0.0f };
 	LifeSpan = { 0.0f };
@@ -40,7 +38,6 @@ void Element::SwapPositions(Element& elem) {
 	//assert(SwapCnt == 0 && elem.SwapCnt == 0);
 	swap(type, elem.type);
 	swap(color, elem.color);
-	swap(MoveFactors, elem.MoveFactors);
 	swap(BurnDuration, elem.BurnDuration);
 	swap(BurnChance, elem.BurnChance);
 	swap(elem.LifeSpan, LifeSpan);
@@ -64,15 +61,11 @@ void Element::Create(Type newtype)
 	case Type::Sand:
 		color = RandColor(&SandColorRange[0]);
 		BurnChance = 0;
-		SetGravity(2);
-		SetSpread(2);
 		state = State::Solid;
 		break;
 	case Type::Water:
 		color = Colors::Cyan;
 		BurnChance = 0;
-		SetSpread(10);
-		SetGravity(3);
 		state = State::Liquid;
 		break;
 	case Type::Stone:
@@ -105,38 +98,28 @@ void Element::Create(Type newtype)
 		color = RandColor(&SmokeColorRange[0]);
 		LifeSpan = RdLifeSpan_gas.GetVal();
 		BurnChance = 0;
-		SetSpread(1);
-		SetGravity(-1);
 		state = State::Gas;
 		break;
 	case Type::Steam:
 		color = RandColor(&SteamColorRange[0]);
 		LifeSpan = RdLifeSpan_gas.GetVal();
 		BurnChance = 0;
-		SetSpread(1);
-		SetGravity(-1);
 		state = State::Gas;
 		break;
 	case Type::Snow:
 		color = RandColor(&SnowColorRange[0]);;
 		BurnChance = 0;
 		state = State::Solid;
-		SetSpread(1);
-		SetGravity(1);
 		break;
 	case Type::Acid:
 		color = RandColor(&AcidColorRange[0]);
 		BurnChance = 0;
 		state = State::Liquid;
-		SetSpread(10);
-		SetGravity(2);
 		break;
 	case Type::ToxicGas:
 		color = RandColor(&ToxicGasColorRange[0]);
 		LifeSpan = RdLifeSpan_gas.GetVal();
 		BurnChance = 100;
-		SetSpread(1);
-		SetGravity(-1);
 		state = State::Gas;
 		BurnDuration = { 0.1f };
 		break;
@@ -322,13 +305,13 @@ bool Element::CanMove(Element& elem) const
 
 	bool Move = false;
 
-	auto Range = GetConditions();
+	auto Range = CondList[int(state)];
 	for (; Range.first != Range.second; Range.first++)
 	{
 		Move = Move || (*Range.first == type);
 	}
 
-	return Move;
+	return Move ;
 }
 
 State Element::GetState() const
@@ -397,22 +380,4 @@ void Element::Darken(int percentage)
 		if (!(r < 30 && g < 30 && b < 30))
 			color = Color(r, g, b);
 	}
-}
-
-void Element::SetSpread(char spread)
-{
-	MoveFactors = MoveFactors & (0x00FF) | (spread << 8u);
-}
-
-void Element::SetGravity(char gravity)
-{
-	MoveFactors = MoveFactors & (0xFF00) | (gravity);
-}
-
-char Element::GetSpread() const {
-	return (MoveFactors >> 8u) + SpreadRange.GetVal();
-}
-
-char Element::GetGravity() const {
-	return (MoveFactors & 0x00FFU);
 }

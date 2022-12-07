@@ -17,7 +17,7 @@ namespace SpecialBehaviour
 		{
 			return Chance.GetVal() <= win_chance;
 		}
-		bool operator()(size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , size_t& ind1, size_t& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == type)
 			{
@@ -28,37 +28,39 @@ namespace SpecialBehaviour
 	private:
 		Type type;
 		int win_chance;
-		//RNG rng = { 1, 100 };
 	};
 
 	class DoNothing
 	{
 	public:
 		DoNothing() = default;
-		World::Move operator()(size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world ,size_t& ind1, size_t& ind2, Element& elem2)
 		{
-			return World::Move{ World::MoveType::Swap };
+			return false;
 		}
 	private:
 	};
+
+
 	class Sand {
 	public:
-		World::Move operator()(size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world ,size_t& ind1, size_t& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == Type::Water)
 			{
 				if (Chance.GetVal() <= Element::SandSinkChance)
 				{
-					return World::Move{ World::MoveType::Static };
+					return true;
 				}
 			}
-			return World::Move{ World::MoveType::Swap };
+			return false;
 		}
-
+		static constexpr short spread  = 1;
+		static constexpr short gravity = 3;
 	};
 	class Snow {
 	public:
-		World::Move operator()(size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world ,size_t& ind1, size_t& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == Type::Water)
 			{
@@ -66,47 +68,85 @@ namespace SpecialBehaviour
 				{ 
 					if (Chance.GetVal() <= Element::SnowToWaterChance)
 					{
-						return World::Move(ind1,  World::MoveType::Create, Type::Water);
+						world.AddToSpawnList(World::Spawn(ind1, Type::Water));
+						return false;
 					}
 					else
 					{
-						return World::Move(World::MoveType::Swap);
+						return false;
 					}
 				}
 				else 
-					return World::Move(World::MoveType::Static);
+					return true;
 			}
 			else if (elem2.GetType() == Type::Fire)
 			{
-				return World::Move(ind1, World::MoveType::Create, Type::Water);
+				world.AddToSpawnList(World::Spawn(ind1, Type::Water));
+				return false;
 			}
-			return World::Move(World::MoveType::Swap);
+			return false;
 		}
+		static constexpr short spread  = 1;
+		static constexpr short gravity = 1;
 	};
 
 	class Water {
 	public:
-		World::Move operator()(size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , size_t& ind1, size_t& ind2, Element& elem2)
 		{
 			if (elem2.GetState() == State::Plasma)
 			{
-				return World::Move(ind1, int(ind2), World::MoveType::Conversion, Type::Steam);
+				world.AddToConversionList(World::Move(ind2, int(ind1), World::MoveType::Conversion, Type::Steam));
+				return true;
 			}
-			return World::Move(World::MoveType::Swap);
+			return false;
 		}
+		static constexpr short spread =  10;
+		static constexpr short gravity = 3;
 	};
 
 	class Acid {
 	public:
-		World::Move operator()(size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , size_t& ind1, size_t& ind2, Element& elem2)
 		{
 			State state = elem2.GetState();
 			Type type = elem2.GetType(); 
 			if ((state != State::Empty && state != State::Plasma) && type != Type::Acid)
 			{
-				return World::Move(ind1, int(ind2), World::MoveType::Conversion, Type::Water);
+				world.AddToConversionList(World::Move(ind1, int(ind2), World::MoveType::Conversion, Type::Water));
+				return true;
 			}
-			return World::Move(World::MoveType::Swap);
+			return false;
 		}
+		static constexpr short spread = 10;
+		static constexpr short gravity = 3;
+	};
+
+	class Smoke {
+	public:
+		bool operator()(World& world, size_t& ind1, size_t& ind2, Element& elem2)
+		{
+			return false;
+		}
+		static constexpr short spread = 1;
+		static constexpr short gravity = -1;
+	};
+	class Steam {
+	public:
+		bool operator()(World& world, size_t& ind1, size_t& ind2, Element& elem2)
+		{
+			return false;
+		}
+		static constexpr short spread = 1;
+		static constexpr short gravity = -1;
+	};
+	class ToxicGas {
+	public:
+		bool operator()(World& world, size_t& ind1, size_t& ind2, Element& elem2)
+		{
+			return false;
+		}
+		static constexpr short spread = 1;
+		static constexpr short gravity = -1;
 	};
 }

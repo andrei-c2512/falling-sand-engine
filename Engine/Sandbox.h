@@ -3,6 +3,8 @@
 #include "World.h"
 #include "Weather.h"
 #include "Player.h"
+
+
 class Sandbox {
 public:
 	static constexpr int ChunkSize = 40;
@@ -36,5 +38,6 @@ private:
 	Timer UpdateTimer;
 	std::vector<Chunk> Chunk_list;
 
+	RNG rand = { 0 , 1 };
 	Player player;
 };

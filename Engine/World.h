@@ -103,9 +103,9 @@ public:
 		{}
 		int index1;
 		int index2;
-		void operator()(World& world)
+		void Do(World& world)
 		{
-			assert(elem2 != -1);
+			assert(index2 != -1);
 
 			Element& elem_1 = *world.GetElem(index1);
 			Element& elem_2 = *world.GetElem(index2);
@@ -113,6 +113,17 @@ public:
 			elem_1.SwapPositions(elem_2);
 		}
 		
+	};
+	struct Spawn {
+		Spawn(int index0 , Type type0)
+			:type(type0) , index(index0)
+		{}
+		void Do(World& world)
+		{
+			world.CreateElem(index, type);
+		}
+		Type type;
+		int index;
 	};
 public:
 	World()
@@ -218,7 +229,7 @@ public:
 	{
 		return Elements.data();
 	}
-	std::vector<Move> GetMove_List()
+	std::vector<Swap> GetMove_List()
 	{
 		return Move_List;
 	}
@@ -240,9 +251,8 @@ public:
 		return false;
 	}
 
-	void AddMoveToList(Move& move)
+	void AddMoveToList(Swap& move)
 	{
-		assert(move.move == MoveType::Swap);
 		Move_List.emplace_back(std::move(move));
 	}
 	void AddToFireList(Move& move)
@@ -257,7 +267,7 @@ public:
 	{
 		Conversion_list.emplace_back(std::move(move));
 	}
-	void AddToSpawnList(Move& move) 
+	void AddToSpawnList(Spawn& move) 
 	{
 		Spawn_list.emplace_back(std::move(move));
 	}
@@ -265,7 +275,7 @@ public:
 	{
 		return Fire_list.size();
 	}
-	std::vector<Move> GetSpawn_list()
+	std::vector<Spawn> GetSpawn_list()
 	{
 		return Spawn_list;
 	}
@@ -296,16 +306,16 @@ public:
 		}
 		for (auto& move : Spawn_list)
 		{
-			move.Spawn(*this);
+			move.Do(*this);
 		}
 
 		for (auto& n : Elements)
 		{
 			n.ResetStatus();
 		}
-		std::sort(Move_List.begin(), Move_List.end(), [](Move& move1, Move& move2)
+		std::sort(Move_List.begin(), Move_List.end(), [](Swap& move1, Swap& move2)
 			{
-				return move1.elem2 > move2.elem2;
+				return move1.index2 > move2.index2;
 			});
 
 		for (int ind = 0; ind < Move_List.size(); )
@@ -315,19 +325,19 @@ public:
 
 			while (ind + add < Move_List.size())
 			{
-				if (Move_List[ind + add].elem2 == Move_List[ind].elem2)
+				if (Move_List[ind + add].index2 == Move_List[ind].index2)
 					add++;
 				else
 					break;
 			}
 			if (add == 1)
 			{
-				Move_List[ind].MoveElem(*this);
+				Move_List[ind].Do(*this);
 			}
 			else
 			{
 				Pick.ChangeRange(ind, ind + add - 1);
-				Move_List[Pick.GetVal()].MoveElem(*this);
+				Move_List[Pick.GetVal()].Do(*this);
 			}
 			ind += add;
 		}
@@ -378,11 +388,11 @@ private:
 	Dimensions<size_t> SandboxDim;
 	std::vector<Element> Elements;
 
-	std::vector<Move> Move_List;
+	std::vector<Swap> Move_List;
 	std::vector<Move> Fire_list;
 	std::vector<Move> FireAura_list;
 	std::vector<Move> Conversion_list;
-	std::vector<Move> Spawn_list;
+	std::vector<Spawn> Spawn_list;
 
 	Sprite BackGround = "background.bmp";
 };

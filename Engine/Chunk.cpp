@@ -11,7 +11,7 @@ bool LotteryWon(int Chance)
 	return Range(rng) <= Chance;
 }
 
-void Chunk::Evaluate_Moves(float time)
+void Chunk::Evaluate_Moves(float time ,Order order)
 {
 	if (Active)
 	{
@@ -19,15 +19,27 @@ void Chunk::Evaluate_Moves(float time)
 
 		bool IsActive = false;
 
-		for (auto& index : Chunk_matrix)
+		int StartX, EndX, AddX;
+		if (order == Order::Ascending)
 		{
-			World::Move move;
-
+			StartX = Size.left;
+			EndX = Size.right();
+			AddX = 1;
+		}
+		else
+		{
+			StartX = Size.right();
+			EndX = Size.left;
+			AddX = -1;
+		}
+		auto dim = world.GetSandboxDim();
+		std::vector<World::Move> result;
+		for (int y = Size.top ; y < Size.bottom() ; y++)
+		{
+			for (int x = StartX; x != EndX; x += AddX)
 			{
-				std::vector<World::Move> result;
-				const Type Particle = sandbox[index].GetType();
-
-				switch (Particle)
+				auto index = y * dim.width + x;
+				switch (sandbox[index].GetType())
 				{
 				default:
 					break;
@@ -57,18 +69,19 @@ void Chunk::Evaluate_Moves(float time)
 							}
 						}
 					}
+					result.clear();
 					break;
 				case Type::FireAura:
 					world.GetElem(index)->Update_Fire(time);
 
 					break;
 				case Type::Smoke:
-					GetNextMove_Gas(index);
+					GetNextMove_Gas(index , SpecialBehaviour::Smoke{});
 
 					Update_Gas(index, time);
 					break;
 				case Type::Steam:
-					GetNextMove_Gas(index);
+					GetNextMove_Gas(index , SpecialBehaviour::Steam{});
 		
 					world.GetElem(index)->Update_Steam(time);
 					break;
@@ -77,13 +90,13 @@ void Chunk::Evaluate_Moves(float time)
 
 					break;
 				case Type::Acid:
-					GetNextMove_Liquid(index, SpecialBehaviour::DoNothing{});
+					GetNextMove_Liquid(index, SpecialBehaviour::Acid{});
 					
 					if(Chance.GetVal() > 50)
 						Update_Acid(index);
 					break;
 				case Type::ToxicGas:
-					GetNextMove_Gas(index);
+					GetNextMove_Gas(index , SpecialBehaviour::ToxicGas{});
 
 					Update_Gas(index, time);
 
@@ -113,7 +126,7 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 	NextMove Dir(Direction::None, Direction::None);
 	Vec2_<int> pos = Vec2I( index % dim.width , index / dim.width );
 
-	int Spread = world.GetElem(index)->GetSpread();
+	int Spread = 5;
 
 	int right = Size.right();
 	int bottom = Size.bottom();
@@ -284,24 +297,7 @@ void Chunk::GetNextMove_Fire(size_t index)
 
 }
 
-void Chunk::GetNextMove_Gas(size_t index)
-{
-	assert(world.GetWorld()[index].GetState() == State::Gas);
 
-	SpecialBehaviour::DoNothing e{};
-	auto elem = world.GetElem(index);
-
-	GetNextMove(index, Direction::Up ,  e);
-
-	if (elem->IsUpdated() == false)
-	{
-		GetNextSideMove(index, Direction::Up ,e);
-		if (elem->IsUpdated() == false)
-		{
-			GetNextSideMove(index,Direction::None, e);
-		}
-	}
-}
 
 void Chunk::Update_Gas(size_t index, float time)
 {

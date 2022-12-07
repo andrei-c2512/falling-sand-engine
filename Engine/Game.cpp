@@ -49,7 +49,7 @@ void Game::UpdateModel()
 	bench.Start();
 	GameSpeed_button.Go(wnd.mouse);
 	const float Speed = GameSpeed_button.GetSpeed();
-	const float dt = Timer.DeltaTime() * Speed;
+	const float dt = Timer.DeltaTime() * 2;
 
 	particle_list.Update(dt);
 	if(GameSpeed_button.IsHovered(wnd.mouse) == false)
@@ -81,7 +81,7 @@ void Game::ComposeFrame()
 	bench.DrawFrameCounter(gfx);
 	GameSpeed_button.Draw(gfx);
 	/////////////////////////////////////////////////////////
-	gfx.ApplyBloom();
+	//gfx.ApplyBloom();
 
 	bench.UploadTime();
 	bench.DrawFrameCounter(gfx);

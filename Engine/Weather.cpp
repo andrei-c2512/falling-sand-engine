@@ -24,7 +24,7 @@ void Weather::UpdateMatrix()
 			{
 				size_t index = ParticleSpread.GetVal();
 
-				world.AddToSpawnList(World::Move(index, World::MoveType::Create, ElemType));
+				world.AddToSpawnList(World::Spawn(index,  ElemType));
 			}
 		}
 	}

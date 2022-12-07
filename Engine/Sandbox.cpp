@@ -81,12 +81,17 @@ void Sandbox::UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time)
 			n.Necessary_Activation();
 		}
 
-		for (Chunk& chunk : Chunk_list)
+		
 		{
-			chunk.Evaluate_Moves(time);
+			Chunk::Order order = Chunk::Order(rand.GetVal());
+			for (Chunk& chunk : Chunk_list)
+			{
+				chunk.Evaluate_Moves(time , Chunk::Order(order));
+			}
+			UpdateChunkActivation();
+			world.CommitMoves();
 		}
-		UpdateChunkActivation();
-		world.CommitMoves();
+
 		weather.UpdateMatrix();
 		
 		player.UpdateMovement(kbd , time);
@@ -115,10 +120,10 @@ void Sandbox::ActivateChunk(int index)
 
 void Sandbox::DrawChunkBorders(Graphics& gfx)
 {
-	//for (auto& chunk : Chunk_list)
-	//{
-	//	chunk.DrawBorder(gfx);
-	//}
+	for (auto& chunk : Chunk_list)
+	{
+		//chunk.DrawBorder(gfx);
+	}
 }
 
 void Sandbox::UpdateChunkActivation()
@@ -148,7 +153,7 @@ void Sandbox::UpdateChunkActivation()
 
 	for (auto b = List3.begin(), e = List3.end(); b != e; b++)
 	{
-		ActivateChunk(b->elem1);
+		ActivateChunk(b->index);
 	}
 }
 

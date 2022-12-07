@@ -84,11 +84,33 @@ public:
 												   {0 , 155 , 0 },
 												   {0 , 160 , 0} };
 
+//public:
+//	struct ElemInfo {
+//		ElemInfo( short spread0 , short gravity0 , short burnchance , float BurnDuration0)
+//			:spread(spread0),gravity(gravity0),BurnChance(burnchance),BurnDuration(BurnDuration0)
+//		{}
+//
+//		short spread = 0;
+//		short gravity = 0;
+//		unsigned char BurnChance = 0;
+//		float BurnDuration = 0.0f;
+//	};
+//public:
+//	static ElemInfo elemtype_info[int(Type::Count)] = {
+//		ElemInfo()
+//	};
+public:
 	static constexpr short WoodBurnChance = 3;
 
 	static constexpr State Conditions_liquid[] = { State::Empty , State::Plasma , State::Gas };
 	static constexpr State Conditions_solid[] = { State::Empty , State::Liquid , State::Gas , State::Plasma };
 	static constexpr State Conditions_gas[] = { State::Empty };
+
+	static constexpr std::pair<const State*, const State*> CondList[] =
+	{ {std::begin(Conditions_liquid) , std::end(Conditions_liquid)} ,
+	  {std::begin(Conditions_solid)  , std::end(Conditions_solid)} ,
+	  {std::begin(Conditions_gas)    , std::end(Conditions_gas)}};
+
 public:
 	static constexpr short WaterSpread = 4;
 	static constexpr short SandSinkChance = 15;
@@ -111,15 +133,12 @@ public:
 
 	void Create(Type newtype);
 	void SetType(Type newtype);
-	void SetState(State state);
 	void SetOnFire();
 
 	bool UpdateLifeSpan(float time);
 	void UpdateColorTime(float time);
 	void UpdateColor(); //if the elem is the type to change color periodically
 
-	char GetSpread() const;
-	char GetGravity() const;
 	Type GetType() const;
 	State GetState() const;
 	RectI GetRect() const;
@@ -136,9 +155,6 @@ public:
 	void SetColor(Color c);
 	void SetLifeSpan(Timer& timer);
 	void SetColorTimer(Timer& timer);
-
-	void SetSpread(char spread);
-	void SetGravity(char gravity);
 
 	bool Update_Fire(float time);
 	bool CaughtOnFire();
@@ -167,8 +183,6 @@ private:
 	State state;
 
 	Color color;
-
-	short MoveFactors;
 
 	unsigned char BurnChance;
 	float BurnDuration;
