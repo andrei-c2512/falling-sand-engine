@@ -84,7 +84,7 @@ public:
 
 	std::pair<bool , int> SpreadFire(size_t index);
 
-	template<typename E>
+	template<typename E> 
 	void GetNextMove(size_t index, Direction dir1 , Direction dir2 ,E effect)
 	{
 		size_t CurInd = index;
@@ -156,6 +156,8 @@ public:
 		}
 		
 		world.AddMoveToList(World::Swap(index , CurInd));
+		//World::Swap S(index, CurInd);
+		//S.Do(world);
 		elem1.Update();
 
 	END:
@@ -163,6 +165,7 @@ public:
 		}
 		//end of the program lol
 	}
+
 
 	template<typename E> 
 	void  GetNextMove(size_t index, Direction dir1, E effect)

@@ -212,7 +212,7 @@ void Player::MoveY(float time)
 	int StartY, EndY, Add;
 
 	std::function<bool(int , int)> Condition;
-	if (vel.y > 0.0f)
+	if (vel.y >= 0.0f)
 	{
 		StartY = ZoneY.top;
 		EndY = ZoneY.bottom();
@@ -220,7 +220,7 @@ void Player::MoveY(float time)
 
 		Condition = [=](int nr1 , int nr2)
 		{
-			return nr1 < nr2;
+			return nr1 < nr2 && nr1 + World::ElemSize < Graphics::ScreenHeight;
 		};
 	}
 	else
@@ -231,14 +231,16 @@ void Player::MoveY(float time)
 
 		Condition = [=](int nr1 , int nr2)
 		{
-			return nr1 > nr2;
+			return nr1 > nr2 && nr1 > 0;
 		};
 	}
 
 
 	{
 		std::vector<Element> ElementsY;
-		for (int y = StartY; Condition(y , EndY) == true; y += Add)
+		for (int y = StartY;
+			Condition(y , EndY) == true
+			; y += Add)
 		{
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
@@ -256,7 +258,10 @@ void Player::MoveY(float time)
 					break;
 				}
 			}
-
+			if (ElementsY.size() == 0)
+			{
+				break;
+			}
 			for (auto& n : ElementsY)
 			{
 				if (n.GetState() == State::Solid)

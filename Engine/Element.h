@@ -10,6 +10,7 @@ enum class Type {
 	Water,
 	Sand,
 	Stone,
+	Metal,
 	Wood,
 	Fire,
 	Smoke,
@@ -20,6 +21,7 @@ enum class Type {
 	Empty,
 	Explosion,
 	FireAura,
+	None,
 	Count
 };
 enum class State {
@@ -83,6 +85,9 @@ public:
 	static constexpr Color ToxicGasColorRange[3] = { {0 , 150 , 0},
 												   {0 , 155 , 0 },
 												   {0 , 160 , 0} };
+	static constexpr Color MetalColorRange[3] = { { 130 , 130 , 130} ,
+												 { 150 , 150 , 150} ,
+												 { 175 , 175 , 175} };
 
 //public:
 //	struct ElemInfo {

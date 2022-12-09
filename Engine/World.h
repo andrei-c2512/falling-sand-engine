@@ -219,7 +219,7 @@ public:
 		}
 	}
 
-	static constexpr int ElemSize = 2;
+	static constexpr int ElemSize = 4;
 
 	static constexpr int SandSinkChance = 75;
 	static constexpr int WoodFlamability = 50;

@@ -42,6 +42,7 @@ void Element::SwapPositions(Element& elem) {
 	swap(BurnChance, elem.BurnChance);
 	swap(elem.LifeSpan, LifeSpan);
 	swap(elem.state, state);
+	swap(elem.Updated, Updated);
 }
 
 void Element::SetType(Type newtype)
@@ -70,6 +71,11 @@ void Element::Create(Type newtype)
 		break;
 	case Type::Stone:
 		color = RandColor(&StoneColorRange[0]);
+		BurnChance = 0;
+		state = State::Solid;
+		break;
+	case Type::Metal:
+		color = RandColor(&MetalColorRange[0]);
 		BurnChance = 0;
 		state = State::Solid;
 		break;
@@ -275,7 +281,7 @@ void Element::Update_Steam(float time)
 	{
 		if (Chance.GetVal() > 90) // chance to convert towater(100 - x) 
 		{
-			Create(Type::Water);
+			Create(Type::Water); 
 		}
 	}
 }

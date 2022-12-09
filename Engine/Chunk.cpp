@@ -28,8 +28,8 @@ void Chunk::Evaluate_Moves(float time ,Order order)
 		}
 		else
 		{
-			StartX = Size.right();
-			EndX = Size.left;
+			StartX = Size.right() - 1;
+			EndX = Size.left - 1;
 			AddX = -1;
 		}
 		auto dim = world.GetSandboxDim();
@@ -39,69 +39,72 @@ void Chunk::Evaluate_Moves(float time ,Order order)
 			for (int x = StartX; x != EndX; x += AddX)
 			{
 				auto index = y * dim.width + x;
-				switch (sandbox[index].GetType())
+				if(world.GetElem(index)->IsUpdated() == false)
 				{
-				default:
-					break;
-				case Type::Water:
-					GetNextMove_Liquid(index, SpecialBehaviour::Water{});
-	
-					break;
-				case Type::Sand:
-					GetNextMove_MoveableSolid(index, SpecialBehaviour::Sand{});
-
-					break;
-				case Type::Fire:
-					GetNextMove_Fire(index);
-					world.GetElem(index)-> Update_Fire(time);
-
-					IsActive = true;
-
-					if (Chance.GetVal() <= 30)
+					switch (sandbox[index].GetType())
 					{
-						result = EmitFire_Aura(index);
+					default:
+						break;
+					case Type::Water:
+						GetNextMove_Liquid(index, SpecialBehaviour::Water{});
 
-						if (result.size() > 0)
+						break;
+					case Type::Sand:
+						GetNextMove_MoveableSolid(index, SpecialBehaviour::Sand{});
+
+						break;
+					case Type::Fire:
+						GetNextMove_Fire(index);
+						world.GetElem(index)->Update_Fire(time);
+
+						IsActive = true;
+
+						if (Chance.GetVal() <= 30)
 						{
-							for (auto b = result.begin(), e = result.end(); e != b; b++)
+							result = EmitFire_Aura(index);
+
+							if (result.size() > 0)
 							{
-								world.AddToFireAuraList(*b);
+								for (auto b = result.begin(), e = result.end(); e != b; b++)
+								{
+									world.AddToFireAuraList(*b);
+								}
 							}
 						}
+						result.clear();
+						break;
+					case Type::FireAura:
+						world.GetElem(index)->Update_Fire(time);
+
+						break;
+					case Type::Smoke:
+						GetNextMove_Gas(index, SpecialBehaviour::Smoke{});
+
+						Update_Gas(index, time);
+						break;
+					case Type::Steam:
+						GetNextMove_Gas(index, SpecialBehaviour::Steam{});
+
+						world.GetElem(index)->Update_Steam(time);
+						break;
+					case Type::Snow:
+						GetNextRandomMove(index, Direction::Down, SpecialBehaviour::Snow{});
+
+						break;
+					case Type::Acid:
+						GetNextMove_Liquid(index, SpecialBehaviour::Acid{});
+
+						if (Chance.GetVal() > 50)
+							Update_Acid(index);
+						break;
+					case Type::ToxicGas:
+						GetNextMove_Gas(index, SpecialBehaviour::ToxicGas{});
+
+						Update_Gas(index, time);
+
+						IsActive = true;
+						break;
 					}
-					result.clear();
-					break;
-				case Type::FireAura:
-					world.GetElem(index)->Update_Fire(time);
-
-					break;
-				case Type::Smoke:
-					GetNextMove_Gas(index , SpecialBehaviour::Smoke{});
-
-					Update_Gas(index, time);
-					break;
-				case Type::Steam:
-					GetNextMove_Gas(index , SpecialBehaviour::Steam{});
-		
-					world.GetElem(index)->Update_Steam(time);
-					break;
-				case Type::Snow:
-					GetNextRandomMove(index, Direction::Down, SpecialBehaviour::Snow{});
-
-					break;
-				case Type::Acid:
-					GetNextMove_Liquid(index, SpecialBehaviour::Acid{});
-					
-					if(Chance.GetVal() > 50)
-						Update_Acid(index);
-					break;
-				case Type::ToxicGas:
-					GetNextMove_Gas(index , SpecialBehaviour::ToxicGas{});
-
-					Update_Gas(index, time);
-
-					IsActive = true;
-					break;
 				}
 			}
 

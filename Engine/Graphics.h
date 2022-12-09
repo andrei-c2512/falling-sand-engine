@@ -262,6 +262,44 @@ public:
 		Bloom.Fill(Colors::Black);
 	}
 	~Graphics();
+	template <typename T>
+	void DrawLine(Vec2_<T> p1, Vec2_<T> p2 , Color c)
+	{
+		float yDist = p2.y - p1.y;
+		float xDist = p2.x - p1.x;
+		float Slope = 0.0f;
+
+		if (std::abs(xDist) > std::abs(yDist))
+		{
+			Slope = yDist / xDist; // the tangent
+			int StartY = p1.y - Slope * p1.x;
+
+			if (p1.x > p2.x)
+			{
+				std::swap(p1, p2);
+			}
+			for (int x = p1.x; x < p2.x; x++)
+			{
+				PutPixel(x, Slope * x + StartY , c);
+			}
+		}
+		else
+		{
+			Slope = xDist / yDist; // the cotangent
+
+			int StartX = p1.x - Slope * p1.y;
+
+			if (p1.y > p2.y)
+			{
+				std::swap(p1, p2);
+			}
+
+			for (int y = p1.y; y < p2.y; y++)
+			{
+				PutPixel(Slope * y + StartX, y , c);
+			}
+		}	
+	}
 private:
 	BlurProcessor blur_processor = { Bloom };
 	Sprite Bloom  = Sprite(ScreenWidth, ScreenHeight);

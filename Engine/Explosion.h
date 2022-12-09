@@ -68,7 +68,7 @@ public:
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
-					if (world.GetElem(index)->GetType() != Type::Stone)
+					if (world.GetElem(index)->GetState() != State::Solid)
 					{
 						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
@@ -108,7 +108,7 @@ public:
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
-					if (world.GetElem(index)->GetType() != Type::Stone)
+					if (world.GetElem(index)->GetState() != State::Solid)
 					{
 						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
@@ -148,7 +148,7 @@ public:
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
-					if (world.GetElem(index)->GetType() != Type::Stone)
+					if (world.GetElem(index)->GetState() != State::Solid)
 					{
 						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
@@ -188,7 +188,7 @@ public:
 				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
-					if (world.GetElem(index)->GetType() != Type::Stone)
+					if (world.GetElem(index)->GetState() != State::Solid)
 					{
 						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);

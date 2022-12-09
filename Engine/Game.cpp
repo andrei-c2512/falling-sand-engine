@@ -86,6 +86,11 @@ void Game::ComposeFrame()
 	bench.UploadTime();
 	bench.DrawFrameCounter(gfx);
 
+	//formula este y = 2x + 1;
+	if (wnd.mouse.LeftIsPressed())
+	{
+		gfx.DrawLine(Vec2I(300, 300), wnd.mouse.GetPos() , Colors::Magenta);
+	}
 	//bench.End();
 	//bench.UploadData();
 }

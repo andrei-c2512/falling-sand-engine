@@ -24,6 +24,9 @@ private:
 	int SpawnRadius;
 	int ExplosionRadius = 30;
 	int DarkeningRadius = ExplosionRadius / 3;
+
+	int Max_rows = 3; // for buttons
+	int space = 10; // space between buttons
 	Type ToBeSpawned = Type::Sand;
 	Vec2I SpawnLoc = { 0 , 0 };
 
@@ -33,11 +36,14 @@ private:
 
 	RNG Chance;
 	Vec2I ElemButtonPos = { 10 , 10 };
-	Vec2I WeatherButtonPos = { 10 , 30 };
+	Vec2I WeatherButtonPos = { 10 , 30 + ((int(Type::Count) / (Max_rows)) + 1) * (ElementButton::dim + space)};
+
+	int InfoY = 30;
 
 	std::vector<WeatherButton> WButtons;
 	std::vector<ElementButton> EButtons;
 	std::map<Type, std::string> ElemName_map;
+	std::map<WeatherType, std::string> WeatherName_map;
 
 	Explosion explosion;
 };
