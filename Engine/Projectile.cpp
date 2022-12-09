@@ -124,7 +124,7 @@ void Projectile::MoveX(float time)
 		Add = World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
-			return nr1 < nr2;
+			return nr1 < (nr2 - World::ElemSize);
 		};
 	}
 	else
@@ -134,7 +134,7 @@ void Projectile::MoveX(float time)
 		Add = -World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
-			return nr1 > nr2;
+			return nr1 > (nr2 + World::ElemSize);
 		};
 	}
 
@@ -174,7 +174,19 @@ void Projectile::MoveX(float time)
 			if (Move)
 			{
 				float add;
-				if (AddX < World::ElemSize)
+				if (x == StartX)
+				{
+					add = World::ElemSize;
+					if (vel.x < 0)
+					{
+						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+					else
+					{
+						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+				}
+				else if (AddX < World::ElemSize)
 				{
 					add = AddX;
 					int sign = std::abs(vel.x) / vel.x;
@@ -280,7 +292,19 @@ void Projectile::MoveY(float time)
 			if (Move)
 			{
 				float add;
-				if (AddY < World::ElemSize)
+				if (y == StartY)
+				{
+					add = World::ElemSize;
+					if (vel.y < 0)
+					{
+						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+					else
+					{
+						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+				}
+				else if (AddY < World::ElemSize)
 				{
 					add = AddY;
 					int sign = std::abs(vel.y) / vel.y;

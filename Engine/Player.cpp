@@ -93,6 +93,7 @@ void Player::MoveX(float time)
 
 	int StartX, EndX, Add;
 	std::function<bool(int, int)> Condition;
+	std::function<float(Rect, RectI)> dist;
 	if (vel.x > 0.0f)
 	{
 		StartX = ZoneX.left;
@@ -100,17 +101,25 @@ void Player::MoveX(float time)
 		Add = World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
-			return nr1 < nr2;
+			return nr1 <  (nr2);
+		};
+		dist = [](Rect rect, RectI elem)
+		{
+			return std::abs(rect.right() - elem.left);
 		};
 	}
-	else
+	else 
 	{
 		StartX = ZoneX.right();
 		EndX = ZoneX.left;
 		Add = -World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
-			return nr1 > nr2;
+			return nr1 > (nr2 );
+		};
+		dist = [](Rect rect, RectI elem)
+		{
+			return std::abs(elem.right() - rect.left);
 		};
 	}
 
@@ -141,8 +150,10 @@ void Player::MoveX(float time)
 				{
 					if (ind < ElementsX.size() - 4)
 					{
-						Move = false;
-						break;
+						{
+							Move = false;
+							break;
+						}
 					}
 					else
 					{
@@ -156,7 +167,19 @@ void Player::MoveX(float time)
 			if (Move)
 			{
 				float add;
-				if (AddX < World::ElemSize)
+				if (x == StartX)
+				{
+					add = World::ElemSize;
+					if (vel.x < 0)
+					{
+						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+					else
+					{
+						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+				}
+				else if (AddX < World::ElemSize)
 				{
 					add = AddX;
 					int sign = std::abs(vel.x) / vel.x;
@@ -276,13 +299,25 @@ void Player::MoveY(float time)
 				float add;
 				short sign = 1;
 
-				if (vel.y != 0.0f)
-				{
-					sign = short(std::abs(vel.y) / vel.y);
-				}
 
-				if (AddY < World::ElemSize)
+				if (y == StartY)
 				{
+					add = World::ElemSize;
+					if (vel.y < 0)
+					{
+						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+					else
+					{
+						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+					}
+				}
+				else if (AddY < World::ElemSize)
+				{
+					if (vel.y != 0.0f)
+					{
+						sign = short(std::abs(vel.y) / vel.y);
+					}
 					add = AddY;
 					AddY -= add;
 					HitBox.top += sign * add;
@@ -290,6 +325,10 @@ void Player::MoveY(float time)
 				}
 				else
 				{
+					if (vel.y != 0.0f)
+					{
+						sign = short(std::abs(vel.y) / vel.y);
+					}
 					add = World::ElemSize;
 					AddY -= World::ElemSize;
 				}
