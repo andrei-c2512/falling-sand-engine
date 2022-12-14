@@ -3,7 +3,7 @@
 #include "Graphics.h"
 #include "Keyboard.h"
 #include "Weapon.h"
-
+#include <forward_list>
 class Player{
 public:
 	Player(Sprite& bodysprite  , Sprite& headsprite, World& world ,  float speed);
@@ -16,6 +16,10 @@ public:
 	{
 		return &HitBox;
 	}
+public:
+	//getters
+	const std::forward_list<std::unique_ptr<Projectile>>& GetProj_list() const;
+	Rect GetRect() const;
 private:
 	void MoveX(float time);
 	void MoveY(float time);

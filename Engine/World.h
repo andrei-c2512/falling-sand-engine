@@ -24,15 +24,15 @@ public:
 public:
 	struct Move {
 		Move() = default;
-		Move(size_t elem_1, int elem_2, MoveType movetype)
+		Move(int elem_1, int elem_2, MoveType movetype)
 			:elem1(elem_1), elem2(elem_2) , move(movetype)
 		{
 		}
-		Move(size_t elem_1, int elem_2, MoveType movetype , Type conversion0)
+		Move(int elem_1, int elem_2, MoveType movetype , Type conversion0)
 			:elem1(elem_1), elem2(elem_2), move(movetype) , conversion(conversion0)
 		{
 		}
-		Move(size_t elem_1, MoveType movetype, Type conversion0)
+		Move(int elem_1, MoveType movetype, Type conversion0)
 			:elem1(elem_1), move(movetype), conversion(conversion0)
 		{
 		}
@@ -92,7 +92,7 @@ public:
 		{
 			world.CreateElem(elem1, conversion);
 		}
-		size_t elem1 = 0;
+		int elem1 = 0;
 		int elem2 = -1;
 		MoveType move = MoveType::Static;
 		Type conversion = Type::Empty;
@@ -227,21 +227,21 @@ public:
 
 	Element* GetWorld()
 	{
-		return Elements.data();
+		return Elements.data(); 
 	}
 	std::vector<Swap> GetMove_List()
 	{
 		return Move_List;
 	}
-	size_t GetMove_ListSize() const {
+	int GetMove_ListSize() const {
 		return Move_List.size();
 	}
-	Dimensions<size_t> GetSandboxDim() const
+	Dimensions<int> GetSandboxDim() const
 	{
 		return SandboxDim;
 	}
 
-	bool CreateElem(size_t index, Type type)
+	bool CreateElem(int index, Type type)
 	{
 		if (index >= 0 && index < Elements.size())
 		{
@@ -322,7 +322,7 @@ public:
 		{
 			//im basically assuming there is no way 65000+ cells have the same place to go
 			short add = 0;
-
+		
 			while (ind + add < Move_List.size())
 			{
 				if (Move_List[ind + add].index2 == Move_List[ind].index2)
@@ -348,7 +348,7 @@ public:
 		Conversion_list.clear();
 		Spawn_list.clear();
 	}
-	Element* GetElem(size_t index)
+	Element* GetElem(int index)
 	{
 		return &Elements[index];
 	}
@@ -357,7 +357,7 @@ public:
 		return &Elements[pos.y * SandboxDim.width + pos.x];
 	}
 
-	Vec2I IndexToPos(size_t index)
+	Vec2I IndexToPos(int index)
 	{
 		return Vec2I(int(index % SandboxDim.width) , int(index / SandboxDim.width ));
 	}
@@ -365,15 +365,15 @@ public:
 	{
 		return Vec2I(pos.x / ElemSize , pos.y / ElemSize);
 	}
-	size_t MatrixPosToIndex(Vec2I& pos)
+	int MatrixPosToIndex(Vec2I& pos)
 	{
 		return pos.y * SandboxDim.width + pos.x;
 	}
-	size_t GetElemIndex(Vec2I& pos) const
+	int GetElemIndex(Vec2I& pos) const
 	{
 		return pos.y * SandboxDim.width + pos.x;
 	}
-	size_t GetElemIndScr(Vec2I& screenpos)
+	int GetElemIndScr(Vec2I& screenpos)
 	{
 		return GetElemIndex(ScreenToMatrixPos(screenpos));
 	}
@@ -385,7 +385,7 @@ public:
 	RNG Chance = { 1 , 100};
 	RNG Pick   = { 0 , 2 };
 private:
-	Dimensions<size_t> SandboxDim;
+	Dimensions<int> SandboxDim;
 	std::vector<Element> Elements;
 
 	std::vector<Swap> Move_List;

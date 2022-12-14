@@ -25,22 +25,26 @@ public:
 	bool IsDestroyed() const;
 	Rect GethBox() const;
 	Vec2D GetVel() const;
+	float GetDamage() const;
 protected:
 	Rect HitBox;
 	Vec2D vel;
 	bool Destroyed;
 
 	float Speed;
+	float BaseDamage = 5;
 protected:
 	World& world;
+	mutable RNG dmg_rand = { -3 , 3 };
 };
 
 
 class Explosive : public Projectile {
 public:
 	Explosive(Projectile& proj , ParticleEffect& effect )
-		:Projectile(proj) , effect_list(effect) , explosion(world , 15)
+		:Projectile(proj) , effect_list(effect) , explosion(world)
 	{
+		BaseDamage = 20;
 		Explode = false;
 	}
 	void Destroy() override;
@@ -49,5 +53,7 @@ private:
 	ParticleEffect& effect_list;
 	Explosion explosion;
 
+	float ExplosionRadius = 10.0f;
+	float DarkeningRadius = ExplosionRadius / 3.0f;
 	bool Explode = false;
 };

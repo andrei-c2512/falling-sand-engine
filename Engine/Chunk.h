@@ -71,23 +71,23 @@ public:
 		}
 
 	}
-	std::vector<World::Move> EmitFire_Aura(size_t index);
-	void Update_Gas(size_t index, float time);
-	void Update_Acid(size_t index);
-	bool InBounds(size_t index, World& world) const;
+	std::vector<World::Move> EmitFire_Aura(int index);
+	void Update_Gas(int index, float time);
+	void Update_Acid(int index);
+	bool InBounds(int index, World& world) const;
 	void DrawBorder(Graphics& gfx);
 
-	static int  GetDelta(int index, Direction direction , Dimensions<size_t> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
+	static int  GetDelta(int index, Direction direction , Dimensions<int> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
 
-	int  GetNextElem(size_t index, Direction dir1) const;				     // returns the index of the element in that direction
-	int  GetNextElem(size_t index, Direction dir1, Direction dir2) const;    // 
+	int  GetNextElem(int index, Direction dir1) const;				     // returns the index of the element in that direction
+	int  GetNextElem(int index, Direction dir1, Direction dir2) const;    // 
 
-	std::pair<bool , int> SpreadFire(size_t index);
+	std::pair<bool , int> SpreadFire(int index);
 
 	template<typename E> 
-	void GetNextMove(size_t index, Direction dir1 , Direction dir2 ,E effect)
+	void GetNextMove(int index, Direction dir1 , Direction dir2 ,E effect)
 	{
-		size_t CurInd = index;
+		int CurInd = index;
 
 		World::MoveType movetype = World::MoveType::Swap;
 
@@ -101,7 +101,7 @@ public:
 
 		for (unsigned char origin = 0; origin < vel; origin++)
 		{
-			size_t NextIndex;
+			int NextIndex;
 
 			{
 				if (dir2 == Direction::None && origin % 6 == 5 &&
@@ -168,17 +168,17 @@ public:
 
 
 	template<typename E> 
-	void  GetNextMove(size_t index, Direction dir1, E effect)
+	void  GetNextMove(int index, Direction dir1, E effect)
 	{
 		GetNextMove(index, dir1, Direction::None,effect);
 	}
 	template<typename E>
-	void  GetNextMove(size_t index, NextMove& nextmove, E effect )
+	void  GetNextMove(int index, NextMove& nextmove, E effect )
 	{
 		GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
 	}
 	template<typename E>
-	void GetNextSideMove(size_t index, Direction dirY , E effect )
+	void GetNextSideMove(int index, Direction dirY , E effect )
 	{
 		bool Option = Rand.GetVal();
 
@@ -191,7 +191,7 @@ public:
 		}
 	}
 	template<typename E>
-	void  GetNextRandomMove(size_t index, Direction dirY , E effect)
+	void  GetNextRandomMove(int index, Direction dirY , E effect)
 	{
 		int Option = RdMove.GetVal();
 
@@ -209,7 +209,7 @@ public:
 		}
 	}
 	template <typename E>
-	void GetNextMove_Liquid(size_t index, E effect)
+	void GetNextMove_Liquid(int index, E effect)
 	{
 		assert(world.GetWorld()[index].GetState() == State::Liquid);
 
@@ -226,7 +226,7 @@ public:
 		}
 	}
 	template <typename E>
-	void GetNextMove_MoveableSolid(size_t index, E effect )
+	void GetNextMove_MoveableSolid(int index, E effect )
 	{
 		assert(world.GetWorld()[index].GetState() == State::Solid);
 
@@ -239,7 +239,7 @@ public:
 		}
 	}
 	template <typename E>
-	void GetNextMove_Gas(size_t index , E effect)
+	void GetNextMove_Gas(int index , E effect)
 	{
 		assert(world.GetWorld()[index].GetState() == State::Gas);
 
@@ -256,7 +256,7 @@ public:
 			}
 		}
 	}
-	void GetNextMove_Fire(size_t index);
+	void GetNextMove_Fire(int index);
 	
 	void Evaluate_Moves(float time , Order order);
 

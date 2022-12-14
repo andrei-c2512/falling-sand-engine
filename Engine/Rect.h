@@ -47,7 +47,7 @@ public:
 		width(dim.width), height(dim.height)
 	{
 	}
-	 
+	
     bool Collision(Rect_& rect) const
 	{
 		return (left + width >= rect.left && left < rect.left + rect.width &&
@@ -74,6 +74,11 @@ public:
 	Rect_ operator* (T number) {
 		return Rect_(width * number, height * number,
 			Vec2_<T>(T(left * number), T(top * number)));
+	}
+
+	Rect_ operator/ (T number) {
+		return Rect_(width / number, height / number,
+			Vec2_<T>(T(left / number), T(top / number)));
 	}
 
 	void SwapPositions(Rect_& rect)

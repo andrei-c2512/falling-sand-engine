@@ -164,7 +164,7 @@ void Chunk::DrawBorder(Graphics& gfx)
 		gfx.DrawRect_Border(PhysicalSize, Colors::Yellow);
 }
 
-bool Chunk::InBounds(size_t index, World& world) const
+bool Chunk::InBounds(int index, World& world) const
 {
 	auto dim = world.GetSandboxDim();
 	const Vec2_<int> pos = Vec2I( int(index / dim.width) , int(index % dim.width ));
@@ -174,7 +174,7 @@ bool Chunk::InBounds(size_t index, World& world) const
 }
 
 
-int Chunk::GetNextElem(size_t index, Direction dir1, Direction dir2) const
+int Chunk::GetNextElem(int index, Direction dir1, Direction dir2) const
 {
 	auto dim = world.GetSandboxDim();
 	const int Add1 = GetDelta(index, dir1 , dim);
@@ -185,7 +185,7 @@ int Chunk::GetNextElem(size_t index, Direction dir1, Direction dir2) const
 	return NewInd;
 }
 
-int Chunk::GetNextElem(size_t index, Direction dir1) const {
+int Chunk::GetNextElem(int index, Direction dir1) const {
 
 	return GetNextElem(index, dir1, Direction::None);
 
@@ -193,7 +193,7 @@ int Chunk::GetNextElem(size_t index, Direction dir1) const {
 
 
 
-int Chunk::GetDelta(int index, Direction dir , Dimensions<size_t> dim) {
+int Chunk::GetDelta(int index, Direction dir , Dimensions<int> dim) {
 	int Delta = 0;
 	const int width = int(dim.width);
 	const int height = int(dim.height);
@@ -248,18 +248,18 @@ void Chunk::Necessary_Activation()
 	}
 }
 
-std::pair<bool , int> Chunk::SpreadFire(size_t index)
+std::pair<bool , int> Chunk::SpreadFire(int index)
 {
 	auto dim = world.GetSandboxDim();
 
-	std::vector<size_t> Pos_list;
+	std::vector<int> Pos_list;
 
 	for (int y = -1; y <= 1; y++)
 	{
-		size_t AddY = y * dim.width;
+		int AddY = y * dim.width;
 		for (int x = -1; x <= 1; x++)
 		{
-			size_t newind = index + AddY + x;
+			int newind = index + AddY + x;
 			
 			if (newind >= 0 && newind < dim.width * dim.height)
 			{
@@ -275,7 +275,7 @@ std::pair<bool , int> Chunk::SpreadFire(size_t index)
 	{
 		RandSpread.ChangeRange(0, int(Pos_list.size()) - 1);
 
-		size_t WorldIndex = Pos_list[RandSpread.GetVal()];
+		int WorldIndex = Pos_list[RandSpread.GetVal()];
 
 		std::pair<bool, int> result = { true , WorldIndex};
 
@@ -288,7 +288,7 @@ std::pair<bool , int> Chunk::SpreadFire(size_t index)
 	}
 }
 
-void Chunk::GetNextMove_Fire(size_t index)
+void Chunk::GetNextMove_Fire(int index)
 {
 	auto result = SpreadFire(index);
 
@@ -302,23 +302,23 @@ void Chunk::GetNextMove_Fire(size_t index)
 
 
 
-void Chunk::Update_Gas(size_t index, float time)
+void Chunk::Update_Gas(int index, float time)
 {
 	world.GetElem(index)->UpdateLifeSpan(time);
 }
 
 
-std::vector<World::Move> Chunk::EmitFire_Aura(size_t index)
+std::vector<World::Move> Chunk::EmitFire_Aura(int index)
 {
 	auto dim = world.GetSandboxDim();
 
-	std::vector<size_t> Pos_list;
+	std::vector<int> Pos_list;
 
 	for (int y = -1; y <= 0; y++)
 	{
 		for (int x = -1; x <= 1; x++)
 		{
-			size_t newind = index + y * dim.width + x;
+			int newind = index + y * dim.width + x;
 
 			if (newind >= 0 && newind < dim.GetArea())
 				if (world.GetElem(newind)->IsEmpty())
@@ -332,13 +332,13 @@ std::vector<World::Move> Chunk::EmitFire_Aura(size_t index)
 	{
 		RandSpread.ChangeRange(0, Pos_list.size() - 1);
 
-		size_t WorldIndex = Pos_list[RandSpread.GetVal()];
+		int WorldIndex = Pos_list[RandSpread.GetVal()];
 
 		std::vector<World::Move> Fire_list = { { WorldIndex , -1 , World::MoveType::FireAura } };
 
-		size_t FireSize = RandFire.GetVal();
+		int FireSize = RandFire.GetVal();
 
-		for (size_t i = 1; i < FireSize; ++i)
+		for (int i = 1; i < FireSize; ++i)
 		{
 
 			const int NextIndex = int(WorldIndex - dim.width);
@@ -365,17 +365,17 @@ std::vector<World::Move> Chunk::EmitFire_Aura(size_t index)
 	}
 }
 
-void Chunk::Update_Acid(size_t index)
+void Chunk::Update_Acid(int index)
 {
 	auto dim = world.GetSandboxDim();
 
-	std::vector<size_t> Pos_list;
+	std::vector<int> Pos_list;
 
 	for (int y = -1; y <= 1; y++)
 	{
 		for (int x = -1; x <= 1; x++)
 		{
-			size_t newind = index + y * dim.width + x;
+			int newind = index + y * dim.width + x;
 
 			if (newind >= 0 && newind < dim.GetArea())
 			{
@@ -395,7 +395,7 @@ void Chunk::Update_Acid(size_t index)
 	{
 		RandSpread.ChangeRange(0, Pos_list.size() - 1);
 
-		size_t WorldIndex = Pos_list[RandSpread.GetVal()];
+		int WorldIndex = Pos_list[RandSpread.GetVal()];
 		Type type;
 		if (Chance.GetVal() > 60)
 			type = Type::Empty;

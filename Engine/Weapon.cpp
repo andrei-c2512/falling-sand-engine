@@ -93,3 +93,8 @@ void ExplosiveLauncher::LaunchNewProj(Vec2D& vel, Vec2D& initpos)
 	
 	proj_list.emplace_front(std::move(proj));
 }
+
+const std::forward_list<std::unique_ptr<Projectile>>& Weapon::GetProj_list() const
+{
+	return proj_list;
+}

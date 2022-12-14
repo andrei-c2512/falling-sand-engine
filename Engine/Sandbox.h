@@ -34,7 +34,7 @@ public:
 private:
 	World world;
 	Weather weather;
-	Dimensions<size_t> SandboxDim_InChunks;
+	Dimensions<int> SandboxDim_InChunks;
 	Timer UpdateTimer;
 	std::vector<Chunk> Chunk_list;
 

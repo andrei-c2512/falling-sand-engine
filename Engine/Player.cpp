@@ -353,3 +353,13 @@ void Player::UseWeapon(Mouse& mouse , float time)
 {
 	pWeapon->Update(mouse, time);
 }
+
+const std::forward_list<std::unique_ptr<Projectile>>& Player::GetProj_list() const
+{
+	return pWeapon->GetProj_list();
+}
+
+Rect Player::GetRect() const
+{
+	return HitBox;
+}

@@ -17,7 +17,7 @@ namespace SpecialBehaviour
 		{
 			return Chance.GetVal() <= win_chance;
 		}
-		bool operator()(World& world , size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , int& ind1, int& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == type)
 			{
@@ -34,7 +34,7 @@ namespace SpecialBehaviour
 	{
 	public:
 		DoNothing() = default;
-		bool operator()(World& world ,size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world ,int& ind1, int& ind2, Element& elem2)
 		{
 			return false;
 		}
@@ -44,7 +44,7 @@ namespace SpecialBehaviour
 
 	class Sand {
 	public:
-		bool operator()(World& world ,size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , int& ind1, int& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == Type::Water)
 			{
@@ -60,7 +60,7 @@ namespace SpecialBehaviour
 	};
 	class Snow {
 	public:
-		bool operator()(World& world ,size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world ,int& ind1, int& ind2, Element& elem2)
 		{
 			if (elem2.GetType() == Type::Water)
 			{
@@ -92,7 +92,7 @@ namespace SpecialBehaviour
 
 	class Water {
 	public:
-		bool operator()(World& world , size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , int& ind1, int& ind2, Element& elem2)
 		{
 			if (elem2.GetState() == State::Plasma)
 			{
@@ -107,7 +107,7 @@ namespace SpecialBehaviour
 
 	class Acid {
 	public:
-		bool operator()(World& world , size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world , int& ind1, int& ind2, Element& elem2)
 		{
 			State state = elem2.GetState();
 			Type type = elem2.GetType(); 
@@ -124,7 +124,7 @@ namespace SpecialBehaviour
 
 	class Smoke {
 	public:
-		bool operator()(World& world, size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world, int& ind1, int& ind2, Element& elem2)
 		{
 			return false;
 		}
@@ -133,7 +133,7 @@ namespace SpecialBehaviour
 	};
 	class Steam {
 	public:
-		bool operator()(World& world, size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world, int& ind1, int& ind2, Element& elem2)
 		{
 			return false;
 		}
@@ -142,7 +142,7 @@ namespace SpecialBehaviour
 	};
 	class ToxicGas {
 	public:
-		bool operator()(World& world, size_t& ind1, size_t& ind2, Element& elem2)
+		bool operator()(World& world, int& ind1, int& ind2, Element& elem2)
 		{
 			return false;
 		}

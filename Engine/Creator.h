@@ -10,8 +10,17 @@
 #include <map>
 class Creator {
 public:
+	enum class Action {
+		SpawnElement,
+		SpawnObject,
+		ChangeWeather,
+		None,
+		Count
+	};
+public:
 	Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather);
 	void Spawn(Mouse& mouse , MouseLastFrameStats& previous_stats, Sandbox& sandbox , ParticleEffect& list);
+	void ChangeSpawnArea(Mouse& mouse);
 	void DrawButtons(Graphics& gfx);
 	void DrawSpawnSurface(Graphics& gfx , Mouse& mouse);
 	bool CheckButtons(Mouse& mouse);
@@ -20,10 +29,14 @@ public:
 	std::vector<size_t> GetSpawnableElements(Mouse& mouse);
 
 	void ShowHoveredElement(Mouse& mouse, Graphics& gfx);
+	
 private:
-	int SpawnRadius;
-	int ExplosionRadius = 30;
-	int DarkeningRadius = ExplosionRadius / 3;
+	float SpawnRadius;
+	float ExplosionRadius = 30;
+	float DarkeningRadius = ExplosionRadius / 3;
+
+	float MinSpawnRadius = 1;
+	float MinExplosionRadius = 6;
 
 	int Max_rows = 3; // for buttons
 	int space = 10; // space between buttons

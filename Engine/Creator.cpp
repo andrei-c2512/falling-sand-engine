@@ -1,7 +1,7 @@
 #include "Creator.h"
 #include "assert.h"
 Creator::Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather0)
-	:world(world), Chance(1 , 100),weather(weather0),explosion(Explosion(world, 30))
+	:world(world), Chance(1 , 100),weather(weather0),explosion(Explosion(world))
 {
 	SpawnRadius = 15;
 	ToBeSpawned = Type::Steam;
@@ -102,7 +102,7 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 			if (mouse.LeftIsPressed())
 			{
 				auto MousePos = mouse.GetPos();
-				explosion.ExplodeZone(MousePos , list);
+				explosion.ExplodeZone(MousePos , list , ExplosionRadius , DarkeningRadius);
 			}
 
 		}
@@ -337,4 +337,45 @@ std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse)
 	}
 
 	return Elements;
+}
+
+void Creator::ChangeSpawnArea(Mouse& mouse)
+{
+	auto e = mouse.Read();
+
+	if (e.GetType() == Mouse::Event::Type::WheelUp)
+	{
+		if (int(ToBeSpawned) < 12) // the types until 12 are ALL regular elements
+		{
+			SpawnRadius += 0.5f;
+		}
+		else if (ToBeSpawned == Type::Explosion)
+		{
+			ExplosionRadius += 0.5f;
+			DarkeningRadius = ExplosionRadius / 3.0f;
+		}
+	}
+	else if (e.GetType() == Mouse::Event::Type::WheelDown)
+	{
+		if (int(ToBeSpawned) < 12) // the types until 12 are ALL regular elements
+		{
+			SpawnRadius -= 0.5f;
+			if (SpawnRadius < MinSpawnRadius)
+			{
+				SpawnRadius = MinSpawnRadius;
+			}
+		}
+		else if (ToBeSpawned == Type::Explosion)
+		{
+			ExplosionRadius -= 0.5f;
+			if (ExplosionRadius < MinExplosionRadius)
+			{
+				ExplosionRadius = MinExplosionRadius;
+			}
+			else
+			{
+				DarkeningRadius = ExplosionRadius / 3.0f;
+			}
+		}
+	}
 }

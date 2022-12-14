@@ -52,9 +52,13 @@ void Game::UpdateModel()
 	const float dt = Timer.DeltaTime() * 2;
 
 	particle_list.Update(dt);
+
 	if(GameSpeed_button.IsHovered(wnd.mouse) == false)
 		Builder.Spawn(wnd.mouse , MouseStats , World , particle_list);
+
 	Builder.CheckButtons(wnd.mouse);
+	Builder.ChangeSpawnArea(wnd.mouse);
+
 	if (!wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
 		World.UpdateTime(dt);
@@ -87,10 +91,7 @@ void Game::ComposeFrame()
 	bench.DrawFrameCounter(gfx);
 
 	//formula este y = 2x + 1;
-	if (wnd.mouse.LeftIsPressed())
-	{
-		gfx.DrawLine(Vec2I(300, 300), wnd.mouse.GetPos() , Colors::Magenta);
-	}
+
 	//bench.End();
 	//bench.UploadData();
 }

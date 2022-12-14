@@ -12,12 +12,11 @@ struct Explosion_verification {
 
 class Explosion {
 public:
-	Explosion(World& world0, int eRadius)
-		:world(world0), ExplosionRadius(eRadius)
+	Explosion(World& world0)
+		:world(world0)
 	{
-		DarkeningRadius = ExplosionRadius / 3;
 	}
-	void ExplodeZone(Vec2I center, ParticleEffect& list)
+	void ExplodeZone(Vec2I center, ParticleEffect& list , float ExplosionRadius ,float DarkeningRadius)
 	{
 		center = world.ScreenToMatrixPos(center);
 
@@ -227,8 +226,6 @@ public:
 		}
 	};
 private:
-	int DarkeningRadius;
-	int ExplosionRadius;
 	RNG Chance = { 1 , 100 };
 	World& world;
 };

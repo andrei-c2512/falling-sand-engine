@@ -1,125 +1,48 @@
-#include "Projectile.h"
+#include "Entity.h"
 
-
-Projectile::Projectile(Rect& rect, World& world0 ,  Vec2D& vel0, bool Destroyed0)
-	:HitBox(rect),world(world0),
-	vel(vel0),
-	Destroyed(Destroyed0)
+Entity::Entity(Rect rect, Sprite sprite0, float dmg, int health, float speed)
+	:HitBox(rect),  sprite(sprite0), Damage(dmg) , Health(health) , Speed(speed)
 {
-	Speed = 1.0f;
 }
 
-Projectile::Projectile(Rect& rect , World& world0 , float Speed0)
-	:Speed(Speed0), world(world0) , HitBox(rect)
+void Entity::Draw(Graphics& gfx)
 {
-	vel = { 0.0f , 0.0f };
-	Destroyed = true;
+	gfx.DrawSprite(HitBox.left, HitBox.top, sprite,
+		RectI(sprite.GetWidth(), sprite.GetHeight(), Vec2I(0, 0)),
+		Graphics::GetScreenRect(), Effects::Copy{});
 }
-void Projectile::InitProj(Rect& rect, Vec2D& vel0, bool Destroyed0)
+
+void Entity::Move(World& world ,float time)
 {
-	HitBox = rect; vel = vel0; Destroyed = Destroyed0;
-}
-void Projectile::InitProj(const Projectile& proj)
-{
-	HitBox = proj.GethBox();
-	Destroyed = proj.IsDestroyed();
-	vel = proj.GetVel();
-}
-void Projectile::Launch(Vec2D& vel0, Vec2D& pos0)
-{
-	Destroyed = false;
-	vel = vel0;
-	HitBox.left = pos0.x;
-	HitBox.top = pos0.y;
+	MoveX(world , time);
+	MoveY(world , time);
 }
 
-void Projectile::Destroy()
-{
-	Destroyed = true;
-	vel = { 0.0f , 0.0f };
-	HitBox.left = HitBox.top = NULL;
-}
-
-void Projectile::Travel(float time)
-{
-	if (!Destroyed)
-	{
-
-		float addX = 60.0f * vel.x * time * Speed, addY = 60.0f * vel.y * time * Speed;
-
-		float x = HitBox.left + addX;
-		float y = HitBox.top + addY;
-
-		Rect rect(HitBox.GetDimensions(), Vec2D(x, y));
-		if (Graphics::WithinScreen(rect))
-		{
-			MoveX(time);
-			MoveY(time);
-		}
-		else
-			Destroy();
-
-	}
-}
-
-
-void Projectile::DetectCollision(float time)
-{  
-	//MoveX(time);
-	//MoveY(time);
-}
-void Projectile::DrawProjectile(Graphics& gfx , Color c) {
-	if (Destroyed == false)
-		gfx.DrawRect(HitBox, c);
-}
-
-Rect Projectile::GethBox() const
-{
-	return HitBox;
-}
-
-
-bool Projectile::IsDestroyed() const
-{
-	return Destroyed;
-}
-
-Vec2D Projectile::GetVel() const
-{
-	return vel;
-}
-void Explosive::Destroy()
-{
-	Vec2I pos = Vec2I(HitBox.left + HitBox.width / 2, HitBox.top + HitBox.height / 2);
-	explosion.ExplodeZone(pos, effect_list , ExplosionRadius , DarkeningRadius);
-
-	Projectile::Destroy();
-}
-
-void Projectile::MoveX(float time)
+void Entity::MoveX(World& world ,float time)
 {
 	RectI ZoneX;
 
-	float AddX = std::abs(vel.x * 60.0f * time * Speed);
+	float AddX = std::abs(vel.x * 60.0f * time);
 
-	int Size = std::ceil(AddX);
+	int Size = AddX;
 	if (int(AddX) % World::ElemSize != 0)
 	{
 		Size += World::ElemSize - int(AddX) % World::ElemSize;
 		Size = int(Size);
 	}
 
-	if (vel.x >= 0.0f)
+	if (vel.x > 0.0f)
 	{
-		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.right(), HitBox.top));
+		ZoneX = RectI(Size, int(HitBox.height), Vec2I(int(HitBox.right()), int(HitBox.top)));
 	}
-	else if (vel.x < 0.0f)
+	else if (vel.x <= 0.0f)
 	{
-		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.left - Size, HitBox.top));
+		ZoneX = RectI(Size, int(HitBox.height), Vec2I(int(HitBox.left - Size), int(HitBox.top)));
 	}
 
 	int StartX, EndX, Add;
 	std::function<bool(int, int)> Condition;
+	std::function<float(Rect, RectI)> dist;
 	if (vel.x > 0.0f)
 	{
 		StartX = ZoneX.left;
@@ -127,7 +50,11 @@ void Projectile::MoveX(float time)
 		Add = World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
-			return nr1 < (nr2 - World::ElemSize);
+			return nr1 < (nr2);
+		};
+		dist = [](Rect rect, RectI elem)
+		{
+			return std::abs(rect.right() - elem.left);
 		};
 	}
 	else
@@ -137,7 +64,11 @@ void Projectile::MoveX(float time)
 		Add = -World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
-			return nr1 > (nr2 + World::ElemSize);
+			return nr1 > (nr2);
+		};
+		dist = [](Rect rect, RectI elem)
+		{
+			return std::abs(elem.right() - rect.left);
 		};
 	}
 
@@ -166,10 +97,18 @@ void Projectile::MoveX(float time)
 
 				if (ElementsX[ind].GetState() == State::Solid)
 				{
-
-					Move = false;
-					break;
-
+					if (ind < ElementsX.size() - 4)
+					{
+						{
+							Move = false;
+							break;
+						}
+					}
+					else
+					{
+						HitBox.top -= ElementsX[ind].GetRect().height * (ElementsX.size() - 1 - ind);
+						break;
+					}
 				}
 			}
 
@@ -205,21 +144,25 @@ void Projectile::MoveX(float time)
 				HitBox.left += sign * add;
 			}
 			else
-			{
-				Destroy();
 				break;
-			}
 			ElementsX.clear();
 		}
 	}
+	//assert(AddX == 0.0f);
+	vel.x = 0.0f;
 }
 
-void Projectile::MoveY(float time)
+void Entity::MoveY(World& world ,float time)
 {
 	float AddY;
-	AddY = float(std::abs(vel.y * 60.0f * time * Speed));
+	if (vel.y == 0.0f)
+	{
+		AddY = Gravity * 60.0f * time;
+	}
+	else
+		AddY = std::abs(vel.y * 60.0f * time);
 
-	int Size = std::ceil(AddY);
+	int Size = AddY;
 	if (int(AddY) % World::ElemSize != 0)
 	{
 		Size += World::ElemSize - int(AddY) % World::ElemSize;
@@ -241,7 +184,7 @@ void Projectile::MoveY(float time)
 	int StartY, EndY, Add;
 
 	std::function<bool(int, int)> Condition;
-	if (vel.y > 0.0f)
+	if (vel.y >= 0.0f)
 	{
 		StartY = ZoneY.top;
 		EndY = ZoneY.bottom();
@@ -249,7 +192,7 @@ void Projectile::MoveY(float time)
 
 		Condition = [=](int nr1, int nr2)
 		{
-			return nr1 < nr2;
+			return nr1 < nr2&& nr1 + World::ElemSize < Graphics::ScreenHeight;
 		};
 	}
 	else
@@ -260,14 +203,16 @@ void Projectile::MoveY(float time)
 
 		Condition = [=](int nr1, int nr2)
 		{
-			return nr1 > nr2;
+			return nr1 > nr2 && nr1 > 0;
 		};
 	}
 
 
 	{
 		std::vector<Element> ElementsY;
-		for (int y = StartY; Condition(y, EndY) == true; y += Add)
+		for (int y = StartY;
+			Condition(y, EndY) == true
+			; y += Add)
 		{
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
@@ -280,9 +225,15 @@ void Projectile::MoveY(float time)
 					ElementsY.emplace_back(element);
 				}
 				else
+				{
 					Move = false;
+					break;
+				}
 			}
-
+			if (ElementsY.size() == 0)
+			{
+				break;
+			}
 			for (auto& n : ElementsY)
 			{
 				if (n.GetState() == State::Solid)
@@ -295,6 +246,9 @@ void Projectile::MoveY(float time)
 			if (Move)
 			{
 				float add;
+				short sign = 1;
+
+
 				if (y == StartY)
 				{
 					add = World::ElemSize;
@@ -309,54 +263,56 @@ void Projectile::MoveY(float time)
 				}
 				else if (AddY < World::ElemSize)
 				{
+					if (vel.y != 0.0f)
+					{
+						sign = short(std::abs(vel.y) / vel.y);
+					}
 					add = AddY;
-					int sign = std::abs(vel.y) / vel.y;
+					AddY -= add;
 					HitBox.top += sign * add;
 					break;
 				}
 				else
 				{
+					if (vel.y != 0.0f)
+					{
+						sign = short(std::abs(vel.y) / vel.y);
+					}
 					add = World::ElemSize;
 					AddY -= World::ElemSize;
 				}
-				int sign = std::abs(vel.y) / vel.y;
 				HitBox.top += sign * add;
 			}
 			else
-			{
-				Destroy();
 				break;
-			}
 
 			ElementsY.clear();
 		}
 	}
+	//assert(AddY == 0.0f);
+	vel.y = 0.0f;
 
 }
 
-void Explosive::Travel(float time)
+
+void Entity::CheckCollisions(Player& player)
 {
-	if (!Destroyed)
+	const auto& list = player.GetProj_list();
+
+	for (auto& n : list)
 	{
-
-		float addX = 60.0f * vel.x * time * Speed, addY = 60.0f * vel.y * time * Speed;
-
-		float x = HitBox.left + addX;
-		float y = HitBox.top + addY;
-
-		Rect rect(HitBox.GetDimensions(), Vec2D(x, y));
-		if (Graphics::WithinScreen(rect))
+		if (n->GethBox().Collision(HitBox))
 		{
-			MoveX(time);
-			if(!Destroyed)
-				MoveY(time);
+			n->Destroy();
 		}
-		else
-			Projectile::Destroy();
-
 	}
 }
 
-float Projectile::GetDamage() const {
-	return dmg_rand.GetVal() + BaseDamage * (Speed / 2);
+void Entity::DetermineMovement(Player& player)
+{
+	Rect pRect = player.GetRect();
+
+	Vec2D pCenter = pRect.GetCenter(); // player center
+	Vec2D eCenter = HitBox.GetCenter(); // enemy center
+
 }

@@ -183,17 +183,17 @@ public:
 	{
 		const short StartX = SpritePortion.top - SpritePortion.width / 2;
 		const short StartY = SpritePortion.top - SpritePortion.height / 2;
-
+	
 		const short StopY = SpritePortion.top + SpritePortion.height / 2;
 		const short StopX = SpritePortion.left + SpritePortion.width / 2;
-
+	
 		RectI SRect = { SpritePortion.width , SpritePortion.height , Vec2I{x , y } };
 		Vec2I SCenter = SRect.GetCenter();
-
+	
 		float hyphotenuse = SCenter.GetLenght(pos);
 		float sin = SCenter.GetSin(pos , hyphotenuse);
 		float cos = SCenter.GetCos(pos , hyphotenuse);
-
+	
 		short hWidth = SpritePortion.width / 2;
 		short hHeight = SpritePortion.height / 2;
 		for (short sy = StartX; sy < StopY; sy++)
@@ -201,10 +201,10 @@ public:
 			for (short sx = StartY; sx < StopX; sx++)
 			{
 				Color c = s.GetPixel(sx + hWidth, sy + hHeight);
-
+	
 				Vec2I new_pos = Vec2I( SCenter.x + sx * cos - sy * sin ,
 								  SCenter.y + sx * sin + sy * cos );
-
+	
 				if (WithinScreen(new_pos))
 				{
 					PutPixel(std::move(new_pos.x), std::move(new_pos.y), c);
@@ -212,7 +212,79 @@ public:
 			}
 		}
 	}
-
+	//template<typename T, typename D>
+	//void DrawAngledSprite(int x0, int y0, Sprite& s, Rect_<T, D>& SpritePortion, Vec2I& pos)
+	//{
+	//	float yDist = pos.y - y0;
+	//	float xDist = pos.x - x0;
+	//	float Slope = yDist / xDist; // the tangent
+	//	Vec2I origin = { x0 , y0 };
+	//
+	//	// slope1 * slope2 = -1
+	//	// slope1 = -1 / slope2 AKA slope1 = -ctg 
+	//	if (std::abs(xDist) > std::abs(yDist))
+	//	{
+	//		int StartY = y0 - Slope * x0;
+	//		float pSlope = -1 / Slope; // perpendicular slope
+	//		
+	//		float cos = sqrt(1.0f / (Slope * Slope + 1)); // you can get this formula with the fact that tg = sin/cos and
+	//													  // sin * sin + cos * cos = 1
+	//													  // tg = slope
+	//		if (xDist < 0)
+	//		{
+	//			cos = -cos;
+	//		}
+	//		float sin = sqrt(1.0f - cos * cos) * (std::abs(yDist) / yDist);
+	//
+	//		if (yDist < 0)
+	//		{
+	//			sin = -sin;
+	//		}
+	//		Vec2I p2 = Vec2I(origin.x + cos * s.GetWidth(), origin.y + sin * s.GetWidth());
+	//
+	//		if (origin.x > p2.x)
+	//		{
+	//			std::swap(origin, p2);
+	//		}
+	//
+	//		for (int x = origin.x; x < p2.x; x++)
+	//		{
+	//			//PutPixel(x, StartY + Slope * x, Colors::Yellow);
+	//			DrawLine(Vec2I(x, StartY + Slope * x), s.GetHeight(), pSlope);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		float pSlope = -1 / Slope;
+	//
+	//		Slope = xDist / yDist; // switching to cotangent
+	//
+	//		int StartX = x0 - Slope * y0;
+	//	
+	//		float cos = sqrt(1.0f / ((1.0f / (Slope * Slope)) + 1)) ;
+	//		if (xDist < 0)
+	//		{
+	//			cos = -cos;
+	//		}
+	//		float sin = sqrt(1.0f - cos * cos) ;
+	//		if (yDist < 0)
+	//		{
+	//			sin = -sin;
+	//		}
+	//		Vec2I p2 = Vec2I(origin.x + cos * s.GetWidth(), origin.y + sin * s.GetWidth());
+	//
+	//		if (origin.y > p2.y)
+	//		{
+	//			std::swap(p2, origin);
+	//		}
+	//
+	//		for (int y = origin.y; y < p2.y; y++)
+	//		{
+	//			//PutPixel(StartX + y * Slope, y, Colors::Yellow);
+	//			DrawLine(Vec2I(StartX + y * Slope, y), s.GetHeight(), pSlope);
+	//		}
+	//	}
+	//}
 	void ChangePixel_Bloom(int x, int y, Color c)
 	{
 		int index = y * ScreenWidth + x;
@@ -263,6 +335,15 @@ public:
 	}
 	~Graphics();
 	template <typename T>
+	void DrawLine(Vec2_<T> p1, int length, float slope)
+	{
+		float cos = sqrt(1.0f / (slope * slope + 1));
+		float sin = sqrt(1.0f - cos * cos);
+
+		Vec2I p2 = Vec2I(p1.x + cos * length, p1.y + sin * length);
+		DrawLine(p1, p2, Colors::Yellow);
+	}
+	template <typename T>
 	void DrawLine(Vec2_<T> p1, Vec2_<T> p2 , Color c)
 	{
 		float yDist = p2.y - p1.y;
@@ -300,6 +381,7 @@ public:
 			}
 		}	
 	}
+
 private:
 	BlurProcessor blur_processor = { Bloom };
 	Sprite Bloom  = Sprite(ScreenWidth, ScreenHeight);
