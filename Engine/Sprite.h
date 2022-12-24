@@ -39,6 +39,10 @@ public:
 	{
 		return pColor.data();
 	}
+	RectI GetRect()
+	{
+		return RectI(width, height, Vec2I(0, 0));
+	}
 private:
 	std::vector<Color> pColor;
 	bool Bloom = false;

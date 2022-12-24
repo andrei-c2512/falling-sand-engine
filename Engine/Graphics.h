@@ -103,13 +103,13 @@ public:
 	}
 	static RectI GetScreenRect();
 
-	template <typename T, typename D>
-	void DrawRect(Rect_<T , D>& rect, Color c)
+	template <typename T, typename D , typename E>
+	void DrawRect(Rect_<T , D>& rect, Color c , E effect)
 	{
 		for (int y = int(rect.top); y < int(rect.top + rect.height); y++)
 		{
 			for (int x = rect.left; x < int(rect.left + rect.width); x++)
-				PutPixel(x, y, c);
+				effect(c, *this, x, y);
 		}
 	}
 
@@ -137,7 +137,10 @@ public:
 		{
 			for (int x = rect.left; x < rect.left + rect.width; x++)
 			{
-				Color sColor = pSysBuffer[y * ScreenWidth + x];
+				Color sColor = Color( pSysBuffer[y * ScreenWidth + x].GetR() * (1.0f - tFactor) ,
+									  pSysBuffer[y * ScreenWidth + x].GetG() * (1.0f - tFactor) ,
+									  pSysBuffer[y * ScreenWidth + x].GetB() * (1.0f - tFactor)  );
+
 				int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
 					g = (c.GetG() + sColor.GetG()) * tFactor;
 				PutPixel(int(x), int(y), r, g, b);
@@ -151,8 +154,8 @@ public:
 			rect.top >= 0 && rect.top + rect.height <= Graphics::ScreenHeight);
 
 	}
-	template <typename T , typename D>
-	void DrawRect_Border(Rect_<T , D>& rect, Color c)
+	template <typename T , typename D , typename E>
+	void DrawRect_Border(Rect_<T , D>& rect, Color c , E effect)
 	{
 		for (int y = int(rect.top); y < int(rect.top + rect.height); y += 1)
 		{
@@ -160,15 +163,15 @@ public:
 			{
 				if (y == rect.top)
 				{
-					PutPixel(x, y, c);
+					effect(c , *this , x , y);
 				}
 				else if (x == rect.left || x == rect.left + rect.width - 1)
 				{
-					PutPixel(x, y, c);
+					effect(c, *this, x, y);
 				}
 				else if (y == rect.bottom() - 1)
 				{
-					PutPixel(x, y, c);
+					effect(c, *this, x, y);
 				}
 			}
 		}
@@ -211,6 +214,23 @@ public:
 				}
 			}
 		}
+	}
+	void BlendPixel(int x, int y, Color c , int alpha)
+	{
+		float tFactor = float(alpha / 100.0f);
+		int index = y * ScreenWidth + x;
+		Color sColor = Color( pSysBuffer[index].GetR() * (1.0f - tFactor) ,
+							  pSysBuffer[index].GetG() * (1.0f - tFactor) ,
+							  pSysBuffer[index].GetB() * (1.0f - tFactor)  );
+
+		int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
+			g = (c.GetG() + sColor.GetG()) * tFactor;
+		PutPixel(index, Color(r, g, b));
+	}
+
+	void PutPixel(unsigned int index, Color c)
+	{
+		pSysBuffer[index] = c;
 	}
 	//template<typename T, typename D>
 	//void DrawAngledSprite(int x0, int y0, Sprite& s, Rect_<T, D>& SpritePortion, Vec2I& pos)
@@ -300,7 +320,13 @@ public:
 				ChangePixel_Bloom(x, y, c);
 		}
 	}
-	
+	void DrawOpenPoly(std::vector<Vec2I> pos_list)
+	{
+		for (int i = 0 ; i < pos_list.size() - 1; i++)
+		{
+			DrawLine(pos_list[i], pos_list[i + 1] , Colors::Yellow);
+		}
+	}
 	void ApplyBloom()
 	{	
 		blur_processor.Go();

@@ -161,7 +161,7 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 void Chunk::DrawBorder(Graphics& gfx)
 {
 	if(Active)
-		gfx.DrawRect_Border(PhysicalSize, Colors::Yellow);
+		gfx.DrawRect_Border(PhysicalSize, Colors::Yellow, Effects::Copy{});
 }
 
 bool Chunk::InBounds(int index, World& world) const

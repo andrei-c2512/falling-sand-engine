@@ -111,13 +111,13 @@ public:
 	}
 	Vec2_<T> GetPos()
 	{
-		return Vec2<T>_(left, top);
+		return Vec2_<T>(left, top);
 	}
 
 	void SetPos(Vec2_<T> newpos)
 	{
-		left = newpos.left;
-		top = newpos.top
+		left = newpos.x;
+		top = newpos.y;
 	}
 public:
 	T left = T(0);

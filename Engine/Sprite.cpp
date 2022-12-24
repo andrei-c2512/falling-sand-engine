@@ -4,6 +4,7 @@
 #include "ChiliWin.h"
 #include <algorithm>
 #include <iterator>
+
 Sprite::Sprite(int width0, int height0)
 	:width(width0), height(height0)
 {

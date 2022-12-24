@@ -29,9 +29,7 @@
 #include "Creator.h"
 #include "Weather.h"
 #include <string>
-#include "player.h"
 #include "Bench.h"
-
 
 
 class Game
@@ -42,6 +40,8 @@ public:
 	Game& operator=( const Game& ) = delete;
 	~Game();
 	void Go();
+	bool AreButtonsHovered()const;
+	void CheckButtons();
 private:
 	void ComposeFrame();
 	void UpdateModel();
@@ -61,8 +61,13 @@ private:
 	Bench bench;
 
 	Vec2I SpeedButton_pos = Vec2I(Graphics::ScreenWidth - 60 , 60);
-	GameSpeedButton GameSpeed_button = { Colors::Gray , Colors::White ,
-		RectI(30 , 60 , Vec2I(SpeedButton_pos)) };
+
+	std::vector<GameSpeedButton> button_list;
+
+	float GameSpeed = 1.0f;
+	//GameSpeedButton GameSpeed_button = { Colors::Gray , Colors::White ,
+	//	RectI(30 , 60 , Vec2I(SpeedButton_pos)) };
+
 	/********************************/
 	/*  User Variables              */
 	/********************************/

@@ -6,28 +6,59 @@
 #include <typeinfo>
 #include <memory>
 
+
 class Weapon {
 public:
-	Weapon() = default;
-	Weapon( float speed0, int MaxRounds0, float rTime, float sTime);
-	void Shoot(const Mouse& mouse);
-	void Update_projectiles(float time);
-	void CoolDowns(float time);
-	void DrawProjectiles(Graphics& gfx, Color c);
+	Weapon(const Rect* owner, int damage , float usetimer);
 
+	virtual void Draw(Graphics& gfx) {};
+	virtual void CoolDowns(float time);
+	virtual void Use(Vec2D& pos) {};
+	virtual void Update(float time);
+	virtual bool Collision(Rect& rect) { return false; };
+
+	const Rect* GetpOwner() const;
+	//this function will get the hitbox of the weapon + it's custom made projectiles
+	virtual std::forward_list<Rect> GetWeaponHitBoxes() const { return std::forward_list<Rect> {}; };
+	virtual int GetDamage() const;
+protected:
+	int damage = 0;
+	const Rect* pOwner;  // the player , probably
+	Timer use_timer;
+	Rect weapon;
+	mutable RNG dmg_rng = { 0 , 6};
+};
+
+//class MeleeWp : public Weapon {
+//public:
+//	D
+//protected:
+//	int Reach;
+//};
+class RangedWp : public Weapon {
+public:
+	RangedWp() = default;
+	RangedWp( const Rect* owner , int damage ,float speed0, int MaxRounds0, float rTime, float sTime);
+
+	//overrides
+	std::forward_list<Rect> GetWeaponHitBoxes() const override;
+	void Draw(Graphics& gfx)                          override;
+	void Use(Vec2D& pos)                              override;
+	bool Collision(Rect& rect)						  override;
+	void Update(float time)							  override;
+	void CoolDowns(float time)						  override;
+	void Update_projectiles(float time);
+
+	void DrawProjectiles(Graphics& gfx, Color c);
 	// getters
 	int GetCapacity() const;
-	const std::forward_list<std::unique_ptr<Projectile>>& GetProj_list() const;
+	virtual int GetDamage() const override;
 
-	bool IsInitialized() const;
-	const Rect* Weapon::GetpOwner() const;
+	virtual void LaunchNewProj(Vec2D& vel, Vec2D& initpos) {};
 
-	virtual void LaunchNewProj(Vec2D& vel, Vec2D& initpos) = 0;
-
-	void Update(const Mouse& mouse, float time);
+	bool CanShoot() const;
 	
 protected:
-	const Rect* pOwner;  // the player , probably
 	std::forward_list<std::unique_ptr<Projectile>> proj_list;
 
 	int MaxRounds;
@@ -35,21 +66,19 @@ protected:
 	int BulletCnt;
 
 	Timer reload;
-	Timer shoot;
 
-	bool Initialized = false;
-	float speed;
+	float proj_speed;
 protected:
 };
 
-class ExplosiveLauncher : public Weapon {
+class ExplosiveLauncher : public RangedWp {
 public:
 	ExplosiveLauncher(const Rect* Owner0 ,std::unique_ptr<Explosive> proj, ParticleEffect& particle)
-		:InitProj(std::move(proj)),effect_list(particle), Weapon(5.0f , 10 , 1.0f , 0.5f) 
+		:InitProj(std::move(proj)),effect_list(particle), RangedWp(Owner0 , 10  ,5.0f , 10 , 1.0f , 0.5f) 
 	{
-		pOwner = Owner0;
 	}
 	void LaunchNewProj(Vec2D& vel , Vec2D& initpos) override;
+	int GetDamage() const override;
 private:
 	std::unique_ptr<Explosive> InitProj;
 	ParticleEffect& effect_list;

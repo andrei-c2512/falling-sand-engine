@@ -53,8 +53,25 @@ void Projectile::Travel(float time)
 		Rect rect(HitBox.GetDimensions(), Vec2D(x, y));
 		if (Graphics::WithinScreen(rect))
 		{
-			MoveX(time);
-			MoveY(time);
+			if (vel.x > 0.0f)
+			{
+				MoveRight(time);
+			}
+			else
+			{
+				MoveLeft(time);
+			}
+			if (!Destroyed)
+			{
+				if (vel.y > 0.0f)
+				{
+					MoveDown(time);
+				}
+				else
+				{
+					MoveUp(time);
+				}
+			}
 		}
 		else
 			Destroy();
@@ -70,7 +87,7 @@ void Projectile::DetectCollision(float time)
 }
 void Projectile::DrawProjectile(Graphics& gfx , Color c) {
 	if (Destroyed == false)
-		gfx.DrawRect(HitBox, c);
+		gfx.DrawRect(HitBox, c, Effects::Copy{});
 }
 
 Rect Projectile::GethBox() const
@@ -347,9 +364,25 @@ void Explosive::Travel(float time)
 		Rect rect(HitBox.GetDimensions(), Vec2D(x, y));
 		if (Graphics::WithinScreen(rect))
 		{
-			MoveX(time);
-			if(!Destroyed)
-				MoveY(time);
+			if (vel.x > 0.0f)
+			{
+				MoveRight(time);
+			}
+			else
+			{
+				MoveLeft(time);
+			}
+			if (!Destroyed)
+			{
+				if (vel.y > 0.0f)
+				{
+					MoveDown(time);
+				}
+				else
+				{
+					MoveUp(time);
+				}
+			}
 		}
 		else
 			Projectile::Destroy();
@@ -359,4 +392,246 @@ void Explosive::Travel(float time)
 
 float Projectile::GetDamage() const {
 	return dmg_rand.GetVal() + BaseDamage * (Speed / 2);
+}
+
+void Projectile::MoveRight( float time)
+{
+	float AddX = vel.x * time * 60.0f;
+	int LineX = HitBox.right() + World::ElemSize;
+	while (AddX)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(LineX, y));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
+
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				Move = false;
+				break;
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddX < World::ElemSize)
+			{
+				HitBox.left += AddX;
+				AddX = 0;
+			}
+			else
+			{
+				HitBox.left += World::ElemSize;
+				AddX -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//basically i am getting the modulus for a float 
+			float offset = HitBox.left - (int(HitBox.left) / World::ElemSize) * World::ElemSize;
+			//distance to the next cell
+			float dist = World::ElemSize - offset;
+
+			if (AddX <= dist)
+			{
+				HitBox.left += AddX;
+				break;
+			}
+			else
+			{
+				HitBox.left += dist;
+				Destroy();
+				break;
+			}
+		}
+
+		LineX += World::ElemSize;
+	}
+}
+
+void Projectile::MoveLeft(float time)
+{
+	float AddX = std::abs(vel.x * time * 60.0f);
+	int LineX = HitBox.left - World::ElemSize;
+	while (AddX)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(LineX, y));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
+
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				Move = false;
+				break;
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddX < World::ElemSize)
+			{
+				HitBox.left -= AddX;
+				AddX = 0;
+			}
+			else
+			{
+				HitBox.left -= World::ElemSize;
+				AddX -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//basically i am getting the modulus for a float 
+			//distance to the next cell
+			float dist = HitBox.left - (int(HitBox.left) / World::ElemSize) * World::ElemSize;
+
+			if (AddX <= dist)
+			{
+				HitBox.left -= AddX;
+				break;
+			}
+			else
+			{
+				HitBox.left -= dist;
+				Destroy();
+				break;
+			}
+		}
+
+		LineX -= World::ElemSize;
+	}
+}
+
+void Projectile::MoveDown(float time)
+{
+	float AddY = vel.y * time * 60.0f;
+	int LineY = HitBox.bottom() + World::ElemSize;
+	while (AddY)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, LineY));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
+
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				Move = false;
+				break;
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddY < World::ElemSize)
+			{
+				HitBox.top += AddY;
+				AddY = 0;
+			}
+			else
+			{
+				HitBox.top += World::ElemSize;
+				AddY -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//basically i am getting the modulus for a float 
+			float offset = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+			//distance to the next cell
+			float dist = World::ElemSize - offset;
+
+			if (AddY <= dist)
+			{
+				HitBox.top += AddY;
+				break;
+			}
+			else
+			{
+				HitBox.top += dist;
+				Destroy();
+				break;
+			}
+		}
+
+		LineY += World::ElemSize;
+	}
+}
+
+void Projectile::MoveUp(float time)
+{
+	float AddY = std::abs(vel.y * time * 60.0f);
+	int LineY = HitBox.top - World::ElemSize;
+	while (AddY)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, LineY));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
+
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				Move = false;
+				break;
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddY < World::ElemSize)
+			{
+				HitBox.top -= AddY;
+				AddY = 0;
+			}
+			else
+			{
+				HitBox.top -= World::ElemSize;
+				AddY -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//basically i am getting the modulus for a float 
+			//distance to the next cell
+			float dist = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+
+			if (AddY <= dist)
+			{
+				HitBox.top -= AddY;
+				break;
+			}
+			else
+			{
+				HitBox.top -= dist;
+				Destroy();
+				break;
+			}
+		}
+
+		LineY -= World::ElemSize;
+	}
 }

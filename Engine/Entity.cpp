@@ -1,30 +1,107 @@
 #include "Entity.h"
 
 Entity::Entity(Rect rect, Sprite sprite0, float dmg, int health, float speed)
-	:HitBox(rect),  sprite(sprite0), Damage(dmg) , Health(health) , Speed(speed)
+	:HitBox(rect),  sprite(sprite0), Damage(dmg) , Speed(speed)
 {
+	hp_bar.show_timer = { 4.0f };
+	hp_bar.Health = (health);
+	hp_bar.MaxHealth = { health };
+
+	hp_bar.dim = {  HitBox.width + 2 * HpBar::offset , HitBox.height / 5 };
+
 }
 
+Entity::Entity(const Entity& entity)
+{
+	if(entity.pWeapon != nullptr)
+		pWeapon = std::make_unique<Weapon>(*entity.pWeapon);
+
+	Damage = entity.Damage;
+	HitBox = entity.HitBox;
+	Speed = entity.Speed;
+	vel = entity.vel;
+	hp_bar = entity.hp_bar;
+	sprite = entity.sprite;
+}
 void Entity::Draw(Graphics& gfx)
 {
-	gfx.DrawSprite(HitBox.left, HitBox.top, sprite,
-		RectI(sprite.GetWidth(), sprite.GetHeight(), Vec2I(0, 0)),
-		Graphics::GetScreenRect(), Effects::Copy{});
+	//gfx.DrawSprite(HitBox.left, HitBox.top, sprite,
+	//	RectI(sprite.GetWidth(), sprite.GetHeight(), Vec2I(0, 0)),
+	//	Graphics::GetScreenRect(), Effects::Copy{});
+
+	int space = 10; // the space between the health bar and the entity
+	Effects::Copy eCopy{};
+	gfx.DrawRect(HitBox, Colors::Red , eCopy);
+
+	if (hp_bar.show_timer.IsReady() == false)
+	{
+		float cnt = hp_bar.show_timer.GetTime();
+		float limit = hp_bar.show_timer.GetTimeLimit();
+
+		int x = HitBox.left - HpBar::offset;
+		int y = HitBox.top - space;
+		int bar_width = hp_bar.HpBarWidth();
+
+		if (cnt < limit / 2)
+		{ 
+			gfx.DrawRect(RectI(bar_width, hp_bar.dim.height,
+				Vec2I(x, y)), Colors::Green , eCopy);
+
+			gfx.DrawRect_Border(RectI(bar_width, hp_bar.dim.height,
+				Vec2I(x, y)), Colors::White , eCopy);
+		}
+		else
+		{
+			float elapsed_time = (cnt - limit / 2);
+			unsigned char transparency = 100 - ((elapsed_time / (limit / 2))) * 100.0f;
+
+			Effects::AlphaBlending effect(transparency);
+
+			gfx.DrawRect(RectI(bar_width, hp_bar.dim.height,
+				Vec2I(x, y)), Colors::Green, effect);
+
+			gfx.DrawRect_Border(RectI(bar_width, hp_bar.dim.height,
+				Vec2I(x , y)), Colors::White, effect);
+		}
+	}
 }
 
-void Entity::Move(World& world ,float time)
+void Entity::Move(World& world , float time)
 {
-	MoveX(world , time);
-	MoveY(world , time);
+	if (vel.x > 0.0f)
+	{
+		MoveRight(world, time);
+	}
+	else if (vel.x < 0.0f)
+	{
+		MoveLeft(world, time);
+	}
+	
+	if (vel.y > 0.0f)
+	{
+		MoveDown(world, time);
+	}
+	else if (vel.y < 0.0f)
+	{
+		MoveUp(world, time);
+	}
+
+	hp_bar.show_timer.Update(time);
+	if (hp_bar.Health <= 0)
+	{
+		Kill(world);
+	}
+
+	vel = { 0.0f , 0.0f };
 }
 
-void Entity::MoveX(World& world ,float time)
+void Entity::MoveX(World& world , float time)
 {
 	RectI ZoneX;
 
 	float AddX = std::abs(vel.x * 60.0f * time);
 
-	int Size = AddX;
+	int Size = std::ceil(AddX);
 	if (int(AddX) % World::ElemSize != 0)
 	{
 		Size += World::ElemSize - int(AddX) % World::ElemSize;
@@ -59,8 +136,8 @@ void Entity::MoveX(World& world ,float time)
 	}
 	else
 	{
-		StartX = ZoneX.right();
-		EndX = ZoneX.left;
+		StartX = ZoneX.right() ;
+		EndX = ZoneX.left ;
 		Add = -World::ElemSize;
 		Condition = [](int nr1, int nr2)
 		{
@@ -112,36 +189,69 @@ void Entity::MoveX(World& world ,float time)
 				}
 			}
 
-
+			//here , we use addX as a form of "how many pixels are there left to process", with each move ,
+			//the pixel quantity diminishes 
 			if (Move)
 			{
-				float add;
-				if (x == StartX)
+				if (AddX == 0.0f)
 				{
-					add = World::ElemSize;
-					if (vel.x < 0)
+					break;
+				}
+				float add = 0.0f;
+
+				{
+					//checking if it's the first time that we process a move in this frame
+					// if it's true , we'll adjust the object position first so that it fits perfectly in line
+					//with the sand simulation
+					if (x == StartX)
 					{
-						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+						if (vel.x < 0)
+						{
+							if (AddX < World::ElemSize)
+							{
+								add = AddX;
+							}
+							else
+							{
+								//this is the distance from entity to the nearest element behind it in the particle simulation
+								add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+							}
+							HitBox.left -= add;
+							AddX -= add;
+						}
+						else
+						{
+							
+							if (AddX < World::ElemSize)
+							{
+								add = AddX;
+							}
+							else
+							{
+								//this is the distance from entity to the nearest element in front of it in the particle simulation
+								add = World::ElemSize - (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+							}
+							HitBox.left += add;
+							AddX -= add;
+						}
 					}
 					else
 					{
-						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+						int sign = std::abs(vel.x) / vel.x;
+						if (AddX < World::ElemSize)
+						{
+							add = AddX;
+							HitBox.left += sign * add;
+							break;
+						}
+						else
+						{
+							add = World::ElemSize;
+							HitBox.left += sign * add;
+							AddX -= add;
+						}
 					}
 				}
-				else if (AddX < World::ElemSize)
-				{
-					add = AddX;
-					int sign = std::abs(vel.x) / vel.x;
-					HitBox.left += sign * add;
-					break;
-				}
-				else
-				{
-					add = World::ElemSize;
-					AddX -= World::ElemSize;
-				}
-				int sign = std::abs(vel.x) / vel.x;
-				HitBox.left += sign * add;
 			}
 			else
 				break;
@@ -152,23 +262,66 @@ void Entity::MoveX(World& world ,float time)
 	vel.x = 0.0f;
 }
 
-void Entity::MoveY(World& world ,float time)
+void Entity::CheckProtrusionY(World& world ,float y)
 {
-	float AddY;
-	if (vel.y == 0.0f)
+	Rect ProtrusionZone;
+	float new_y = y;
+
+	ProtrusionZone = Rect(HitBox.width, 0, Vec2D(HitBox.left, std::move(new_y)));
+
+
+	if (vel.y > 0.0f)
 	{
-		AddY = Gravity * 60.0f * time;
+		for (int x = ProtrusionZone.left; x < ProtrusionZone.right(); x += World::ElemSize)
+		{
+			int index = (World::SandboxDim.width * ProtrusionZone.top  + x) / World::ElemSize;
+			Element& elem = *world.GetElem(index);
+			if (elem.GetState() == State::Solid)
+			{
+				int dist = elem.GetRect().bottom() - HitBox.bottom();
+				if (dist < 0)
+				{
+					HitBox.top += dist;
+				}
+				break;
+			}
+		}
 	}
 	else
+	{
+		for (int x = ProtrusionZone.left; x < ProtrusionZone.right(); x += World::ElemSize)
+		{
+			int index = (World::SandboxDim.width * ProtrusionZone.top + x) / World::ElemSize;
+			Element& elem = *world.GetElem(index);
+			if (elem.GetState() == State::Solid)
+			{
+				int dist = elem.GetRect().top - HitBox.top;
+				if (dist > 0)
+				{
+					HitBox.top += dist;
+				}
+				break;
+			}
+		}
+	}
+}
+void Entity::MoveY(World& world , float time)
+{
+	float AddY;
+	//if (vel.y == 0.0f)
+	//{
+	//	AddY = Gravity * 60.0f * time;
+	//}
+	//else
 		AddY = std::abs(vel.y * 60.0f * time);
 
-	int Size = AddY;
+	int Size = std::ceil(AddY);
 	if (int(AddY) % World::ElemSize != 0)
 	{
 		Size += World::ElemSize - int(AddY) % World::ElemSize;
 		Size = int(AddY);
 	}
-	RectI ZoneY;
+	RectI ZoneY , PortrustionZoneY;
 
 	if (vel.y >= 0.0f)
 	{
@@ -180,10 +333,14 @@ void Entity::MoveY(World& world ,float time)
 	}
 	auto dim = world.GetSandboxDim();
 
+	//we need to store the Y for later , in case the for loop that processes the distance stops because of an obstacle
+	float y = 0;
 
 	int StartY, EndY, Add;
 
 	std::function<bool(int, int)> Condition;
+	std::function<float()> GetEdge;
+	std::function<void(Element & elem)>CheckPortrusion;
 	if (vel.y >= 0.0f)
 	{
 		StartY = ZoneY.top;
@@ -192,7 +349,19 @@ void Entity::MoveY(World& world ,float time)
 
 		Condition = [=](int nr1, int nr2)
 		{
-			return nr1 < nr2&& nr1 + World::ElemSize < Graphics::ScreenHeight;
+			return nr1 < nr2 && nr1 + World::ElemSize < Graphics::ScreenHeight;
+		};
+		GetEdge = [=]()
+		{
+			return HitBox.bottom();
+		};
+		CheckPortrusion = [=](Element& elem)
+		{
+			float dist = elem.GetRect().bottom() - HitBox.bottom();
+			if (dist < 0.0f)
+			{
+				HitBox.top += dist;
+			}
 		};
 	}
 	else
@@ -205,15 +374,28 @@ void Entity::MoveY(World& world ,float time)
 		{
 			return nr1 > nr2 && nr1 > 0;
 		};
+		GetEdge = [=]()
+		{
+			return HitBox.top;
+		};
+		CheckPortrusion = [=](Element& elem)
+		{
+			float dist = elem.GetRect().top - HitBox.top;
+			if (dist > 0.0f)
+			{
+				HitBox.top += dist;
+			}
+		};
 	}
 
 
 	{
 		std::vector<Element> ElementsY;
-		for (int y = StartY;
+		for (y = StartY;
 			Condition(y, EndY) == true
 			; y += Add)
 		{
+			ElementsY.clear();
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
 			{
@@ -243,76 +425,402 @@ void Entity::MoveY(World& world ,float time)
 				}
 			}
 
+			//here , we use addX as a form of "how many pixels are there left to process", with each move ,
+			//the pixel quantity diminishes 
 			if (Move)
 			{
-				float add;
-				short sign = 1;
-
-
-				if (y == StartY)
+				if (AddY == 0.0f)
 				{
-					add = World::ElemSize;
-					if (vel.y < 0)
+					break;
+				}
+				float add = 0.0f;
+
+				{
+					//checking if it's the first time that we process a move in this frame
+					// if it's true , we'll adjust the object position first so that it fits perfectly in line
+					//with the sand simulation
+					if (y == StartY)
 					{
-						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+						if (vel.y < 0)
+						{
+							if (AddY < World::ElemSize)
+							{
+								add = AddY;
+							}
+							else
+							{
+								//this is the distance from entity to the nearest element behind it in the particle simulation
+								add = (HitBox.top - (World::ElemSize * (int(HitBox.top / World::ElemSize))));
+							}
+							HitBox.top -= add;
+							AddY -= add;
+						}
+						else
+						{
+
+							if (AddY < World::ElemSize)
+							{
+								add = AddY;
+							}
+							else
+							{
+								//this is the distance from entity to the nearest element in front of it in the particle simulation
+								add = World::ElemSize - (HitBox.top - (World::ElemSize * (int(HitBox.top / World::ElemSize))));
+							}
+							HitBox.top += add;
+							AddY -= add;
+						}
 					}
 					else
 					{
-						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
+						int sign = std::abs(vel.y) / vel.y;
+						if (AddY < World::ElemSize)
+						{
+							add = AddY;
+							HitBox.top += sign * add;
+							break;
+						}
+						else
+						{
+							add = World::ElemSize;
+							HitBox.top += sign * add;
+							AddY -= add;
+						}
 					}
 				}
-				else if (AddY < World::ElemSize)
-				{
-					if (vel.y != 0.0f)
-					{
-						sign = short(std::abs(vel.y) / vel.y);
-					}
-					add = AddY;
-					AddY -= add;
-					HitBox.top += sign * add;
-					break;
-				}
-				else
-				{
-					if (vel.y != 0.0f)
-					{
-						sign = short(std::abs(vel.y) / vel.y);
-					}
-					add = World::ElemSize;
-					AddY -= World::ElemSize;
-				}
-				HitBox.top += sign * add;
+
 			}
 			else
+			{
 				break;
-
-			ElementsY.clear();
+			}
 		}
+		//CheckProtrusionY(world, y);
+
+		ElementsY.clear();
 	}
 	//assert(AddY == 0.0f);
 	vel.y = 0.0f;
 
 }
 
-
-void Entity::CheckCollisions(Player& player)
+bool Entity::CheckFullCollision(Entity& entity)
 {
-	const auto& list = player.GetProj_list();
+	return CheckWeaponCollision(entity) && CheckBodyCollision(entity);
+}
+bool Entity::CheckWeaponCollision(Entity& entity)
+{
+	return pWeapon->Collision(entity.GetRect());
+}
+bool Entity::CheckBodyCollision(Entity& entity)
+{
+	return entity.HitBox.Collision(HitBox);
+}
 
-	for (auto& n : list)
+bool Entity::CheckCollision(Entity& entity)
+{
+	return CheckBodyCollision(entity);
+}
+void Entity::SetPos(Vec2I& pos)
+{
+	HitBox.SetPos(Vec2D(pos.x , pos.y));
+}
+
+Rect Entity::GetRect() const
+{
+	return HitBox;
+}
+
+void Entity::DamageEntity(int damage)
+{
+	hp_bar.Health -= damage;
+	hp_bar.show_timer.ResetTimer();
+}
+void Entity::MoveRight(World& world, float time)
+{
+	float AddX = vel.x * time * 60.0f;
+
+	//basically i am getting the modulus for a float 
+	float offset = HitBox.left - (int(HitBox.left) / World::ElemSize) * World::ElemSize;
+	int LineX = HitBox.right();
+	if (offset != 0.0f)
 	{
-		if (n->GethBox().Collision(HitBox))
+		LineX += World::ElemSize;
+	}
+
+	while (AddX)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
 		{
-			n->Destroy();
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(LineX, y));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
 		}
+
+		for(int ind = 0 ; ind < elem_list.size() ; ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				if (ind >= elem_list.size() - 5)
+				{
+					HitBox.top -= (ind - (elem_list.size() - 5)) * World::ElemSize;
+				}
+				else
+				{
+					Move = false;
+					break;
+				}
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddX < World::ElemSize)
+			{
+				HitBox.left += AddX;
+				AddX = 0;
+			}
+			else
+			{
+				HitBox.left += World::ElemSize;
+				AddX -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//distance to the next cell
+			float dist = World::ElemSize - offset;
+			
+			if (offset != 0.0f)
+			{
+				if (AddX <= dist)
+				{
+					HitBox.left += AddX;
+					break;
+				}
+				else
+				{
+					HitBox.left += dist;
+					break;
+				}
+			}
+			break;
+		}
+
+		LineX += World::ElemSize;
 	}
 }
 
-void Entity::DetermineMovement(Player& player)
+void Entity::MoveLeft(World& world, float time)
 {
-	Rect pRect = player.GetRect();
+	float AddX = std::abs(vel.x * time * 60.0f);
+	int LineX = HitBox.left - World::ElemSize;
+	while (AddX)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(LineX, y));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
 
-	Vec2D pCenter = pRect.GetCenter(); // player center
-	Vec2D eCenter = HitBox.GetCenter(); // enemy center
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				if (ind > elem_list.size() - 5)
+				{
+					HitBox.top -= (ind - (elem_list.size() - 5))  * World::ElemSize;
+				}
+				else
+				{
+					Move = false;
+					break;
+				}
+			}
+		}
 
+		if (Move == true)
+		{
+			if (AddX < World::ElemSize)
+			{
+				HitBox.left -= AddX;
+				AddX = 0;
+			}
+			else
+			{
+				HitBox.left -= World::ElemSize;
+				AddX -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//basically i am getting the modulus for a float 
+			//distance to the next cell
+			float dist = HitBox.left - (int(HitBox.left) / World::ElemSize) * World::ElemSize;
+
+			if (AddX <= dist)
+			{
+				HitBox.left -= AddX;
+				break;
+			}
+			else
+			{
+				HitBox.left -= dist;
+				break;
+			}
+		}
+
+		LineX -= World::ElemSize;
+	}
+}
+
+void Entity::MoveDown(World& world, float time)
+{
+	float AddY = vel.y * time * 60.0f;
+
+	//basically i am getting the modulus for a float 
+	float offset = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+
+	int LineY = HitBox.bottom();
+	if (offset != 0.0f)
+	{
+		LineY += World::ElemSize;
+	}
+
+	while (AddY)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, LineY));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
+
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				Move = false;
+				break;
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddY < World::ElemSize)
+			{
+				HitBox.top += AddY;
+				AddY = 0;
+			}
+			else
+			{
+				HitBox.top += World::ElemSize;
+				AddY -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//distance to the next cell
+			float dist = World::ElemSize - offset;
+
+			if (offset != 0.0f)
+			{
+				if (AddY <= dist)
+				{
+					HitBox.top += AddY;
+					break;
+				}
+				else
+				{
+					HitBox.top += dist;
+					break;
+				}
+			}
+			else
+				break;
+		}
+
+		LineY += World::ElemSize;
+	}
+}
+
+void Entity::MoveUp(World& world, float time)
+{
+	float AddY = std::abs(vel.y * time * 60.0f);
+	int LineY = HitBox.top - World::ElemSize;
+	while (AddY)
+	{
+		bool Move = true;
+		std::vector<State> elem_list;
+		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, LineY));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+			elem_list.emplace_back(world.GetElem(index)->GetState());
+		}
+
+		for (int ind = 0; ind < elem_list.size(); ind++)
+		{
+			if (elem_list[ind] == State::Solid)
+			{
+				Move = false;
+				break;
+			}
+		}
+
+		if (Move == true)
+		{
+			if (AddY < World::ElemSize)
+			{
+				HitBox.top -= AddY;
+				AddY = 0;
+			}
+			else
+			{
+				HitBox.top -= World::ElemSize;
+				AddY -= World::ElemSize;
+			}
+		}
+		else
+		{
+			//basically i am getting the modulus for a float 
+			//distance to the next cell
+			float dist = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+
+			if (AddY <= dist)
+			{
+				HitBox.top -= AddY;
+				break;
+			}
+			else
+			{
+				HitBox.top -= dist;
+				break;
+			}
+		}
+
+		LineY -= World::ElemSize;
+	}
+}
+
+void Entity::Kill(World& world)
+{
+	Dead = true;
+	for (int y = HitBox.top; y < HitBox.bottom(); y++)
+	{
+		for (int x = HitBox.left; x < HitBox.right(); x++)
+		{
+			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, y));
+			int index = pos.y * World::SandboxDim.width + pos.x;
+
+			world.AddToSpawnList(World::Spawn(std::move(index), Type::Sand));
+		}
+	}
 }

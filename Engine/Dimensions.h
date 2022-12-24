@@ -2,8 +2,8 @@
 
 template<typename T>
 struct Dimensions {
-	Dimensions() = default;
-	Dimensions(T width0, T height0)
+	constexpr Dimensions() = default;
+	constexpr Dimensions(T width0, T height0)
 		:width(width0) , height(height0)
 	{
 	}

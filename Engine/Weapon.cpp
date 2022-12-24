@@ -3,52 +3,85 @@
 #include <assert.h>
 #include <typeinfo>
 
-Weapon::Weapon( float speed0, int MaxRounds0, float rTime , float sTime )
-	:speed(speed0),
-	MaxRounds(MaxRounds0),
-	reload(rTime),
-	shoot(sTime)
+Weapon::Weapon(const Rect* owner , int damage0 , float timer)
+	:pOwner(owner) , use_timer(timer), damage(damage0)
+{}
+
+void Weapon::CoolDowns(float time)
 {
-	Initialized = false;
-	Rounds = 0;
-	BulletCnt = 0;
-	Initialized = true;
+	use_timer.Update(time);
 }
 
-void Weapon::Shoot(const Mouse& mouse)
+void Weapon::Update(float time)
 {
-	if (mouse.LeftIsPressed() && reload.IsReady() && Rounds > 0)
+	CoolDowns(time);
+}
+
+int Weapon::GetDamage() const {
+	return damage + dmg_rng.GetVal();
+}
+
+RangedWp::RangedWp(const Rect* owner, int damage ,  float speed0, int MaxRounds0, float rTime , float sTime )
+	:proj_speed(speed0),
+	MaxRounds(MaxRounds0),
+	reload(rTime),
+	Weapon(owner , damage , sTime)
+{
+	Rounds = 0;
+	BulletCnt = 0;
+}
+
+bool RangedWp::CanShoot()const
+{
+	return (reload.IsReady() && Rounds > 0 && use_timer.IsReady());
+}
+bool RangedWp::Collision(Rect& rect)
+{
+	bool collision = false;
+	for (auto& proj : proj_list)
 	{
-		short x = mouse.GetPosX() , y = mouse.GetPosY();
-		if (shoot.IsReady())
+		if (proj->GethBox().Collision(rect))
 		{
-			assert(Rounds > 0);
-			Vec2D pos = { pOwner->left , pOwner->top };
-			Vec2D vel = { x - pos.x , y - pos.y };
-			
-			float dist = sqrt(vel.x * vel.x + vel.y * vel.y);
-			vel /= dist;
-			vel *= speed;
+			proj->Destroy();
+			collision = true;
+		}
+	}
+	return collision;
+}
+void RangedWp::Use(Vec2D& target_pos)
+{
+	if(CanShoot())
+	{
+		assert(Rounds > 0);
+		Vec2D start_pos = { pOwner->left , pOwner->top };
+		Vec2D vel = { target_pos.x - start_pos.x , target_pos.y - start_pos.y };
 
-			LaunchNewProj(vel, pos);
+		float dist = sqrt(vel.x * vel.x + vel.y * vel.y);
+		vel /= dist;
+		vel *= proj_speed;
 
-			shoot.ResetTimer();
-			Rounds--;
-			if (Rounds == 0)
-			{
-				reload.ResetTimer();
-			}
+		LaunchNewProj(vel, start_pos);
+
+		use_timer.ResetTimer();
+		Rounds--;
+		if (Rounds == 0)
+		{
+			reload.ResetTimer();
 		}
 	}
 }
-void Weapon::Update_projectiles(float time)
+void RangedWp::Update_projectiles(float time)
 {
+	proj_list.remove_if([](std::unique_ptr<Projectile>& proj) {
+		return proj->IsDestroyed();
+		});
+
 	for (auto& proj : proj_list)
 	{
 		proj->Travel(time);
 	}
 }
-void Weapon::CoolDowns(float time)
+void RangedWp::CoolDowns(float time)
 {
 	bool BeforeUpdate = reload.IsReady();
 	reload.Update(time);
@@ -56,34 +89,36 @@ void Weapon::CoolDowns(float time)
 	{
 		Rounds = 6;
 	}
-	shoot.Update(time);
+	Weapon::CoolDowns(time);
 }
-void Weapon::DrawProjectiles(Graphics& gfx , Color c)
+
+void RangedWp::DrawProjectiles(Graphics& gfx , Color c)
 {
 	for (auto& proj : proj_list)
 	{
 		proj->DrawProjectile(gfx, c);
 	}
 }
-
-int Weapon::GetCapacity() const {
+void RangedWp::Draw(Graphics& gfx)
+{
+	DrawProjectiles(gfx, Colors::Red);
+}
+int RangedWp::GetCapacity() const {
 	return MaxRounds;
 }
-
-
-bool Weapon::IsInitialized() const {
-	return Initialized;
+int RangedWp::GetDamage() const
+{
+	return damage / 2 + dmg_rng.GetVal();
 }
 
 const Rect* Weapon::GetpOwner() const {
 	return pOwner;
 }
 
-void Weapon::Update(const Mouse& mouse, float time)
+void RangedWp::Update(float time)
 {
 	CoolDowns(time);
 	Update_projectiles(time);
-	Shoot(mouse);
 }
 
 void ExplosiveLauncher::LaunchNewProj(Vec2D& vel, Vec2D& initpos)
@@ -93,8 +128,17 @@ void ExplosiveLauncher::LaunchNewProj(Vec2D& vel, Vec2D& initpos)
 	
 	proj_list.emplace_front(std::move(proj));
 }
-
-const std::forward_list<std::unique_ptr<Projectile>>& Weapon::GetProj_list() const
+int ExplosiveLauncher::GetDamage() const
 {
-	return proj_list;
+	return RangedWp::GetDamage() + InitProj->GetDamage();
 }
+std::forward_list<Rect> RangedWp::GetWeaponHitBoxes() const
+{
+	std::forward_list<Rect> HitBox_list;
+	for (auto& proj : proj_list)
+	{
+		HitBox_list.emplace_front(proj->GethBox());
+	}
+	return HitBox_list;
+}
+

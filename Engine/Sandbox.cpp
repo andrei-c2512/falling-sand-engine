@@ -1,19 +1,11 @@
 #include "Sandbox.h"
 #include "assert.h"
 
-Sandbox::Sandbox(ParticleEffect& effect) 
-	:weather(world , WeatherType::Clear , size_t(2)), 
-	player(Sprite(Dimensions<short>(10, 20), Colors::Yellow), Sprite(Dimensions<short>(10, 10), Colors::Yellow)
-		, world, 10.0f)
+Sandbox::Sandbox(Mouse& mouse , ParticleEffect& effect) 
+	:weather(world , WeatherType::Clear , size_t(2)),
+	mob_list(world ,effect , mouse)
 {
 	{
-		auto proj = std::make_unique<Explosive>(Explosive(Projectile(Rect(5, 5, Vec2D(5, 5)), world, 5.0f) , effect)) ;
-
-		std::unique_ptr<ExplosiveLauncher> wp = std::make_unique<ExplosiveLauncher>
-			(ExplosiveLauncher(player.pHitBox(), std::move(proj) , effect));
-		
-		player.GiveWeapon(std::move(wp));
-
 		auto dim = world.GetSandboxDim();
 		const int width = dim.width;
 		const int height = dim.height;
@@ -62,13 +54,13 @@ Sandbox::Sandbox(ParticleEffect& effect)
 				}
 
 				const size_t index = (y / ChunkSize) * SandboxDim_InChunks.width + (x / ChunkSize);
-				assert(index < SandboxDim_InChunks.GetArea());
+				//assert(index < SandboxDim_InChunks.GetArea());
 				Chunk_list.emplace_back(RectI(CWidth, CHeight, Vec2I(x, y)), world, index);
 
 			}
 		}
 
-		UpdateTimer = { 0.016f };
+		UpdateTimer = { 0.008f };
 		
 	}
 }
@@ -93,9 +85,11 @@ void Sandbox::UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time)
 		}
 
 		weather.UpdateMatrix();
-		
-		player.UpdateMovement(kbd , time);
-		player.UseWeapon(mouse , time);
+	
+
+		mob_list.Go(time);
+		mob_list.UpdateMobs(kbd , time);
+
 		UpdateTimer.ResetTimer();
 	}
 }
@@ -108,7 +102,7 @@ void Sandbox::UpdateTime(float time)
 void Sandbox::DrawSandbox(Graphics& gfx ,Mouse& mouse)
 {
 	world.DrawWorld(gfx);
-	player.Draw(gfx, mouse);
+	mob_list.DrawMobs(gfx);
 	DrawChunkBorders(gfx);
 }
 

@@ -30,8 +30,12 @@ Game::Game(MainWindow& wnd)
 	Timer(),
 	sprite("dib.bmp"),
 	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather()),
-	World(particle_list)
+	World(wnd.mouse , particle_list)
 {
+	//int Space = 10;
+	//button_list.emplace_back(Button(RectI(20, 20, SpeedButton_pos) , Sprite("Normal_speed_button.bmp")), 1.0f);
+	//button_list.emplace_back(Button(RectI(30, 20, Vec2I(SpeedButton_pos.x , SpeedButton_pos.y + Space + 20)) , 
+	//	Sprite("Double_speed_button.bmp")), 1.0f);
 }
 
 Game::~Game() {
@@ -47,18 +51,20 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	bench.Start();
-	GameSpeed_button.Go(wnd.mouse);
-	const float Speed = GameSpeed_button.GetSpeed();
-	const float dt = Timer.DeltaTime() * 2;
 
+	
+	const float dt = Timer.DeltaTime() * GameSpeed;
+	
 	particle_list.Update(dt);
+	
+	CheckButtons();
 
-	if(GameSpeed_button.IsHovered(wnd.mouse) == false)
+	if(AreButtonsHovered() == false)
 		Builder.Spawn(wnd.mouse , MouseStats , World , particle_list);
-
+	
 	Builder.CheckButtons(wnd.mouse);
 	Builder.ChangeSpawnArea(wnd.mouse);
-
+	
 	if (!wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
 		World.UpdateTime(dt);
@@ -71,27 +77,56 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	const float dt = Timer.DeltaTime();
-
+	
 	gfx.ResetBloom();
-
+	
 	World.DrawSandbox(gfx , wnd.mouse);
 	Builder.DrawButtons(gfx);
 	Builder.ShowHoveredElement(wnd.mouse, gfx);
 	Builder.DrawSpawnSurface(gfx, wnd.mouse);
-
+	
 	//FPS.DrawFrameCounter(gfx, dt);
 	particle_list.Draw(gfx);
-
+	
 	bench.DrawFrameCounter(gfx);
-	GameSpeed_button.Draw(gfx);
+	for (auto& button : button_list)
+	{
+		button.Draw(gfx);
+	}
 	/////////////////////////////////////////////////////////
 	//gfx.ApplyBloom();
-
+	
 	bench.UploadTime();
 	bench.DrawFrameCounter(gfx);
 
-	//formula este y = 2x + 1;
+	//if (wnd.mouse.LeftIsPressed())
+	//{
+	//	auto list = AStarAlgorithm::ApplyAlgorithm(Vec2I(200, 200), wnd.mouse.GetPos(),
+	//		World.GetWorld(), wnd.mouse , gfx ,  Graphics::GetScreenRect());
+	//
+	//	//gfx.DrawOpenPoly(list);
+	//}
+}
 
-	//bench.End();
-	//bench.UploadData();
+void Game::CheckButtons() 
+{
+	for (auto& button : button_list)
+	{
+		if (button.IsPressed(wnd.mouse))
+		{
+			GameSpeed = button.GetSpeed();
+		}
+	}
+}
+
+bool Game::AreButtonsHovered() const
+{
+	for (auto& button : button_list)
+	{
+		if (button.IsHovered(wnd.mouse))
+		{
+			return true;
+		}
+	}
+	return false;
 }

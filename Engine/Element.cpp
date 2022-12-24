@@ -152,7 +152,7 @@ void Element::DrawElement(Graphics& gfx, Sprite& sprite)
 			gfx.DrawRectI_Bloom(hBox, color);
 		}
 		else
-			gfx.DrawRect(hBox, color);
+			gfx.DrawRect(hBox, color , Effects::Copy{});
 	}
 }
 

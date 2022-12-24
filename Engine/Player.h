@@ -2,37 +2,31 @@
 #include "World.h"
 #include "Graphics.h"
 #include "Keyboard.h"
-#include "Weapon.h"
+#include "Entity.h"
+#include "NPC.h"
 #include <forward_list>
-class Player{
+
+class Player : public Entity{
 public:
-	Player(Sprite& bodysprite  , Sprite& headsprite, World& world ,  float speed);
+	Player(Mouse& mouse ,Sprite& bodysprite  , Sprite& headsprite,  float speed);
 	void GiveWeapon(std::unique_ptr<Weapon> wp);
-	void UpdateMovement(Keyboard& kbd , float time);
-	void Draw(Graphics& gfx , Mouse& mouse);
-	void Move(Keyboard& kbd, float time);
-	void UseWeapon(Mouse& mouse , float time);
+	void UpdateMovement(World& world ,Keyboard& kbd , float time);
+	void Draw(Graphics& gfx) override; 
+	bool CheckCollision(Entity& entity) override;
+	bool CheckCollision(NPC& entity);
+	void UseWeapon(float time);
 	const Rect* pHitBox() const
 	{
 		return &HitBox;
 	}
 public:
 	//getters
-	const std::forward_list<std::unique_ptr<Projectile>>& GetProj_list() const;
-	Rect GetRect() const;
+	const std::forward_list<Rect> GetProj_list();
 private:
-	void MoveX(float time);
-	void MoveY(float time);
-private:
-	std::unique_ptr<Weapon> pWeapon;
-	Rect HitBox;
-
+	Mouse& mouse;
 	Sprite sBody;
 	Sprite sHead;
 
-	World& world;
-
-	Vec2D vel;
 	float Speed = 10.0f;
 
 	float Gravity = 15.0f;

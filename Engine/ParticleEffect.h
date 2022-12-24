@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "Timer.h"
 #include <forward_list>
+#include "Effects.h"
 class Particle {
 public:
 	Particle(RectI& rect, Color& c, Vec2D& vel0, Timer& lifespan)
@@ -12,7 +13,8 @@ public:
 	}
 	void Draw(Graphics& gfx)
 	{
-		gfx.DrawRect(HitBox, color);
+		Effects::Copy e;
+		gfx.DrawRect(HitBox, color, e);
 	}
 	void Update(float time)
 	{

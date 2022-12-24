@@ -107,7 +107,7 @@ bool Button::IsHovered(Mouse& mouse) const
 	return HitBox.PointInRect(mouse.GetPos());
 }
 
-void GameSpeedButton::Update(Mouse& mouse)
+void GameSpeedButtonV1::Update(Mouse& mouse)
 {
 	assert(IsPressed(mouse));
 	auto MouseY = mouse.GetPosY();
@@ -117,7 +117,7 @@ void GameSpeedButton::Update(Mouse& mouse)
 
 }
 
-void GameSpeedButton::DetermineSpeed()
+void GameSpeedButtonV1::DetermineSpeed()
 {
 	//distance from the center , where the default value is established
 	int dist =  last_pressY - BaseY ;
@@ -131,21 +131,28 @@ void GameSpeedButton::DetermineSpeed()
 	}
 }
 
-float GameSpeedButton::GetSpeed() const {
+float GameSpeedButtonV1::GetSpeed() const {
 	return Speed;
 }
 
-void GameSpeedButton::Go(Mouse& mouse) {
+void GameSpeedButtonV1::Go(Mouse& mouse) {
+	DetermineSpeed();
 	if (IsPressed(mouse))
 	{
 		Update(mouse);
 	}
 }
 
-void GameSpeedButton::Draw(Graphics& gfx)
+void GameSpeedButtonV1::Draw(Graphics& gfx)
 {
 	gfx.DrawRect(RectI(HitBox.width, HitBox.height - last_pressY, Vec2I(HitBox.left, HitBox.top)),
-		default_color);
+		default_color , Effects::Copy{});
 	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(HitBox.left, HitBox.top + (HitBox.height - last_pressY))),
-		filler_color);
+		filler_color, Effects::Copy{});
+}
+
+void GameSpeedButton::Draw(Graphics& gfx)
+{
+	Effects::Chroma chroma = { Colors::Magenta };
+	gfx.DrawSprite(HitBox.left, HitBox.top, sprite, sprite.GetRect(), Graphics::GetScreenRect(), chroma);
 }

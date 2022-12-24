@@ -5,6 +5,7 @@
 #include "World.h"
 #include "ParticleEffect.h"
 #include "Explosion.h"
+
 class Projectile {
 public:
 	Projectile() = delete;
@@ -19,6 +20,12 @@ public:
 protected:
 	void MoveX(float time);
 	void MoveY(float time);
+
+	void MoveRight( float time);
+	void MoveLeft(float time);
+	void MoveDown( float time);
+	void MoveUp( float time);
+
 	void DetectCollision(float time);
 public:
 	//getters

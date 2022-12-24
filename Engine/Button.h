@@ -100,15 +100,20 @@ private:
 	WeatherType type = WeatherType::Clear;
 };
 
-class GameSpeedButton : public Button
+class GameSpeedButtonV1 : public Button
 {
 public:
-	GameSpeedButton(const Color& default, const Color& filler ,RectI& rect)
+	GameSpeedButtonV1(const Color& default, const Color& filler ,RectI& rect)
 		:Button(rect) , default_color(default) , filler_color(filler)
 	{
-		IncreaseFactor = (MaxSpeed - MinSpeed) / rect.height;
+		MaxSpeed = 5.0f;
+		MinSpeed = 0.0f;
+		
+
+		IncreaseFactor = (MaxSpeed - MinSpeed) / HitBox.height;
 		last_pressY = (BaseSpeed / IncreaseFactor);
 		BaseY = last_pressY;
+		Speed = 1.0f;
 	}
 	void  Update(Mouse& mouse);
 	void  DetermineSpeed();
@@ -126,6 +131,17 @@ private:
 	Color default_color = Colors::Gray;
 	Color filler_color  = Colors::White;
 
-	short BaseY;
-	short last_pressY;
+	int BaseY;
+	int last_pressY;
+};
+
+class GameSpeedButton : public Button {
+public:
+	GameSpeedButton(Button& button, float Speed0)
+		:Speed(Speed0) , Button(button)
+	{}
+	void Draw(Graphics& gfx) override;
+	float GetSpeed()const { return Speed; };
+private:
+	float Speed;
 };

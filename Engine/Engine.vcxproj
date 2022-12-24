@@ -148,6 +148,8 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="MobList.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Rng.h" />
@@ -193,6 +195,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="MobWp.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Rng.cpp" />

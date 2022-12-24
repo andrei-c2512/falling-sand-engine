@@ -44,4 +44,16 @@ namespace Effects{
 		Color color;
 		Color chroma;
 	};
+	class AlphaBlending {
+	public:
+		AlphaBlending(unsigned char alpha)
+			:transparency(alpha)
+		{}
+		void operator()(Color color0, Graphics& gfx, int x, int y)
+		{
+			gfx.BlendPixel(x, y, color0, transparency);
+		}
+	private:
+		unsigned char transparency;
+	};
 }

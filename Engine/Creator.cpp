@@ -275,13 +275,13 @@ void Creator::DrawSpawnSurface(Graphics& gfx , Mouse& mouse)
 			{
 				RectI rect = world.GetElem(n)->GetRect();
 
-				gfx.DrawRect(rect, circle_color);
+				gfx.DrawRect(rect, circle_color, Effects::Copy{});
 			}
 		}
 		else
 		{
 			RectI Zone = RectI(mouse.GetPos(), SpawnLoc);
-			gfx.DrawRect_Border(Zone, Colors::Green);
+			gfx.DrawRect_Border(Zone, Colors::Green, Effects::Copy{});
 		}
 	}
 	else

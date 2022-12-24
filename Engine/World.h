@@ -128,8 +128,6 @@ public:
 public:
 	World()
 	{
-		SandboxDim.width = Graphics::ScreenWidth / ElemSize;
-		SandboxDim.height = Graphics::ScreenHeight / ElemSize;
 
 		const int width  = int(SandboxDim.width);
 		const int height = int(SandboxDim.height);
@@ -149,8 +147,6 @@ public:
 	}
 	World(Sprite& sprite)
 	{
-		SandboxDim.width = Graphics::ScreenWidth / ElemSize;
-		SandboxDim.height = Graphics::ScreenHeight / ElemSize;
 
 		const int width = int(SandboxDim.width);
 		const int height = int(SandboxDim.height);
@@ -220,6 +216,8 @@ public:
 	}
 
 	static constexpr int ElemSize = 4;
+	static constexpr Dimensions<int> SandboxDim = Dimensions<int>( Graphics::ScreenWidth  / ElemSize , 
+																   Graphics::ScreenHeight / ElemSize );
 
 	static constexpr int SandSinkChance = 75;
 	static constexpr int WoodFlamability = 50;
@@ -385,7 +383,6 @@ public:
 	RNG Chance = { 1 , 100};
 	RNG Pick   = { 0 , 2 };
 private:
-	Dimensions<int> SandboxDim;
 	std::vector<Element> Elements;
 
 	std::vector<Swap> Move_List;

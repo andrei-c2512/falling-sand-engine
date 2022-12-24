@@ -2,13 +2,12 @@
 #include "Chunk.h"
 #include "World.h"
 #include "Weather.h"
-#include "Player.h"
-
+#include "MobList.h"
 
 class Sandbox {
 public:
 	static constexpr int ChunkSize = 40;
-	Sandbox(ParticleEffect& effect);
+	Sandbox(Mouse& mouse , ParticleEffect& effect);
 	void UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time );
 	void DrawSandbox(Graphics& gfx , Mouse& mouse);
 	void ActivateChunk(int index);
@@ -39,5 +38,6 @@ private:
 	std::vector<Chunk> Chunk_list;
 
 	RNG rand = { 0 , 1 };
-	Player player;
+
+	MobList mob_list;
 };
