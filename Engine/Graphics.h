@@ -104,11 +104,31 @@ public:
 	static RectI GetScreenRect();
 
 	template <typename T, typename D , typename E>
-	void DrawRect(Rect_<T , D>& rect, Color c , E effect)
+	void DrawRect(Rect_<T , D>& rect, Color c , E effect , RectI clip = GetScreenRect())
 	{
-		for (int y = int(rect.top); y < int(rect.top + rect.height); y++)
+		RectI new_rect = RectI(rect.width , rect.height , Vec2I(rect.left , rect.top));
+
+		if (int(rect.top) <= clip.top)
 		{
-			for (int x = rect.left; x < int(rect.left + rect.width); x++)
+			new_rect.top += clip.top - rect.top;
+		}
+		if (int(rect.left) <= clip.left)
+		{
+			new_rect.left += clip.left - rect.left;
+		}
+		if (int(rect.bottom()) > clip.bottom())
+		{
+			new_rect.height += (clip.bottom() - rect.bottom() - 1);
+		}
+		if (int(rect.right()) > clip.right())
+		{
+			new_rect.width += (clip.right() - rect.right() - 1);
+		}
+
+
+		for (int y = new_rect.top; y < new_rect.bottom() ; y++)
+		{
+			for (int x = new_rect.left; x < new_rect.right(); x++)
 				effect(c, *this, x, y);
 		}
 	}
@@ -155,25 +175,42 @@ public:
 
 	}
 	template <typename T , typename D , typename E>
-	void DrawRect_Border(Rect_<T , D>& rect, Color c , E effect)
+	void DrawRect_Border(Rect_<T , D>& rect, Color c , E effect , RectI clip = GetScreenRect())
 	{
-		for (int y = int(rect.top); y < int(rect.top + rect.height); y += 1)
+		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
+
+		if (int(rect.top) <= clip.top)
 		{
-			for (int x = int(rect.left); x < int(rect.left + rect.width); x += 1)
-			{
-				if (y == rect.top)
-				{
-					effect(c , *this , x , y);
-				}
-				else if (x == rect.left || x == rect.left + rect.width - 1)
-				{
-					effect(c, *this, x, y);
-				}
-				else if (y == rect.bottom() - 1)
-				{
-					effect(c, *this, x, y);
-				}
-			}
+			new_rect.top += clip.top - rect.top;
+		}
+		if (int(rect.left) <= clip.left)
+		{
+			new_rect.left += clip.left - rect.left;
+		}
+		if (int(rect.bottom()) > clip.bottom())
+		{
+			new_rect.height += (clip.bottom() - rect.bottom() - 1);
+		}
+		if (int(rect.right()) > clip.right())
+		{
+			new_rect.width += (clip.right() - rect.right() - 1);
+		}
+
+
+		for (int x = new_rect.left; x < new_rect.right(); x++)
+		{
+			effect(c, *this, x, new_rect.top);
+		}
+
+		for (int y = new_rect.top + 1; y < new_rect.bottom() - 1; y++)
+		{
+			effect(c, *this, new_rect.left       , y);
+			effect(c, *this, new_rect.right() - 1, y);
+		}
+
+		for (int x = new_rect.left; x < new_rect.right(); x++)
+		{
+			effect(c, *this, x, new_rect.bottom() - 1);
 		}
 	}
 	static bool WithinScreen(Vec2I& pos)
