@@ -32,10 +32,6 @@ Game::Game(MainWindow& wnd)
 	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather()),
 	World(wnd.mouse , particle_list)
 {
-	//int Space = 10;
-	//button_list.emplace_back(Button(RectI(20, 20, SpeedButton_pos) , Sprite("Normal_speed_button.bmp")), 1.0f);
-	//button_list.emplace_back(Button(RectI(30, 20, Vec2I(SpeedButton_pos.x , SpeedButton_pos.y + Space + 20)) , 
-	//	Sprite("Double_speed_button.bmp")), 1.0f);
 }
 
 Game::~Game() {

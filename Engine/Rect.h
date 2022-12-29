@@ -109,7 +109,7 @@ public:
 	{
 		return Vec2_<T>(left + width / 2, top + height / 2);
 	}
-	Vec2_<T> GetPos()
+	Vec2_<T> GetPos() const
 	{
 		return Vec2_<T>(left, top);
 	}

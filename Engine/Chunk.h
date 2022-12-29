@@ -245,16 +245,17 @@ public:
 
 		auto elem = world.GetElem(index);
 
-		GetNextMove(index, Direction::Up, effect);
-
-		if (elem->IsUpdated() == false)
-		{
-			GetNextSideMove(index, Direction::Up, effect);
-			if (elem->IsUpdated() == false)
-			{
-				GetNextSideMove(index, Direction::None, effect);
-			}
-		}
+		//GetNextMove(index, Direction::Up, effect);
+		//
+		//if (elem->IsUpdated() == false)
+		//{
+		//	GetNextSideMove(index, Direction::Up, effect);
+		//	if (elem->IsUpdated() == false)
+		//	{
+		//		GetNextSideMove(index, Direction::None, effect);
+		//	}
+		//}
+		GetNextRandomMove(index, Direction::Up, effect);
 	}
 	void GetNextMove_Fire(int index);
 	

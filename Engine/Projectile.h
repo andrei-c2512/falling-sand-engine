@@ -9,8 +9,8 @@
 class Projectile {
 public:
 	Projectile() = delete;
-	Projectile(Rect& rect,  World& world0 ,Vec2D& vel0, bool Destroyed0);
-	Projectile(Rect& rect , World& world0 , float Speed0);
+	Projectile(Rect& rect,  Simulation& world0 ,Vec2D& vel0, bool Destroyed0);
+	Projectile(Rect& rect , Simulation& world0 , float Speed0);
 	void InitProj(const Projectile& proj);
 	void InitProj(Rect& rect, Vec2D& vel0, bool Destroyed0);
 	virtual void Destroy();
@@ -41,7 +41,7 @@ protected:
 	float Speed;
 	float BaseDamage = 5;
 protected:
-	World& world;
+	Simulation& simulation;
 	mutable RNG dmg_rand = { -3 , 3 };
 };
 
@@ -49,7 +49,7 @@ protected:
 class Explosive : public Projectile {
 public:
 	Explosive(Projectile& proj , ParticleEffect& effect )
-		:Projectile(proj) , effect_list(effect) , explosion(world)
+		:Projectile(proj) , effect_list(effect) , explosion(simulation)
 	{
 		BaseDamage = 20;
 		Explode = false;

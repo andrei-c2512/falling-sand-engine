@@ -1,20 +1,76 @@
 #pragma once
 #include "World.h"
 
-struct Explosion_verification {
-	Explosion_verification(size_t index0, Action type0)
-		:type(type0), index(index0)
-	{
-	}
-	size_t index;
-	Action type;
+class Action {
+public:
+	Action(int ind)
+		:index(ind)
+	{}
+	virtual void Apply(Element& element) {};
+public:
+	int index;
 };
+
+class Explode :public Action{
+public:
+	Explode(int ind , Vec2D vel0 , Simulation& sim , ParticleEffect& effect0)
+		:Action(ind), vel(std::move(vel0)) , simulation(sim), effect(effect0)
+	{}
+	void Apply(Element& element) override
+	{
+		element.Explode(effect);
+		auto state = element.GetState();
+	//	if(state == State::Liquid || state == State::Solid)
+		{
+			MoveableElement new_elem(element, vel);
+
+			simulation.AddToList(std::move(new_elem));
+		}
+	};
+private:
+	Vec2D vel = { 0.0f , 0.0f };
+	Simulation& simulation;
+	ParticleEffect& effect;
+};
+
+class Darken :public Action {
+public:
+	static constexpr unsigned char DarkeningPercentage = 80;
+
+	Darken(int ind)
+		:Action(ind)
+	{
+		assert(ind >= 0);
+	}
+	void Apply(Element& element) override
+	{
+		element.Darken(DarkeningPercentage);
+	};
+};
+
+class Destroy :public Action {
+public:
+	Destroy(int ind)
+		:Action(ind)
+	{
+
+	}
+	void Apply(Element& element) override
+	{
+		element.Create(Type::Empty);
+	};
+};
+
 
 class Explosion {
 public:
-	Explosion(World& world0)
-		:world(world0)
+	Explosion(Simulation& sim)
+		:world(sim)
 	{
+	}
+	Explosion& operator=(const Explosion& explosion)
+	{
+		world = explosion.world;
 	}
 	void ExplodeZone(Vec2I center, ParticleEffect& list , float ExplosionRadius ,float DarkeningRadius)
 	{
@@ -46,8 +102,7 @@ public:
 
 
 		//explosion buffer
-		std::vector<Explosion_verification> eBuffer(Zone.width * Zone.height,
-			Explosion_verification(0, Action::None));
+		std::vector<Action*> eBuffer(Zone.width * Zone.height, nullptr);
 
 		auto dim = world.GetSandboxDim();
 
@@ -60,17 +115,22 @@ public:
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
 
-			size_t dist = 0;
+			int dist = 0;
 			for (dist = 0; dist < ExplosionRadius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
+				unsigned int index = matrix_pos.y * dim.width + matrix_pos.x;
+
 
 				if (index > 0 && index < dim.GetArea())
 					if (world.GetElem(index)->GetState() != State::Solid)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
+						int power = ExplosionRadius - dist + PowerIncrease;
+						float VerticalPower =   sin * power * (3.0f / power_rng.GetVal());
+						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
+
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower , VerticalPower ) , world , list);
 					}
 					else
 						break;
@@ -78,14 +138,14 @@ public:
 			for (; dist <= Radius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
+				unsigned int index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Darken(index);
 					}
 					else
 						break;
@@ -101,16 +161,21 @@ public:
 			float cos = center.GetCos(pos);
 
 			int dist = 0;
-			for (dist = 0; dist <= ExplosionRadius; dist++)
+			for (dist = 0; dist < ExplosionRadius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
+				unsigned int index = matrix_pos.y * dim.width + matrix_pos.x;
+
 
 				if (index > 0 && index < dim.GetArea())
 					if (world.GetElem(index)->GetState() != State::Solid)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
+						int power = ExplosionRadius - dist + PowerIncrease;
+						float VerticalPower =  sin * power * (3.0f / power_rng.GetVal());
+						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
+
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower, VerticalPower), world , list);
 					}
 					else
 						break;
@@ -118,14 +183,14 @@ public:
 			for (; dist <= Radius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
+				int index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Darken(index);
 					}
 					else
 						break;
@@ -139,18 +204,22 @@ public:
 			pos = Vec2I(Zone.right(), y);
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
-
+		
 			int dist = 0;
-			for (dist = 0; dist <= ExplosionRadius; dist++)
+			for (dist = 0; dist < ExplosionRadius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
+				int index = matrix_pos.y * dim.width + matrix_pos.x;
+		
 				if (index > 0 && index < dim.GetArea())
 					if (world.GetElem(index)->GetState() != State::Solid)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
+						int power = ExplosionRadius - dist + PowerIncrease;
+						float VerticalPower = sin * power * (3.0f / power_rng.GetVal());
+						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
+		
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower, VerticalPower), world , list);
 					}
 					else
 						break;
@@ -158,14 +227,14 @@ public:
 			for (; dist <= Radius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
+				int index = matrix_pos.y * dim.width + matrix_pos.x;
+		
 				if (index > 0 && index < dim.GetArea())
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Darken(index);
 					}
 					else
 						break;
@@ -181,16 +250,20 @@ public:
 			float cos = center.GetCos(pos);
 
 			int dist = 0;
-			for (dist = 0; dist <= ExplosionRadius; dist++)
+			for (dist = 0; dist < ExplosionRadius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
+				int index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
 					if (world.GetElem(index)->GetState() != State::Solid)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
+						int power = ExplosionRadius - dist + PowerIncrease;
+						float VerticalPower = sin * power * (3.0f / power_rng.GetVal());
+						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
+
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower, VerticalPower), world , list);
 					}
 					else
 						break;
@@ -198,14 +271,14 @@ public:
 			for (; dist <= Radius; dist++)
 			{
 				Vec2I matrix_pos = Vec2I(center.x + int(dist * cos), center.y + int(dist * sin));
-				size_t index = matrix_pos.y * dim.width + matrix_pos.x;
+				int index = matrix_pos.y * dim.width + matrix_pos.x;
 
 				if (index > 0 && index < dim.GetArea())
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-						eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
+						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						eBuffer[eIndex] = new Darken(index);
 					}
 					else
 						break;
@@ -214,18 +287,23 @@ public:
 		}
 
 		for (auto& elem : eBuffer)
-		{
-			if (elem.type == Action::Explode)
+		{	
+			if (elem != nullptr)
 			{
-				world.GetElem(elem.index)->Explode(list);
-			}
-			else if (elem.type == Action::Darken)
-			{
-				world.GetElem(elem.index)->Darken(70);
+				assert(elem->index >= 0);
+				elem->Apply(*world.GetElem(elem->index));
 			}
 		}
+
+		for (auto& elem : eBuffer)
+		{
+			delete elem;
+			elem = nullptr;
+		}
 	};
+	static constexpr float PowerIncrease = 3.0f;
 private:
 	RNG Chance = { 1 , 100 };
-	World& world;
+	Simulation& world;
+	RNG power_rng = { 3 , 4};
 };

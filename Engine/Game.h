@@ -64,7 +64,7 @@ private:
 
 	std::vector<GameSpeedButton> button_list;
 
-	float GameSpeed = 1.0f;
+	float GameSpeed = 3.0f;
 	//GameSpeedButton GameSpeed_button = { Colors::Gray , Colors::White ,
 	//	RectI(30 , 60 , Vec2I(SpeedButton_pos)) };
 

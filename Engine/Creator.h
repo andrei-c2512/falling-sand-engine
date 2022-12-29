@@ -18,7 +18,7 @@ public:
 		Count
 	};
 public:
-	Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather);
+	Creator(RectI& ButtonSize, int Radius , Simulation& world , Weather& weather);
 	void Spawn(Mouse& mouse , MouseLastFrameStats& previous_stats, Sandbox& sandbox , ParticleEffect& list);
 	void ChangeSpawnArea(Mouse& mouse);
 	void DrawButtons(Graphics& gfx);

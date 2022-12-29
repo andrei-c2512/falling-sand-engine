@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Attributes.h" />
     <ClInclude Include="Bench.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlurProcessor.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="CiobanuMath.h" />
     <ClInclude Include="Creator.h" />
     <ClInclude Include="Dimensions.h" />
+    <ClInclude Include="DynamicEvents.h" />
     <ClInclude Include="Effects.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Explosion.h" />

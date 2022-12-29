@@ -1,16 +1,16 @@
 #include "Projectile.h"
 
 
-Projectile::Projectile(Rect& rect, World& world0 ,  Vec2D& vel0, bool Destroyed0)
-	:HitBox(rect),world(world0),
+Projectile::Projectile(Rect& rect, Simulation& world0 ,  Vec2D& vel0, bool Destroyed0)
+	:HitBox(rect),simulation(world0),
 	vel(vel0),
 	Destroyed(Destroyed0)
 {
 	Speed = 1.0f;
 }
 
-Projectile::Projectile(Rect& rect , World& world0 , float Speed0)
-	:Speed(Speed0), world(world0) , HitBox(rect)
+Projectile::Projectile(Rect& rect , Simulation& world0 , float Speed0)
+	:Speed(Speed0), simulation(world0) , HitBox(rect)
 {
 	vel = { 0.0f , 0.0f };
 	Destroyed = true;
@@ -158,7 +158,7 @@ void Projectile::MoveX(float time)
 		};
 	}
 
-	auto dim = world.GetSandboxDim();
+	auto dim = simulation.GetSandboxDim();
 	{
 		std::vector<Element> ElementsX;
 		for (int x = StartX; Condition(x, EndX); x += Add)
@@ -167,10 +167,10 @@ void Projectile::MoveX(float time)
 			for (int y = ZoneX.top; y < ZoneX.bottom(); y += World::ElemSize)
 			{
 
-				size_t ind = world.GetElemIndScr(Vec2I(x, y));
+				size_t ind = simulation.GetElemIndScr(Vec2I(x, y));
 				if (ind > 0 && ind < dim.GetArea())
 				{
-					Element& element = *world.GetElem(ind);
+					Element& element = *simulation.GetElem(ind);
 
 					ElementsX.emplace_back(element);
 				}
@@ -252,7 +252,7 @@ void Projectile::MoveY(float time)
 	{
 		ZoneY = RectI(HitBox.width, Size, Vec2I(HitBox.left, HitBox.top - Size));
 	}
-	auto dim = world.GetSandboxDim();
+	auto dim = simulation.GetSandboxDim();
 
 
 	int StartY, EndY, Add;
@@ -289,10 +289,10 @@ void Projectile::MoveY(float time)
 			bool Move = true;
 			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
 			{
-				size_t ind = world.GetElemIndScr(Vec2I(x, y));
+				size_t ind = simulation.GetElemIndScr(Vec2I(x, y));
 				if (ind > 0 && ind < dim.GetArea())
 				{
-					Element& element = *world.GetElem(ind);
+					Element& element = *simulation.GetElem(ind);
 
 					ElementsY.emplace_back(element);
 				}
@@ -397,16 +397,26 @@ float Projectile::GetDamage() const {
 void Projectile::MoveRight( float time)
 {
 	float AddX = vel.x * time * 60.0f;
-	int LineX = HitBox.right() + World::ElemSize;
+	float offset = HitBox.left - (int(HitBox.left) / World::ElemSize) * World::ElemSize;
+	int LineX = HitBox.right();
+	if (offset != 0.0f)
+	{
+		LineX += World::ElemSize;
+	}
 	while (AddX)
 	{
+		if (LineX >= Graphics::ScreenWidth)
+		{
+			break;
+		}
+
 		bool Move = true;
 		std::vector<State> elem_list;
 		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
 		{
-			Vec2I pos = world.ScreenToMatrixPos(Vec2I(LineX, y));
+			Vec2I pos = simulation.ScreenToMatrixPos(Vec2I(LineX, y));
 			int index = pos.y * World::SandboxDim.width + pos.x;
-			elem_list.emplace_back(world.GetElem(index)->GetState());
+			elem_list.emplace_back(simulation.GetElem(index)->GetState());
 		}
 
 		for (int ind = 0; ind < elem_list.size(); ind++)
@@ -461,13 +471,17 @@ void Projectile::MoveLeft(float time)
 	int LineX = HitBox.left - World::ElemSize;
 	while (AddX)
 	{
+		if (LineX < 0)
+		{
+			break;
+		}
 		bool Move = true;
 		std::vector<State> elem_list;
 		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
 		{
-			Vec2I pos = world.ScreenToMatrixPos(Vec2I(LineX, y));
+			Vec2I pos = simulation.ScreenToMatrixPos(Vec2I(LineX, y));
 			int index = pos.y * World::SandboxDim.width + pos.x;
-			elem_list.emplace_back(world.GetElem(index)->GetState());
+			elem_list.emplace_back(simulation.GetElem(index)->GetState());
 		}
 
 		for (int ind = 0; ind < elem_list.size(); ind++)
@@ -518,16 +532,27 @@ void Projectile::MoveLeft(float time)
 void Projectile::MoveDown(float time)
 {
 	float AddY = vel.y * time * 60.0f;
-	int LineY = HitBox.bottom() + World::ElemSize;
+	float offset = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+
+	int LineY = HitBox.bottom();
+	if (offset != 0.0f)
+	{
+		LineY += World::ElemSize;
+	}
 	while (AddY)
 	{
+		if (LineY >= Graphics::ScreenHeight)
+		{
+			break;
+		}
+
 		bool Move = true;
 		std::vector<State> elem_list;
 		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
 		{
-			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, LineY));
+			Vec2I pos = simulation.ScreenToMatrixPos(Vec2I(x, LineY));
 			int index = pos.y * World::SandboxDim.width + pos.x;
-			elem_list.emplace_back(world.GetElem(index)->GetState());
+			elem_list.emplace_back(simulation.GetElem(index)->GetState());
 		}
 
 		for (int ind = 0; ind < elem_list.size(); ind++)
@@ -582,13 +607,17 @@ void Projectile::MoveUp(float time)
 	int LineY = HitBox.top - World::ElemSize;
 	while (AddY)
 	{
+		if (LineY < 0)
+		{
+			break;
+		}
 		bool Move = true;
 		std::vector<State> elem_list;
 		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
 		{
-			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, LineY));
+			Vec2I pos = simulation.ScreenToMatrixPos(Vec2I(x, LineY));
 			int index = pos.y * World::SandboxDim.width + pos.x;
-			elem_list.emplace_back(world.GetElem(index)->GetState());
+			elem_list.emplace_back(simulation.GetElem(index)->GetState());
 		}
 
 		for (int ind = 0; ind < elem_list.size(); ind++)

@@ -24,14 +24,14 @@ public:
 	void ActivateNeededChunks(size_t elem);
 	// getters
 
-	World& GetWorld() {
-		return world;
+	Simulation& GetWorld() {
+		return simulation;
 	}
 	Weather& GetWeather() {
 		return weather;
 	}
 private:
-	World world;
+	Simulation simulation;
 	Weather weather;
 	Dimensions<int> SandboxDim_InChunks;
 	Timer UpdateTimer;

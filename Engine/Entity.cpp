@@ -819,7 +819,7 @@ void Entity::Kill(World& world)
 		{
 			Vec2I pos = world.ScreenToMatrixPos(Vec2I(x, y));
 			int index = pos.y * World::SandboxDim.width + pos.x;
-
+	
 			world.AddToSpawnList(World::Spawn(std::move(index), Type::Sand));
 		}
 	}

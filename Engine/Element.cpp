@@ -143,9 +143,13 @@ void Element::DrawElement(Graphics& gfx, Sprite& sprite)
 {
 	if (state != State::Empty)
 	{
-		if (state == State::Gas || type == Type::Water)
+		if (type == Type::Water)
 		{
 			gfx.DrawRect_Transparent(hBox, color, 50);
+		}
+		else if (state == State::Gas)
+		{
+			gfx.DrawRect_Transparent(hBox, DetermineGasColor(), 50);
 		}
 		else if (type == Type::Acid || state == State::Plasma)
 		{
@@ -385,5 +389,23 @@ void Element::Darken(int percentage)
 
 		if (!(r < 30 && g < 30 && b < 30))
 			color = Color(r, g, b);
+	}
+}
+
+Color Element::DetermineGasColor() const {
+	assert(state == State::Gas);
+	if (LifeSpan.GetTime() >= LifeSpan.GetTimeLimit() - 2.0f)
+	{
+		float color_fade = 1.0f - LifeSpan.GetTime() / LifeSpan.GetTimeLimit();
+
+		unsigned char r = color.GetR() * color_fade,
+			g = color.GetG() * color_fade,
+			b = color.GetB() * color_fade;
+
+		return Color(r, g, b);
+	}
+	else
+	{
+		return color;
 	}
 }

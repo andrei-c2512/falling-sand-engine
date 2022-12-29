@@ -7,6 +7,7 @@
 #include "Rect.h"
 #include "assert.h"
 #include "Effects.h"
+#include "Attributes.h"
 #include <stdexcept>
 
 class World {
@@ -202,7 +203,7 @@ public:
 
 		return Type(pick.index);
 	}
-	void DrawWorld(Graphics& gfx)
+	virtual void DrawWorld(Graphics& gfx)
 	{
 		const int width = BackGround.GetWidth();
 		const int height = BackGround.GetHeight();
@@ -215,7 +216,7 @@ public:
 		}
 	}
 
-	static constexpr int ElemSize = 4;
+	static constexpr int ElemSize = 2;
 	static constexpr Dimensions<int> SandboxDim = Dimensions<int>( Graphics::ScreenWidth  / ElemSize , 
 																   Graphics::ScreenHeight / ElemSize );
 
@@ -382,7 +383,7 @@ public:
 public:
 	RNG Chance = { 1 , 100};
 	RNG Pick   = { 0 , 2 };
-private:
+protected:
 	std::vector<Element> Elements;
 
 	std::vector<Swap> Move_List;
@@ -394,3 +395,399 @@ private:
 	Sprite BackGround = "background.bmp";
 };
 
+struct MoveableElement {
+	MoveableElement(Element& element, Vec2D vel0)
+	{
+		atr.GetAttributes(element);
+		RectI elem_hitbox = element.GetRect();
+		HitBox = Rect(elem_hitbox.width, elem_hitbox.height, Vec2D(elem_hitbox.left, elem_hitbox.top));
+		vel = std::move(vel0);
+
+		Convert = false;
+	}
+	void Draw(Graphics& gfx)
+	{
+		gfx.DrawRect(HitBox, Colors::Magenta, Effects::Copy{}, gfx.GetScreenRect());
+	}
+	Rect HitBox;
+	Attributes atr;
+	Vec2D vel;
+
+	bool Convert = false;
+};
+
+class Simulation : public World {
+public:
+	void Go(float time)
+	{
+		for (auto& elem : particle_list)
+		{
+			if (elem.Convert)
+			{
+				continue;
+			}
+
+			Vec2D& vel = elem.vel;
+			Vec2D pos = elem.HitBox.GetPos();
+
+			if (vel.x > 0)
+			{
+				MoveRight(elem, time, vel.x);
+				elem.Convert = elem.HitBox.left == pos.x;
+			}
+			else if (vel.x < 0)
+			{
+				MoveLeft(elem, time, vel.x);
+				elem.Convert = elem.HitBox.left == pos.x;
+			}
+
+
+			if (vel.y > 0)
+			{
+				MoveDown(elem, time, vel.y);
+				elem.Convert = elem.HitBox.top == pos.y;
+			}
+			else if (vel.y < 0)
+			{
+				MoveUp(elem, time, vel.y);
+				elem.Convert = elem.HitBox.top == pos.y;
+			}
+
+			if (elem.Convert)
+			{
+				continue;
+			}
+
+			vel.y += Gravity * time * 60.0f;
+
+			Vec2D new_pos = elem.HitBox.GetPos();
+
+		}
+
+		particle_list.remove_if([=](MoveableElement& elem) {
+			if (elem.Convert)
+			{
+				PutIntoMatrix(elem);
+				return true;
+			}
+			return false;
+			});
+	}
+
+	void MoveRight(MoveableElement& elem, float time, float vel)
+	{
+		float AddX = vel * time * 60.0f;
+		Rect& HitBox = elem.HitBox;
+
+		//basically i am getting the modulus for a float 
+		float offset = HitBox.left - (int(HitBox.left) / World::ElemSize) * World::ElemSize;
+		int LineX = HitBox.right();
+		if (offset != 0.0f)
+		{
+			LineX += World::ElemSize;
+		}
+
+		while (AddX)
+		{
+			if (LineX >= Graphics::ScreenWidth)
+			{
+				break;
+			}
+			bool Move = true;
+			std::vector<State> elem_list;
+			for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+			{
+				Vec2I pos = ScreenToMatrixPos(Vec2I(LineX, y));
+				int index = pos.y * World::SandboxDim.width + pos.x;
+				elem_list.emplace_back(GetElem(index)->GetState());
+			}
+
+			for (int ind = 0; ind < elem_list.size(); ind++)
+			{
+				if (elem_list[ind] == State::Solid)
+				{
+					{
+						Move = false;
+						break;
+					}
+				}
+			}
+
+			if (Move == true)
+			{
+				if (AddX < World::ElemSize)
+				{
+					HitBox.left += AddX;
+					AddX = 0;
+				}
+				else
+				{
+					HitBox.left += World::ElemSize;
+					AddX -= World::ElemSize;
+				}
+			}
+			else
+			{
+				//distance to the next cell
+				float dist = World::ElemSize - offset;
+
+				if (offset != 0.0f)
+				{
+					if (AddX < dist)
+					{
+						HitBox.left += AddX;
+						break;
+					}
+					else
+					{
+						HitBox.left += dist;
+						break;
+					}
+				}
+
+				break;
+			}
+
+			LineX += World::ElemSize;
+		}
+	}
+
+	void MoveLeft(MoveableElement& elem, float time, float vel)
+	{
+		float AddX = std::abs(vel * time * 60.0f);
+		int LineX = elem.HitBox.left - World::ElemSize;
+		while (AddX)
+		{
+			if (LineX < 0)
+			{
+				break;
+			}
+			bool Move = true;
+			std::vector<State> elem_list;
+			for (int y = elem.HitBox.top; y < elem.HitBox.bottom(); y += World::ElemSize)
+			{
+				Vec2I pos = ScreenToMatrixPos(Vec2I(LineX, y));
+				int index = pos.y * World::SandboxDim.width + pos.x;
+				elem_list.emplace_back(GetElem(index)->GetState());
+			}
+
+			for (int ind = 0; ind < elem_list.size(); ind++)
+			{
+				if (elem_list[ind] == State::Solid)
+				{
+					if (ind > elem_list.size() - 5)
+					{
+						elem.HitBox.top -= (ind - (elem_list.size() - 5)) * World::ElemSize;
+					}
+					else
+					{
+						Move = false;
+						break;
+					}
+				}
+			}
+
+			if (Move == true)
+			{
+				if (AddX < World::ElemSize)
+				{
+					elem.HitBox.left -= AddX;
+					AddX = 0;
+				}
+				else
+				{
+					elem.HitBox.left -= World::ElemSize;
+					AddX -= World::ElemSize;
+				}
+			}
+			else
+			{
+				//basically i am getting the modulus for a float 
+				//distance to the next cell
+				float dist = elem.HitBox.left - (int(elem.HitBox.left) / World::ElemSize) * World::ElemSize;
+
+				if (AddX < dist)
+				{
+					elem.HitBox.left -= AddX;
+					break;
+				}
+				else
+				{
+					elem.HitBox.left -= dist;
+					break;
+				}
+			}
+
+			LineX -= World::ElemSize;
+		}
+	}
+
+	void MoveDown(MoveableElement& elem, float time, float vel)
+	{
+		float AddY = vel * time * 60.0f;
+		//basically i am getting the modulus for a float 
+		float offset = elem.HitBox.top - (int(elem.HitBox.top) / World::ElemSize) * World::ElemSize;
+
+		int LineY = elem.HitBox.bottom();
+		if (offset != 0.0f)
+		{
+			LineY += World::ElemSize;
+		}
+
+		while (AddY)
+		{
+			if (LineY >= Graphics::ScreenHeight)
+			{
+				break;
+			}
+			bool Move = true;
+			std::vector<State> elem_list;
+			for (int x = elem.HitBox.left; x < elem.HitBox.right(); x += World::ElemSize)
+			{
+				Vec2I pos = ScreenToMatrixPos(Vec2I(x, LineY));
+				int index = pos.y * World::SandboxDim.width + pos.x;
+				elem_list.emplace_back(GetElem(index)->GetState());
+			}
+
+			for (int ind = 0; ind < elem_list.size(); ind++)
+			{
+				if (elem_list[ind] == State::Solid)
+				{
+					Move = false;
+					break;
+				}
+			}
+
+			if (Move == true)
+			{
+				if (AddY < World::ElemSize)
+				{
+					elem.HitBox.top += AddY;
+					AddY = 0;
+				}
+				else
+				{
+					elem.HitBox.top += World::ElemSize;
+					AddY -= World::ElemSize;
+				}
+			}
+			else
+			{
+				//distance to the next cell
+				float dist = World::ElemSize - offset;
+
+				if (offset != 0.0f)
+				{
+					if (AddY < dist)
+					{
+						elem.HitBox.top += AddY;
+						break;
+					}
+					else
+					{
+						elem.HitBox.top += dist;
+						break;
+					}
+				}
+
+				break;
+			}
+
+			LineY += World::ElemSize;
+		}
+	}
+
+	void MoveUp(MoveableElement& elem, float time, float vel)
+	{
+		float AddY = std::abs(vel * time * 60.0f);
+		int LineY = elem.HitBox.top - World::ElemSize;
+		bool HitObstacle = false;
+
+		while (AddY)
+		{
+			if (LineY < 0)
+			{
+				break;
+			}
+			bool Move = true;
+			std::vector<State> elem_list;
+			for (int x = elem.HitBox.left; x < elem.HitBox.right(); x += World::ElemSize)
+			{
+				Vec2I pos = ScreenToMatrixPos(Vec2I(x, LineY));
+				int index = pos.y * World::SandboxDim.width + pos.x;
+				elem_list.emplace_back(GetElem(index)->GetState());
+			}
+
+			for (int ind = 0; ind < elem_list.size(); ind++)
+			{
+				if (elem_list[ind] == State::Solid)
+				{
+					Move = false;
+					break;
+				}
+			}
+
+			if (Move == true)
+			{
+				if (AddY < World::ElemSize)
+				{
+					elem.HitBox.top -= AddY;
+					AddY = 0;
+				}
+				else
+				{
+					elem.HitBox.top -= World::ElemSize;
+					AddY -= World::ElemSize;
+				}
+			}
+			else
+			{
+				//basically i am getting the modulus for a float 
+				//distance to the next cell
+				float dist = elem.HitBox.top - int(int(elem.HitBox.top) / World::ElemSize) * World::ElemSize;
+
+				if (AddY < dist)
+				{
+					elem.HitBox.top -= AddY;
+					break;
+				}
+				else
+				{
+					elem.HitBox.top -= dist;
+					break;
+				}
+			}
+
+			LineY -= World::ElemSize;
+		}
+	}
+
+	void AddToList(MoveableElement elem)
+	{
+		particle_list.emplace_front(std::move(elem));
+	}
+
+	void PutIntoMatrix(const MoveableElement& elem)
+	{
+		auto pos = elem.HitBox.GetPos();
+		Vec2I scr_pos = Vec2I(std::move(pos.x), std::move(pos.y));
+		Vec2I matrix_pos = ScreenToMatrixPos(std::move(scr_pos));
+
+		int index = matrix_pos.y * World::SandboxDim.width + matrix_pos.x;
+
+		Element* matrix_element = GetElem(index);
+
+		elem.atr.PassAttributes(*matrix_element);
+	}
+	void DrawWorld(Graphics& gfx) override {
+		World::DrawWorld(gfx);
+		for (auto& particle : particle_list)
+		{
+			particle.Draw(gfx);
+		}
+	}
+	static constexpr float Gravity = 0.5f;
+private:
+	std::forward_list<MoveableElement> particle_list;
+	RNG power_rng = { 0, 1 };
+};

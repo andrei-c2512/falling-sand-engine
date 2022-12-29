@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include "NPC.h"
+#include "World.h"
 
 class MobList {
 public:
@@ -12,13 +13,13 @@ public:
 		BigMama
 	};
 public:
-	MobList(World& world0 , ParticleEffect& effect , Mouse& mouse)
+	MobList(Simulation& world0 , ParticleEffect& effect , Mouse& mouse)
 		:Zombie(Entity(Rect(25, 25, Vec2D(0, 0)), Sprite(Dimensions<short>(10, 15), Colors::Red), 10, 100, 2.0f)),
 		player(mouse , Sprite(Dimensions<short>(10, 20), Colors::Yellow), Sprite(Dimensions<short>(10, 10), Colors::Yellow)
 			, 10.0f),
-		world(world0)
+		simulation(world0)
 	{
-		auto proj = std::make_unique<Explosive>(Explosive(Projectile(Rect(5, 5, Vec2D(5, 5)), world, 5.0f), effect));
+		auto proj = std::make_unique<Explosive>(Explosive(Projectile(Rect(5, 5, Vec2D(5, 5)), simulation, 10.0f), effect));
 
 		std::unique_ptr<ExplosiveLauncher> wp = std::make_unique<ExplosiveLauncher>
 			(ExplosiveLauncher(player.pHitBox(), std::move(proj), effect));
@@ -32,12 +33,12 @@ public:
 	void UpdateMobs(Keyboard& kbd , float time)
 	{
 		player.UseWeapon(time);
-		player.UpdateMovement(world, kbd, time);
+		player.UpdateMovement(simulation, kbd, time);
 
 		for (auto& entity : entity_list)
 		{
 			entity->DetermineMovement();
-			entity->Move(world, time);
+			entity->Move(simulation, time);
 		}
 
 		for (auto& entity : entity_list)
@@ -69,7 +70,7 @@ public:
 		Spawn_timer.Update(time);
 		if (Spawn_timer.IsReady())
 		{
-			SpawnMob(MobType::Zombie);
+			//SpawnMob(MobType::Zombie);
 			Spawn_timer.ResetTimer();
 		}
 	}
@@ -82,5 +83,5 @@ private:
 	std::map<MobType, NPC> entity_map;
 
 	Player player;
-	World& world;
+	Simulation& simulation;
 };

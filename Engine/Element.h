@@ -34,14 +34,10 @@ enum class State {
 	Invalid
 };
 
-enum class Action {
-	Explode,
-	Darken,
-	None,
-	Count
-};
-class Element {
+class Attributes;
 
+class Element {
+	friend class Attributes;
 public:
 	static constexpr Color SandColorRange[3] = { { 255 , 220 , 0 } ,
 												 { 255 , 205 , 0 } ,
@@ -167,6 +163,7 @@ public:
 	size_t GetChunkIndex() const;
 
 	void AssignChunk(size_t index);
+	Color DetermineGasColor() const;
 	bool CanMove(Element& elem) const;
 	std::pair<const State*, const State*> GetConditions() const;
 	void ResetStatus()

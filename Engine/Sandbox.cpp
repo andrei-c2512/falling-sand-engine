@@ -2,11 +2,11 @@
 #include "assert.h"
 
 Sandbox::Sandbox(Mouse& mouse , ParticleEffect& effect) 
-	:weather(world , WeatherType::Clear , size_t(2)),
-	mob_list(world ,effect , mouse)
+	:weather(simulation , WeatherType::Clear , size_t(2)),
+	mob_list(simulation ,effect , mouse)
 {
 	{
-		auto dim = world.GetSandboxDim();
+		auto dim = simulation.GetSandboxDim();
 		const int width = dim.width;
 		const int height = dim.height;
 
@@ -55,7 +55,7 @@ Sandbox::Sandbox(Mouse& mouse , ParticleEffect& effect)
 
 				const size_t index = (y / ChunkSize) * SandboxDim_InChunks.width + (x / ChunkSize);
 				//assert(index < SandboxDim_InChunks.GetArea());
-				Chunk_list.emplace_back(RectI(CWidth, CHeight, Vec2I(x, y)), world, index);
+				Chunk_list.emplace_back(RectI(CWidth, CHeight, Vec2I(x, y)), simulation, index);
 
 			}
 		}
@@ -81,9 +81,10 @@ void Sandbox::UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time)
 				chunk.Evaluate_Moves(time , Chunk::Order(order));
 			}
 			UpdateChunkActivation();
-			world.CommitMoves();
+			simulation.CommitMoves();
 		}
 
+		simulation.Go(time);
 		weather.UpdateMatrix();
 	
 
@@ -91,6 +92,7 @@ void Sandbox::UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time)
 		mob_list.UpdateMobs(kbd , time);
 
 		UpdateTimer.ResetTimer();
+
 	}
 }
 
@@ -101,14 +103,14 @@ void Sandbox::UpdateTime(float time)
 
 void Sandbox::DrawSandbox(Graphics& gfx ,Mouse& mouse)
 {
-	world.DrawWorld(gfx);
+	simulation.DrawWorld(gfx);
 	mob_list.DrawMobs(gfx);
 	DrawChunkBorders(gfx);
 }
 
 void Sandbox::ActivateChunk(int index)
 {
-	const size_t ChunkInd = world.GetElem(index)->GetChunkIndex();
+	const size_t ChunkInd = simulation.GetElem(index)->GetChunkIndex();
 	Chunk_list[ChunkInd].Active = true;
 }
 
@@ -122,28 +124,28 @@ void Sandbox::DrawChunkBorders(Graphics& gfx)
 
 void Sandbox::UpdateChunkActivation()
 {
-	auto List = world.GetMove_List();
+	auto List = simulation.GetMove_List();
 
-	for (size_t i = 0; i < world.GetMove_ListSize(); i++)
+	for (size_t i = 0; i < simulation.GetMove_ListSize(); i++)
 	{
 		ActivateNeededChunks(List[i].index1);
 	}
 
-	auto List1 = world.GetFire_list();
+	auto List1 = simulation.GetFire_list();
 
-	for (size_t i = 0 ; i < world.GetFire_listSize() ; i++)
+	for (size_t i = 0 ; i < simulation.GetFire_listSize() ; i++)
 	{
 		ActivateChunk(List1[i].elem1);
 	}
 
-	auto List2 = world.GetFireAura_list();
+	auto List2 = simulation.GetFireAura_list();
 
 	for (auto b = List2.begin() , e = List2.end() ; b != e ; b++)
 	{
 		ActivateChunk(b->elem1);
 	}
 
-	auto List3 = world.GetSpawn_list();
+	auto List3 = simulation.GetSpawn_list();
 
 	for (auto b = List3.begin(), e = List3.end(); b != e; b++)
 	{
@@ -179,7 +181,7 @@ void Sandbox::ActivateAdjacentChunks(size_t index, Chunk::NextMove dir)
 
 size_t Sandbox::GetChunkIndex(size_t elemindex)
 {
-	const auto dim = world.GetSandboxDim();
+	const auto dim = simulation.GetSandboxDim();
 	Vec2I ElemPos( elemindex % dim.width , elemindex / dim.width );
 	Vec2I ChunkPos( ElemPos.x / ChunkSize , ElemPos.y / ChunkSize );
 
@@ -187,7 +189,7 @@ size_t Sandbox::GetChunkIndex(size_t elemindex)
 }
 Chunk* Sandbox::GetChunk(size_t elemindex)
 {
-	const auto dim = world.GetSandboxDim();
+	const auto dim = simulation.GetSandboxDim();
 	Vec2I ElemPos ( elemindex % dim.width , elemindex / dim.width );
 	Vec2I ChunkPos ( ElemPos.x / ChunkSize , ElemPos.y / ChunkSize );
 
