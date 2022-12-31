@@ -110,15 +110,15 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 	}
 }
 
-void Creator::DrawButtons(Graphics& gfx)
+void Creator::DrawButtons(Graphics& gfx , CoordinateTransformer& ct)
 {
 	for (size_t i = 0; i < (int)Type::Count; i++)
 	{
-		EButtons[i].Draw(gfx);
+		EButtons[i].Draw(gfx , ct);
 	}
 	for (size_t i = 0; i < (int)WeatherType::Count; i++)
 	{
-		WButtons[i].Draw(gfx);
+		WButtons[i].Draw(gfx , ct);
 	}
 }
 
@@ -148,7 +148,7 @@ bool Creator::CheckButtons(Mouse& mouse)
 }
 
 
-void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
+void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransformer& ct)
 {
 	Vec2_<int> MousePos = Vec2_<int>( mouse.GetPosX() , mouse.GetPosY() );
 
@@ -184,7 +184,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 
 			InfoPos.x = Graphics::ScreenWidth - ElemName.size() * dim1.width - Space - (count.length() + 2) * dim1.width;
 			const std::string result = ElemName + "(" + count + ")";
-			font.DrawWords(result, gfx, InfoPos);
+			font.DrawWords(result, gfx, ct , InfoPos);
 		}
 		else
 		{
@@ -199,7 +199,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 					const std::string elem_name = ElemName_map[Type(bIndex)];
 					const int ElemNameX = (Graphics::ScreenWidth - elem_name.length() * font_dim.width) / 2;
 
-					font.DrawWords(elem_name, gfx, Vec2I(ElemNameX, InfoY));
+					font.DrawWords(elem_name, gfx, ct , Vec2I(ElemNameX, InfoY));
 					break;
 				}
 			}
@@ -215,7 +215,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 						const std::string weather_name = WeatherName_map[WeatherType(bIndex)];
 						const int WeatherNameX = (Graphics::ScreenWidth - weather_name.length() * font_dim.width) / 2;
 
-						font.DrawWords(weather_name, gfx, Vec2I(WeatherNameX, InfoY));
+						font.DrawWords(weather_name, gfx, ct , Vec2I(WeatherNameX, InfoY));
 						break;
 					}
 				}
@@ -225,7 +225,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
 	}
 }
 
-void Creator::DrawSpawnSurface(Graphics& gfx , Mouse& mouse)
+void Creator::DrawSpawnSurface(Graphics& gfx , CoordinateTransformer& ct ,  Mouse& mouse)
 {
 
 	if (ToBeSpawned != Type::None)
@@ -274,14 +274,14 @@ void Creator::DrawSpawnSurface(Graphics& gfx , Mouse& mouse)
 			for (auto& n : Elements)
 			{
 				RectI rect = world.GetElem(n)->GetRect();
-
-				gfx.DrawRect(rect, circle_color, Effects::Copy{});
+				Vec2I pos = ct.Transform(rect.GetPos());
+				gfx.DrawRect(RectI(rect.GetDimensions() , std::move(pos)), circle_color, Effects::Copy{});
 			}
 		}
 		else
 		{
-			RectI Zone = RectI(mouse.GetPos(), SpawnLoc);
-			gfx.DrawRect_Border(Zone, Colors::Green, Effects::Copy{});
+			RectI Zone = RectI(ct.Transform(mouse.GetPos()), ct.Transform(SpawnLoc));
+			gfx.DrawRect_Border(std::move(Zone), Colors::Green, Effects::Copy{});
 		}
 	}
 	else

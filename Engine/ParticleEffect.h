@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include <forward_list>
 #include "Effects.h"
+#include "CoordinateTransformer.h"
 class Particle {
 public:
 	Particle(RectI& rect, Color& c, Vec2D& vel0, Timer& lifespan)
@@ -11,10 +12,11 @@ public:
 		assert(Graphics::WithinScreen(HitBox));
 		Active = true;
 	}
-	void Draw(Graphics& gfx)
+	void Draw(Graphics& gfx , CoordinateTransformer& ct)
 	{
 		Effects::Copy e;
-		gfx.DrawRect(HitBox, color, e);
+		Vec2I pos = ct.Transform(pos);
+		gfx.DrawRect(RectI(HitBox.GetDimensions() , std::move(pos)), color, e);
 	}
 	void Update(float time)
 	{
@@ -77,11 +79,11 @@ public:
 			particle.Update(time);
 		}
 	}
-	void Draw(Graphics& gfx)
+	void Draw(Graphics& gfx , CoordinateTransformer& ct)
 	{
 		for (Particle& particle : particle_list)
 		{
-			particle.Draw(gfx);
+			particle.Draw(gfx , ct);
 		}
 	}
 	void AddParticle(Particle& particle)

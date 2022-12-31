@@ -1,11 +1,11 @@
 #include "Button.h"
 #include "Effects.h"
-Button::Button(RectI& rect)
-	:HitBox(rect)
+Button::Button( RectI& rect)
+	:HitBox(rect) 
 {
 	Selected = false;
 }
-Button::Button(RectI& rect, Color& c)
+Button::Button( RectI& rect, Color& c)
 	:HitBox(rect) , sprite(HitBox.GetDimensions() , c)
 {
 	Selected = false;
@@ -17,10 +17,11 @@ Button::Button(RectI& rect, Sprite& sprite0)
 	Selected = false;
 
 }
-void Button::Draw(Graphics& gfx)
+void Button::Draw(Graphics& gfx, CoordinateTransformer& ct)
 {
 	Effects::Copy e;
-	gfx.DrawSprite(HitBox.left, HitBox.top, sprite, RectI(HitBox.width, HitBox.height, Vec2I(0, 0)) 
+	Vec2I button_pos = ct.Transform(HitBox.GetPos());
+	gfx.DrawSprite(std::move(button_pos), sprite, RectI(HitBox.width, HitBox.height, Vec2I(0, 0))
 		, Graphics::GetScreenRect(), e);
 }
 
@@ -143,16 +144,22 @@ void GameSpeedButtonV1::Go(Mouse& mouse) {
 	}
 }
 
-void GameSpeedButtonV1::Draw(Graphics& gfx)
+void GameSpeedButtonV1::Draw(Graphics& gfx, CoordinateTransformer& ct)
 {
-	gfx.DrawRect(RectI(HitBox.width, HitBox.height - last_pressY, Vec2I(HitBox.left, HitBox.top)),
+	//pos of the unfilled part of the bar
+	Vec2I unfilled_pos = ct.Transform(HitBox.GetPos());
+	gfx.DrawRect(RectI(HitBox.width, HitBox.height - last_pressY, Vec2I(std::move(unfilled_pos))),
 		default_color , Effects::Copy{});
-	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(HitBox.left, HitBox.top + (HitBox.height - last_pressY))),
+
+	//pos of the filled part of the bar
+	Vec2I filled_pos = ct.Transform(Vec2I(HitBox.left , HitBox.top + (HitBox.height - last_pressY)));
+	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(std::move(filled_pos))),
 		filler_color, Effects::Copy{});
 }
 
-void GameSpeedButton::Draw(Graphics& gfx)
+void GameSpeedButton::Draw(Graphics& gfx, CoordinateTransformer& ct)
 {
 	Effects::Chroma chroma = { Colors::Magenta };
-	gfx.DrawSprite(HitBox.left, HitBox.top, sprite, sprite.GetRect(), Graphics::GetScreenRect(), chroma);
+	Vec2I pos = ct.Transform(Vec2I(HitBox.GetPos()));
+	gfx.DrawSprite(std::move(pos), sprite, sprite.GetRect(), Graphics::GetScreenRect(), chroma);
 }

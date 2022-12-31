@@ -1,5 +1,6 @@
 #pragma once
 #include "FrameTimer.h"
+#include "CoordinateTransformer.h"
 #include <string>
 #include <fstream>
 
@@ -55,7 +56,7 @@ public:
 			nMeasurements++;
 		}
 	}
-	void DrawFrameCounter(Graphics& gfx )
+	void DrawFrameCounter(Graphics& gfx , CoordinateTransformer& ct)
 	{
 		FrameTimer.Update(BuildTime);
 
@@ -72,7 +73,7 @@ public:
 		Vec2I pos = Vec2I(Graphics::ScreenWidth - space - frame_str.length() * dim.width,
 			space + dim.height);
 
-		font.DrawWords(frame_str, gfx, pos);
+		font.DrawWords(frame_str, gfx, ct ,  pos);
 	}
 private:
 	FrameTimer ft;

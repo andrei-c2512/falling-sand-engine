@@ -92,16 +92,16 @@ void RangedWp::CoolDowns(float time)
 	Weapon::CoolDowns(time);
 }
 
-void RangedWp::DrawProjectiles(Graphics& gfx , Color c)
+void RangedWp::DrawProjectiles(Graphics& gfx , CoordinateTransformer& ct , Color c)
 {
 	for (auto& proj : proj_list)
 	{
-		proj->DrawProjectile(gfx, c);
+		proj->DrawProjectile(gfx, ct , c);
 	}
 }
-void RangedWp::Draw(Graphics& gfx)
+void RangedWp::Draw(Graphics& gfx , CoordinateTransformer& ct)
 {
-	DrawProjectiles(gfx, Colors::Red);
+	DrawProjectiles(gfx, ct ,  Colors::Red);
 }
 int RangedWp::GetCapacity() const {
 	return MaxRounds;

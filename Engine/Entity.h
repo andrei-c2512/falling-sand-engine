@@ -6,6 +6,7 @@
 #include <list>
 #include <algorithm>
 #include <iterator>
+#include "CoordinateTransformer.h"
 
 #define INFINITY 100000
 
@@ -206,7 +207,7 @@ public:
 	Entity() = default;
 	Entity(Rect rect, Sprite sprite, float dmg, int health, float speed);
 	Entity(const Entity& entity);
-	virtual void Draw(Graphics& gfx);
+	virtual void Draw(Graphics& gfx , CoordinateTransformer& ct);
 	void SetPos(Vec2I& pos);
 	void Move (World& world  ,float time);
 	void MoveX(World& world , float time);

@@ -143,6 +143,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="CiobanuMath.h" />
+    <ClInclude Include="CoordinateTransformer.h" />
     <ClInclude Include="Creator.h" />
     <ClInclude Include="Dimensions.h" />
     <ClInclude Include="DynamicEvents.h" />

@@ -51,13 +51,13 @@ public:
 				return npc->IsDead();
 			});
 	}
-	void DrawMobs(Graphics& gfx)
+	void DrawMobs(Graphics& gfx , CoordinateTransformer& ct)
 	{
 		for (auto& entity : entity_list)
 		{
-			entity->Draw(gfx);
+			entity->Draw(gfx , ct);
 		}
-		player.Draw(gfx);
+		player.Draw(gfx , ct);
 	}
 	void SpawnMob(MobType mobtype)
 	{

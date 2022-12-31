@@ -28,7 +28,7 @@ Font::Font(std::string sprite)
 }
 
 
-void Font::DrawWords(std::string text, Graphics& gfx , Vec2I pos)
+void Font::DrawWords(std::string text, Graphics& gfx , CoordinateTransformer& ct , Vec2I pos)
 {
 	for (auto& c : text)
 	{
@@ -38,7 +38,7 @@ void Font::DrawWords(std::string text, Graphics& gfx , Vec2I pos)
 			RectI Letter = Letters[index];
 
 			Effects::OneColor e{ Colors::White , Colors::White};
-			gfx.DrawSprite(pos.x, pos.y, SpriteSheet, Letter , Graphics::GetScreenRect() , e);
+			gfx.DrawSprite(ct.Transform(pos), SpriteSheet, Letter, Graphics::GetScreenRect(), e);
 			pos.x += LetterDim.width;
 		}
 	}

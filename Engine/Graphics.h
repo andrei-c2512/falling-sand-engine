@@ -58,6 +58,7 @@ public:
 	void BeginFrame();
 	void PutPixel( int x,int y,int r,int g,int b )
 	{
+		if(x < ScreenWidth && y < ScreenHeight)
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
 	void PutPixel(int index, Color c);
@@ -80,34 +81,66 @@ public:
 			y = clip.top;
 		}
 
-		if (clip.left + clip.width < x + SpritePortion.width)
+		if (clip.right() < x + SpritePortion.width)
 		{
-			SpritePortion.width = std::abs(clip.left + clip.width - x);
+			SpritePortion.width -= std::abs(x + SpritePortion.width - clip.right());
 		}
-		if (clip.top + clip.height < y + SpritePortion.height)
+		if (clip.bottom() < y + SpritePortion.height)
 		{
-			SpritePortion.height = std::abs(clip.top + clip.height - y);
+			SpritePortion.height -= std::abs(y + SpritePortion.height - clip.bottom());
 		}
 
-		const int StopY = SpritePortion.top + SpritePortion.height;
-		const int StopX = SpritePortion.left + SpritePortion.width;
-
-		for (int sy = SpritePortion.top; sy < StopY; sy++)
+		for (int sy = SpritePortion.top; sy < SpritePortion.bottom(); sy++)
 		{
-			for (int sx = SpritePortion.left; sx < StopX; sx++)
+			for (int sx = SpritePortion.left; sx < SpritePortion.right(); sx++)
 			{
 				Color c = s.GetPixel(sx, sy);
 				effect(std::move(c), *this, x + sx - SpritePortion.left, y + sy - SpritePortion.top);
 			}
 		}
 	}
+	template<typename E , typename T>
+	void DrawSprite(Vec2_<T>& pos, Sprite& s, RectI SpritePortion, RectI& clip, E effect)
+	{
+		assert(WithinScreen(SpritePortion));
+
+		if (clip.left > pos.x)
+		{
+			SpritePortion.left +=  std::abs(clip.left - pos.x);
+			SpritePortion.width -= std::abs(clip.left - pos.x);
+			pos.x = clip.left;
+		}
+		if (clip.top > pos.y)
+		{
+			SpritePortion.top +=    clip.top - pos.y;
+			SpritePortion.height -= clip.top - pos.y;
+			pos.y = clip.top;
+		}
+
+		if (clip.right() < pos.x + SpritePortion.width)
+		{
+			SpritePortion.width -= std::abs(pos.x + SpritePortion.width - clip.right());
+		}
+		if (clip.bottom() < pos.y + SpritePortion.height)
+		{
+			SpritePortion.height -= std::abs(pos.y + SpritePortion.height - clip.bottom());
+		}
+
+		for (int sy = SpritePortion.top; sy < SpritePortion.bottom(); sy++)
+		{
+			for (int sx = SpritePortion.left; sx < SpritePortion.right(); sx++)
+			{
+				Color c = s.GetPixel(sx, sy);
+				effect(std::move(c), *this, pos.x + sx - SpritePortion.left, pos.y + sy - SpritePortion.top);
+			}
+		}
+	}
 	static RectI GetScreenRect();
 
 	template <typename T, typename D , typename E>
-	void DrawRect(Rect_<T , D>& rect, Color c , E effect , RectI clip = GetScreenRect())
+	void DrawRect(Rect_<T , D> rect, Color c , E effect , RectI clip = GetScreenRect())
 	{
 		RectI new_rect = RectI(rect.width , rect.height , Vec2I(rect.left , rect.top));
-
 		if (int(rect.top) <= clip.top)
 		{
 			new_rect.top += clip.top - rect.top;
@@ -134,12 +167,31 @@ public:
 	}
 
 	template<typename T, typename D>
-	void DrawRect_Transparent(Rect_<T , D>& rect, Color c, Sprite& sprite, int transparency)
+	void DrawRect_Transparent(Rect_<T , D> rect, Color c, Sprite& sprite, int transparency, RectI& clip = GetScreenRect())
 	{
-		float tFactor = float(transparency / 100.0f);
-		for (int y = rect.top; y < rect.top + rect.height; y++)
+		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
+
+		if (int(rect.top) <= clip.top)
 		{
-			for (int x = rect.left; x < rect.left + rect.width; x++)
+			new_rect.top += clip.top - rect.top;
+		}
+		if (int(rect.left) <= clip.left)
+		{
+			new_rect.left += clip.left - rect.left;
+		}
+		if (int(rect.bottom()) > clip.bottom())
+		{
+			new_rect.height += (clip.bottom() - rect.bottom() - 1);
+		}
+		if (int(rect.right()) > clip.right())
+		{
+			new_rect.width += (clip.right() - rect.right() - 1);
+		}
+		float tFactor = float(transparency / 100.0f);
+
+		for (int y = new_rect.top; y < new_rect.bottom(); y++)
+		{
+			for (int x = new_rect.left; x < new_rect.right(); x++)
 			{
 				Color sColor = sprite.GetPixel(x, y);
 				int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
@@ -150,20 +202,42 @@ public:
 	}
 
 	template<typename T, typename D>
-	void DrawRect_Transparent(Rect_<T , D> rect, Color c, int transparency)
+	void DrawRect_Transparent(Rect_<T , D> rect, Color c, int transparency , RectI& clip = GetScreenRect())
 	{
-		float tFactor = float(transparency / 100.0f);
-		for (int y = rect.top; y < rect.top + rect.height; y++)
+		if (rect.Collision(GetScreenRect()))
 		{
-			for (int x = rect.left; x < rect.left + rect.width; x++)
-			{
-				Color sColor = Color( pSysBuffer[y * ScreenWidth + x].GetR() * (1.0f - tFactor) ,
-									  pSysBuffer[y * ScreenWidth + x].GetG() * (1.0f - tFactor) ,
-									  pSysBuffer[y * ScreenWidth + x].GetB() * (1.0f - tFactor)  );
+			RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
 
-				int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
-					g = (c.GetG() + sColor.GetG()) * tFactor;
-				PutPixel(int(x), int(y), r, g, b);
+			if (int(rect.top) <= clip.top)
+			{
+				new_rect.top += clip.top - rect.top;
+			}
+			if (int(rect.left) <= clip.left)
+			{
+				new_rect.left += clip.left - rect.left;
+			}
+			if (int(rect.bottom()) > clip.bottom())
+			{
+				new_rect.height += (clip.bottom() - rect.bottom() - 1);
+			}
+			if (int(rect.right()) > clip.right())
+			{
+				new_rect.width += (clip.right() - rect.right() - 1);
+			}
+
+			float tFactor = float(transparency / 100.0f);
+			for (int y = new_rect.top; y < new_rect.bottom(); y++)
+			{
+				for (int x = new_rect.left; x < new_rect.right(); x++)
+				{
+					Color sColor = Color(pSysBuffer[y * ScreenWidth + x].GetR() * (1.0f - tFactor),
+						pSysBuffer[y * ScreenWidth + x].GetG() * (1.0f - tFactor),
+						pSysBuffer[y * ScreenWidth + x].GetB() * (1.0f - tFactor));
+
+					int r = (c.GetR() + sColor.GetR()) * tFactor, b = (c.GetB() + sColor.GetB()) * tFactor,
+						g = (c.GetG() + sColor.GetG()) * tFactor;
+					PutPixel(int(x), int(y), r, g, b);
+				}
 			}
 		}
 	}
@@ -175,7 +249,7 @@ public:
 
 	}
 	template <typename T , typename D , typename E>
-	void DrawRect_Border(Rect_<T , D>& rect, Color c , E effect , RectI clip = GetScreenRect())
+	void DrawRect_Border(Rect_<T , D> rect, Color c , E effect , RectI clip = GetScreenRect())
 	{
 		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
 
@@ -252,6 +326,41 @@ public:
 			}
 		}
 	}
+	template<typename T, typename D , typename P>
+	void DrawAngledSprite(Vec2_<P> pos1, Sprite& s, Rect_<T, D>& SpritePortion, Vec2I& pos2)
+	{
+		//pos1 is the position from where its drawn and pos2 is the point that its facing
+		const short StartX = SpritePortion.top - SpritePortion.width / 2;
+		const short StartY = SpritePortion.top - SpritePortion.height / 2;
+
+		const short StopY = SpritePortion.top + SpritePortion.height / 2;
+		const short StopX = SpritePortion.left + SpritePortion.width / 2;
+
+		RectI SRect = { SpritePortion.width , SpritePortion.height , Vec2I(pos1.x , pos1.y ) };
+		Vec2I SCenter = SRect.GetCenter();
+
+		float hyphotenuse = SCenter.GetLenght(pos2);
+		float sin = SCenter.GetSin(pos2, hyphotenuse);
+		float cos = SCenter.GetCos(pos2, hyphotenuse);
+
+		short hWidth = SpritePortion.width / 2;
+		short hHeight = SpritePortion.height / 2;
+		for (short sy = StartX; sy < StopY; sy++)
+		{
+			for (short sx = StartY; sx < StopX; sx++)
+			{
+				Color c = s.GetPixel(sx + hWidth, sy + hHeight);
+
+				Vec2I new_pos = Vec2I(SCenter.x + sx * cos - sy * sin,
+					SCenter.y + sx * sin + sy * cos);
+
+				if (WithinScreen(new_pos))
+				{
+					PutPixel(std::move(new_pos.x), std::move(new_pos.y), c);
+				}
+			}
+		}
+	}
 	void BlendPixel(int x, int y, Color c , int alpha)
 	{
 		float tFactor = float(alpha / 100.0f);
@@ -267,7 +376,8 @@ public:
 
 	void PutPixel(unsigned int index, Color c)
 	{
-		pSysBuffer[index] = c;
+		if(index < ScreenWidth * ScreenHeight)
+			pSysBuffer[index] = c;
 	}
 	//template<typename T, typename D>
 	//void DrawAngledSprite(int x0, int y0, Sprite& s, Rect_<T, D>& SpritePortion, Vec2I& pos)
@@ -444,9 +554,41 @@ public:
 			}
 		}	
 	}
-
 private:
+	class CoordinateTransformer {
+	public:
+		template<typename T>
+		Vec2_<T> Transform(Vec2_<T> pos)
+		{
+			pos.x += ScreenWidth / 2;
+			pos.y += ScreenHeight / 2;
+			return pos;
+		}
+		template<typename T>
+		Vec2_<T> Transform(T x , T y)
+		{
+			x += ScreenWidth / 2;
+			y += ScreenHeight / 2;
+			return Vec2_<T>(x, y);
+		}
+		int TransformX(int x)
+		{
+			return x + ScreenWidth / 2;
+		}
+		int TransformY(int y)
+		{
+			return -y + ScreenHeight / 2;
+		}
+	};
+private:
+	class Camera {
+	public:
+		Camera();
+	private:
+		RectI surface;
+	};
 	BlurProcessor blur_processor = { Bloom };
+	CoordinateTransformer ct;
 	Sprite Bloom  = Sprite(ScreenWidth, ScreenHeight);
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;

@@ -30,7 +30,7 @@
 #include "Weather.h"
 #include <string>
 #include "Bench.h"
-
+#include "CoordinateTransformer.h"
 
 class Game
 {
@@ -50,7 +50,10 @@ private:
 	/********************************/
 private:
 	MainWindow& wnd;
+
 	Graphics gfx;
+	CoordinateTransformer ct;
+
 	FrameTimer Timer;
 	FrameShower FPS;
 	Sprite sprite;

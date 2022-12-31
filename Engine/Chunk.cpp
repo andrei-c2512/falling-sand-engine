@@ -158,10 +158,13 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 
 	return Action;
 }
-void Chunk::DrawBorder(Graphics& gfx)
+void Chunk::DrawBorder(Graphics& gfx, CoordinateTransformer& ct)
 {
-	if(Active)
-		gfx.DrawRect_Border(PhysicalSize, Colors::Yellow, Effects::Copy{});
+	if (Active)
+	{
+		Vec2I world_pos = ct.Transform(PhysicalSize.GetPos());
+		gfx.DrawRect_Border(RectI(PhysicalSize.GetDimensions(), std::move(world_pos)), Colors::Yellow, Effects::Copy{});
+	}
 }
 
 bool Chunk::InBounds(int index, World& world) const

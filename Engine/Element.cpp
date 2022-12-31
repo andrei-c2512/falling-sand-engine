@@ -139,24 +139,26 @@ void Element::Create(Type newtype)
 	}
 }
 
-void Element::DrawElement(Graphics& gfx, Sprite& sprite)
+void Element::DrawElement(Graphics& gfx, CoordinateTransformer& ct , Sprite& sprite)
 {
 	if (state != State::Empty)
 	{
+		Vec2I pos = ct.Transform(hBox.GetPos());
+		RectI new_rect = RectI(hBox.GetDimensions(), std::move(pos));
 		if (type == Type::Water)
 		{
-			gfx.DrawRect_Transparent(hBox, color, 50);
+			gfx.DrawRect_Transparent(std::move(new_rect), color, 50);
 		}
 		else if (state == State::Gas)
 		{
-			gfx.DrawRect_Transparent(hBox, DetermineGasColor(), 50);
+			gfx.DrawRect_Transparent(std::move(new_rect), DetermineGasColor(), 50);
 		}
 		else if (type == Type::Acid || state == State::Plasma)
 		{
-			gfx.DrawRectI_Bloom(hBox, color);
+			gfx.DrawRectI_Bloom(std::move(new_rect), color);
 		}
 		else
-			gfx.DrawRect(hBox, color , Effects::Copy{});
+			gfx.DrawRect(std::move(new_rect), color , Effects::Copy{});
 	}
 }
 

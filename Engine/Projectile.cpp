@@ -85,9 +85,9 @@ void Projectile::DetectCollision(float time)
 	//MoveX(time);
 	//MoveY(time);
 }
-void Projectile::DrawProjectile(Graphics& gfx , Color c) {
+void Projectile::DrawProjectile(Graphics& gfx ,CoordinateTransformer& ct , Color c) {
 	if (Destroyed == false)
-		gfx.DrawRect(HitBox, c, Effects::Copy{});
+		gfx.DrawRect(Rect(HitBox.GetDimensions() ,ct.Transform(HitBox.GetPos())), c, Effects::Copy{});
 }
 
 Rect Projectile::GethBox() const

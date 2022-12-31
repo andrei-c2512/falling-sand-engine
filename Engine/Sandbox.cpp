@@ -101,11 +101,11 @@ void Sandbox::UpdateTime(float time)
 	UpdateTimer.Update(time);
 }
 
-void Sandbox::DrawSandbox(Graphics& gfx ,Mouse& mouse)
+void Sandbox::DrawSandbox(Graphics& gfx , CoordinateTransformer& ct , Mouse& mouse)
 {
-	simulation.DrawWorld(gfx);
-	mob_list.DrawMobs(gfx);
-	DrawChunkBorders(gfx);
+	simulation.DrawWorld(gfx , ct);
+	mob_list.DrawMobs(gfx , ct);
+	DrawChunkBorders(gfx , ct);
 }
 
 void Sandbox::ActivateChunk(int index)
@@ -114,11 +114,11 @@ void Sandbox::ActivateChunk(int index)
 	Chunk_list[ChunkInd].Active = true;
 }
 
-void Sandbox::DrawChunkBorders(Graphics& gfx)
+void Sandbox::DrawChunkBorders(Graphics& gfx ,CoordinateTransformer& ct )
 {
 	for (auto& chunk : Chunk_list)
 	{
-		//chunk.DrawBorder(gfx);
+		//chunk.DrawBorder(gfx , ct);
 	}
 }
 

@@ -8,6 +8,7 @@
 #include "Weather.h"
 #include "Explosion.h"
 #include <map>
+#include "CoordinateTransformer.h"
 class Creator {
 public:
 	enum class Action {
@@ -21,14 +22,14 @@ public:
 	Creator(RectI& ButtonSize, int Radius , Simulation& world , Weather& weather);
 	void Spawn(Mouse& mouse , MouseLastFrameStats& previous_stats, Sandbox& sandbox , ParticleEffect& list);
 	void ChangeSpawnArea(Mouse& mouse);
-	void DrawButtons(Graphics& gfx);
-	void DrawSpawnSurface(Graphics& gfx , Mouse& mouse);
+	void DrawButtons(Graphics& gfx , CoordinateTransformer& ct);
+	void DrawSpawnSurface(Graphics& gfx , CoordinateTransformer& ct , Mouse& mouse);
 	bool CheckButtons(Mouse& mouse);
 	bool IsHoveringAButton(Mouse& mouse) const;
 	
 	std::vector<size_t> GetSpawnableElements(Mouse& mouse);
 
-	void ShowHoveredElement(Mouse& mouse, Graphics& gfx);
+	void ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransformer& ct);
 	
 private:
 	float SpawnRadius;

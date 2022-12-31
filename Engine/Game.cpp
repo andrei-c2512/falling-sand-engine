@@ -30,7 +30,8 @@ Game::Game(MainWindow& wnd)
 	Timer(),
 	sprite("dib.bmp"),
 	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather()),
-	World(wnd.mouse , particle_list)
+	World(wnd.mouse , particle_list),
+	ct(gfx)
 {
 }
 
@@ -76,24 +77,23 @@ void Game::ComposeFrame()
 	
 	gfx.ResetBloom();
 	
-	World.DrawSandbox(gfx , wnd.mouse);
-	Builder.DrawButtons(gfx);
-	Builder.ShowHoveredElement(wnd.mouse, gfx);
-	Builder.DrawSpawnSurface(gfx, wnd.mouse);
+	World.DrawSandbox(gfx , ct ,  wnd.mouse);
+	Builder.DrawButtons(gfx , ct);
+	Builder.ShowHoveredElement(wnd.mouse, gfx, ct);
+	Builder.DrawSpawnSurface(gfx, ct , wnd.mouse);
 	
 	//FPS.DrawFrameCounter(gfx, dt);
-	particle_list.Draw(gfx);
+	particle_list.Draw(gfx , ct);
 	
-	bench.DrawFrameCounter(gfx);
 	for (auto& button : button_list)
 	{
-		button.Draw(gfx);
+		button.Draw(gfx , ct);
 	}
 	/////////////////////////////////////////////////////////
 	//gfx.ApplyBloom();
 	
 	bench.UploadTime();
-	bench.DrawFrameCounter(gfx);
+	bench.DrawFrameCounter(gfx , ct);
 
 	//if (wnd.mouse.LeftIsPressed())
 	//{

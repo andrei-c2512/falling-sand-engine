@@ -203,7 +203,7 @@ public:
 
 		return Type(pick.index);
 	}
-	virtual void DrawWorld(Graphics& gfx)
+	virtual void DrawWorld(Graphics& gfx , CoordinateTransformer& ct )
 	{
 		const int width = BackGround.GetWidth();
 		const int height = BackGround.GetHeight();
@@ -212,7 +212,7 @@ public:
 
 		for (auto& n : Elements)
 		{
-			n.DrawElement(gfx , BackGround);
+			n.DrawElement(gfx , ct , BackGround);
 		}
 	}
 
@@ -405,9 +405,10 @@ struct MoveableElement {
 
 		Convert = false;
 	}
-	void Draw(Graphics& gfx)
+	void Draw(Graphics& gfx , CoordinateTransformer& ct)
 	{
-		gfx.DrawRect(HitBox, Colors::Magenta, Effects::Copy{}, gfx.GetScreenRect());
+
+		gfx.DrawRect(Rect(HitBox.GetDimensions() , ct.Transform(HitBox.GetPos())), Colors::Magenta, Effects::Copy{}, gfx.GetScreenRect());
 	}
 	Rect HitBox;
 	Attributes atr;
@@ -779,11 +780,11 @@ public:
 
 		elem.atr.PassAttributes(*matrix_element);
 	}
-	void DrawWorld(Graphics& gfx) override {
-		World::DrawWorld(gfx);
+	void DrawWorld(Graphics& gfx , CoordinateTransformer& ct) override {
+		World::DrawWorld(gfx , ct);
 		for (auto& particle : particle_list)
 		{
-			particle.Draw(gfx);
+			particle.Draw(gfx , ct);
 		}
 	}
 	static constexpr float Gravity = 0.5f;

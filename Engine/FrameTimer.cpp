@@ -17,7 +17,7 @@ float FrameTimer::DeltaTime() {
 	return frametime.count();
 }
 
-void FrameShower::DrawFrameCounter(Graphics& gfx , float time)
+void FrameShower::DrawFrameCounter(Graphics& gfx , CoordinateTransformer& ct , float time)
 {
 	timer.Update(time);
 	FrameCnt += 1;
@@ -36,5 +36,5 @@ void FrameShower::DrawFrameCounter(Graphics& gfx , float time)
 	Vec2I pos = Vec2I( Graphics::ScreenWidth - space - frame_str.length() * dim.width ,
 				  space + dim.height );
 
-	font.DrawWords(frame_str, gfx, pos);
+	font.DrawWords(frame_str, gfx, ct , pos);
 }

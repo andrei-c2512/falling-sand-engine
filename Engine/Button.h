@@ -6,13 +6,14 @@
 #include "World.h"
 #include "Dimensions.h"
 #include "Weather.h"
+#include "CoordinateTransformer.h"
 
 class Button {
 public:
 	Button(RectI& rect);
 	Button(RectI& rect, Color& c);
 	Button(RectI& rect, Sprite& sprite);
-	virtual void Draw(Graphics& gfx);
+	virtual void Draw(Graphics& gfx , CoordinateTransformer& ct);
 	virtual void SelectSprite(){};
 	bool         IsPressed(Mouse& mouse) const;
 	bool         IsHovered(Mouse& mouse) const;
@@ -21,13 +22,14 @@ protected:
 	RectI HitBox;
 	Sprite sprite;
 	Color c;
+
 };
 
 class ElementButton : public Button
 {
 public:
 	static constexpr int dim = 20;
-	ElementButton(Vec2I& pos , Type type0)
+	ElementButton( Vec2I& pos , Type type0)
 		:Button(RectI(dim, dim, pos) , c) , type(type0)
 	{
 		auto dimensions = Dimensions<short>(dim, dim);
@@ -75,8 +77,8 @@ class WeatherButton : public Button
 {
 public:
 	static constexpr short dim = 20;
-	WeatherButton(Vec2I& pos,WeatherType type0)
-		:Button(RectI(dim , dim , pos)) , type(type0)
+	WeatherButton( Vec2I& pos,WeatherType type0)
+		:Button( RectI(dim , dim , pos)) , type(type0)
 	{
 		auto dimensions = Dimensions<short>(dim, dim);
 
@@ -103,7 +105,7 @@ private:
 class GameSpeedButtonV1 : public Button
 {
 public:
-	GameSpeedButtonV1(const Color& default, const Color& filler ,RectI& rect)
+	GameSpeedButtonV1( const Color& default, const Color& filler ,RectI& rect)
 		:Button(rect) , default_color(default) , filler_color(filler)
 	{
 		MaxSpeed = 5.0f;
@@ -117,7 +119,7 @@ public:
 	}
 	void  Update(Mouse& mouse);
 	void  DetermineSpeed();
-	void  Draw(Graphics& gfx) override;
+	void  Draw(Graphics& gfx, CoordinateTransformer& ct) override;
 	void  Go(Mouse& mouse);
 	float GetSpeed() const;
 
@@ -140,7 +142,7 @@ public:
 	GameSpeedButton(Button& button, float Speed0)
 		:Speed(Speed0) , Button(button)
 	{}
-	void Draw(Graphics& gfx) override;
+	void Draw(Graphics& gfx, CoordinateTransformer& ct) override;
 	float GetSpeed()const { return Speed; };
 private:
 	float Speed;

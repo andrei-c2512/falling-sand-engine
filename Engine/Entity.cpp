@@ -23,7 +23,7 @@ Entity::Entity(const Entity& entity)
 	hp_bar = entity.hp_bar;
 	sprite = entity.sprite;
 }
-void Entity::Draw(Graphics& gfx)
+void Entity::Draw(Graphics& gfx , CoordinateTransformer& ct)
 {
 	//gfx.DrawSprite(HitBox.left, HitBox.top, sprite,
 	//	RectI(sprite.GetWidth(), sprite.GetHeight(), Vec2I(0, 0)),
@@ -31,15 +31,18 @@ void Entity::Draw(Graphics& gfx)
 
 	int space = 10; // the space between the health bar and the entity
 	Effects::Copy eCopy{};
-	gfx.DrawRect(HitBox, Colors::Red , eCopy);
+
+	Vec2D pos = ct.Transform(HitBox.GetPos());
+
+	gfx.DrawRect(Rect(HitBox.GetDimensions() , std::move(pos)), Colors::Red, eCopy);
 
 	if (hp_bar.show_timer.IsReady() == false)
 	{
 		float cnt = hp_bar.show_timer.GetTime();
 		float limit = hp_bar.show_timer.GetTimeLimit();
 
-		int x = HitBox.left - HpBar::offset;
-		int y = HitBox.top - space;
+		int x = ct.TransformX(HitBox.left - HpBar::offset);
+		int y = ct.TransformY(HitBox.top - space);
 		int bar_width = hp_bar.HpBarWidth();
 
 		if (cnt < limit / 2)

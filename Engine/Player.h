@@ -11,7 +11,7 @@ public:
 	Player(Mouse& mouse ,Sprite& bodysprite  , Sprite& headsprite,  float speed);
 	void GiveWeapon(std::unique_ptr<Weapon> wp);
 	void UpdateMovement(World& world ,Keyboard& kbd , float time);
-	void Draw(Graphics& gfx) override; 
+	void Draw(Graphics& gfx , CoordinateTransformer& ct) override; 
 	bool CheckCollision(Entity& entity) override;
 	bool CheckCollision(NPC& entity);
 	void UseWeapon(float time);

@@ -9,10 +9,10 @@ public:
 	static constexpr int ChunkSize = 40;
 	Sandbox(Mouse& mouse , ParticleEffect& effect);
 	void UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time );
-	void DrawSandbox(Graphics& gfx , Mouse& mouse);
+	void DrawSandbox(Graphics& gfx , CoordinateTransformer& , Mouse& mouse);
 	void ActivateChunk(int index);
 	// for testing
-	void DrawChunkBorders(Graphics& gfx);
+	void DrawChunkBorders(Graphics& gfx , CoordinateTransformer& ct);
 	void UpdateTime(float time);
 
 	Chunk* GetChunk(size_t elemindex);

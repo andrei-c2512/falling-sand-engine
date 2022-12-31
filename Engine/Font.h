@@ -3,11 +3,11 @@
 #include "String.h"
 #include "Dimensions.h"
 #include "Rect.h"
-
+#include "CoordinateTransformer.h"
 class Font {
 public:
 	Font(std::string sprite);
-	void DrawWords(std::string text, Graphics& gfx , Vec2I pos);
+	void DrawWords(std::string text, Graphics& gfx , CoordinateTransformer& ct , Vec2I pos);
 	static constexpr char FirstLetter = ' ';
 	static constexpr char LastLetter = '~';
 

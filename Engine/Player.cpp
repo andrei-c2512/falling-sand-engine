@@ -18,24 +18,26 @@ Player::Player(Mouse& mouse0 , Sprite& bodysprite, Sprite& headsprite,  float sp
 	Speed = 20.0f;
 }
 
-void Player::Draw(Graphics& gfx)
+void Player::Draw(Graphics& gfx , CoordinateTransformer& ct)
 {
 	Effects::Copy e;
 	int x = HitBox.left - (std::abs(sHead.GetWidth() - sBody.GetWidth()) / 2);
-	gfx.DrawSprite(x, HitBox.top + sHead.GetHeight(), sBody, RectI(sBody.GetWidth(),
+	Vec2D pos_body = ct.Transform(Vec2D(x, HitBox.top + sHead.GetHeight()));
+
+	gfx.DrawSprite(std::move(pos_body), sBody, RectI(sBody.GetWidth(),
 		sBody.GetHeight(), Vec2I{ 0 , 0 }), Graphics::GetScreenRect() , e);
-
-
+	
+	
 	Rect Head = Rect(sHead.GetWidth(), sHead.GetHeight(), Vec2D(HitBox.pos()));
-
+	
 	auto pos = Head.GetCenter();
 	auto MousePos = mouse.GetPos();
-	gfx.DrawAngledSprite(HitBox.left , HitBox.top, sHead, RectI(sHead.GetWidth(),
-		sHead.GetHeight(), Vec2I{ 0 , 0 }) , MousePos);
-
+	gfx.DrawAngledSprite(ct.Transform(HitBox.GetPos()), sHead, RectI(sHead.GetWidth(),
+		sHead.GetHeight(), Vec2I{ 0 , 0 }) , ct.Transform(MousePos));
+	
 	gfx.DrawRect_Border(HitBox, Colors::Green, Effects::Copy{});
-
-	pWeapon->Draw(gfx);
+	
+	pWeapon->Draw(gfx, ct);
 }
 
 void Player::UpdateMovement(World& world , Keyboard& kbd , float time)
