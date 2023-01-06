@@ -4,8 +4,8 @@
 template<typename T>
 class Vec2_ {
 public:
-	Vec2_() = default;
-	Vec2_(T x0, T y0)
+	constexpr Vec2_() = default;
+	constexpr Vec2_(T x0, T y0)
 		:
 		x(x0),
 		y(y0)
@@ -13,6 +13,9 @@ public:
 	}
 	Vec2_ operator+(const Vec2_<T>& dumb) const {
 		return Vec2_(x + dumb.x, y + dumb.y);
+	}
+	Vec2_ operator-(const Vec2_<T>& dumb) const {
+		return Vec2_(x - dumb.x, y - dumb.y);
 	}
 	Vec2_& operator+=(const Vec2_<T>& dumb) {
 		return *this = *this + dumb;

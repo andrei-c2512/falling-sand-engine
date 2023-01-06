@@ -253,35 +253,43 @@ public:
 	{
 		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
 
-		if (int(rect.top) <= clip.top)
-		{
-			new_rect.top += clip.top - rect.top;
-		}
-		if (int(rect.left) <= clip.left)
-		{
-			new_rect.left += clip.left - rect.left;
-		}
-		if (int(rect.bottom()) > clip.bottom())
-		{
-			new_rect.height += (clip.bottom() - rect.bottom() - 1);
-		}
-		if (int(rect.right()) > clip.right())
-		{
-			new_rect.width += (clip.right() - rect.right() - 1);
-		}
+	    if (int(rect.top) <= clip.top)
+	    {
+	    	new_rect.top += clip.top - rect.top;
+	    }
+	    if (int(rect.left) <= clip.left)
+	    {
+	    	new_rect.left += clip.left - rect.left;
+	    }
+	    if (int(rect.bottom()) > clip.bottom())
+	    {
+	    	new_rect.height += (clip.bottom() - rect.bottom() - 1);
+	    }
+	    if (int(rect.right()) > clip.right())
+	    {
+	    	new_rect.width += (clip.right() - rect.right() - 1);
+	    }
 
 
-		for (int x = new_rect.left; x < new_rect.right(); x++)
-		{
-			effect(c, *this, x, new_rect.top);
-		}
+		if(new_rect.top == rect.top)
+			for (int x = new_rect.left; x < new_rect.right(); x++)
+			{
+				effect(c, *this, x, new_rect.top);
+			}
+
+		bool left_border = new_rect.left == rect.left;
+		bool right_border = new_rect.right() == rect.right();
 
 		for (int y = new_rect.top + 1; y < new_rect.bottom() - 1; y++)
 		{
-			effect(c, *this, new_rect.left       , y);
-			effect(c, *this, new_rect.right() - 1, y);
+
+			if (left_border);
+				effect(c, *this, new_rect.left       , y);
+			if(right_border)
+				effect(c, *this, new_rect.right() - 1, y);
 		}
 
+		if(new_rect.bottom() == rect.bottom())
 		for (int x = new_rect.left; x < new_rect.right(); x++)
 		{
 			effect(c, *this, x, new_rect.bottom() - 1);
@@ -295,7 +303,7 @@ public:
 	template<typename T ,  typename D>
 	void DrawAngledSprite(int x, int y, Sprite& s, Rect_<T , D>& SpritePortion, Vec2I& pos)
 	{
-		const short StartX = SpritePortion.top - SpritePortion.width / 2;
+		const short StartX = SpritePortion.left - SpritePortion.width / 2;
 		const short StartY = SpritePortion.top - SpritePortion.height / 2;
 	
 		const short StopY = SpritePortion.top + SpritePortion.height / 2;
@@ -607,4 +615,11 @@ private:
 public:
 	static constexpr int ScreenWidth = 800; 
 	static constexpr int ScreenHeight = 600;
+
+	static constexpr int WorldWidth  = 1600;
+	static constexpr int WorldHeight = 1200;
+
+	//adding half of the screen dimensions because the Origin is in the center of the screen
+	static constexpr RectI WorldArea = RectI(WorldWidth, WorldHeight, 
+		Vec2I(-WorldWidth / 2 , -WorldHeight / 2 ));
 };

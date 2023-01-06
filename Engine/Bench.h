@@ -56,7 +56,7 @@ public:
 			nMeasurements++;
 		}
 	}
-	void DrawFrameCounter(Graphics& gfx , CoordinateTransformer& ct)
+	void DrawFrameCounter(Graphics& gfx , Camera& ct)
 	{
 		FrameTimer.Update(BuildTime);
 
@@ -71,7 +71,7 @@ public:
 		int space = 10;
 		auto dim = font.GetLetterDim();
 		Vec2I pos = Vec2I(Graphics::ScreenWidth - space - frame_str.length() * dim.width,
-			space + dim.height);
+			Graphics::ScreenHeight - (space + dim.height));
 
 		font.DrawWords(frame_str, gfx, ct ,  pos);
 	}

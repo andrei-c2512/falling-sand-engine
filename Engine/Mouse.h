@@ -22,7 +22,6 @@
 #include <queue>
 #include "Vec2D.h"
 
-
 class Mouse
 {
 	friend class MainWindow;
@@ -109,10 +108,7 @@ public:
 		return buffer.empty();
 	}
 	void Flush();
-	void UpdateStats()
-	{
 
-	}
 private:
 	void OnMouseMove( int x,int y );
 	void OnMouseLeave();

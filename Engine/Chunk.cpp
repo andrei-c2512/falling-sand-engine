@@ -158,11 +158,11 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 
 	return Action;
 }
-void Chunk::DrawBorder(Graphics& gfx, CoordinateTransformer& ct)
+void Chunk::DrawBorder(Graphics& gfx, Camera& cam)
 {
 	if (Active)
 	{
-		Vec2I world_pos = ct.Transform(PhysicalSize.GetPos());
+		Vec2I world_pos = cam.Transform(PhysicalSize.GetPos());
 		gfx.DrawRect_Border(RectI(PhysicalSize.GetDimensions(), std::move(world_pos)), Colors::Yellow, Effects::Copy{});
 	}
 }
@@ -216,15 +216,15 @@ int Chunk::GetDelta(int index, Direction dir , Dimensions<int> dim) {
 		}
 		break;
 	case Direction::Down:
-		if (index + width < int(dim.GetArea()))
-		{
-			Delta = width;
-		}
-		break;
-	case Direction::Up:
 		if (index - width >= 0)
 		{
 			Delta = -width;
+		}
+		break;
+	case Direction::Up:
+		if (index + width < int(dim.GetArea()))
+		{
+			Delta = +width;
 		}
 		break;
 	default:

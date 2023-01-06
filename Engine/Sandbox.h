@@ -3,16 +3,16 @@
 #include "World.h"
 #include "Weather.h"
 #include "MobList.h"
-
+#include "Camera.h"
 class Sandbox {
 public:
 	static constexpr int ChunkSize = 40;
-	Sandbox(Mouse& mouse , ParticleEffect& effect);
+	Sandbox(Mouse& mouse , ParticleEffect& effect , Camera& camera);
 	void UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time );
-	void DrawSandbox(Graphics& gfx , CoordinateTransformer& , Mouse& mouse);
+	void DrawSandbox(Graphics& gfx , Camera& , Mouse& mouse);
 	void ActivateChunk(int index);
 	// for testing
-	void DrawChunkBorders(Graphics& gfx , CoordinateTransformer& ct);
+	void DrawChunkBorders(Graphics& gfx , Camera& ct);
 	void UpdateTime(float time);
 
 	Chunk* GetChunk(size_t elemindex);

@@ -9,6 +9,7 @@
 #include "Effects.h"
 #include "Attributes.h"
 #include <stdexcept>
+#include "Camera.h"
 
 class World {
 public:
@@ -139,7 +140,7 @@ public:
 		{
 			for (int x = 0; x < width; x++)
 			{
-				Vec2D Pos = Vec2D(float(x * ElemSize), float(y * ElemSize));
+				Vec2D Pos = Vec2D(float(x * ElemSize) + Graphics::WorldArea.left , float(y * ElemSize) + Graphics::WorldArea.top);
 				Elements[y * width + x].Update(Pos);
 			}
 		}
@@ -203,7 +204,7 @@ public:
 
 		return Type(pick.index);
 	}
-	virtual void DrawWorld(Graphics& gfx , CoordinateTransformer& ct )
+	virtual void DrawWorld(Graphics& gfx , Camera& ct )
 	{
 		const int width = BackGround.GetWidth();
 		const int height = BackGround.GetHeight();
@@ -217,8 +218,8 @@ public:
 	}
 
 	static constexpr int ElemSize = 2;
-	static constexpr Dimensions<int> SandboxDim = Dimensions<int>( Graphics::ScreenWidth  / ElemSize , 
-																   Graphics::ScreenHeight / ElemSize );
+	static constexpr Dimensions<int> SandboxDim = Dimensions<int>( Graphics::WorldArea.width  / ElemSize , 
+																   Graphics::WorldArea.height / ElemSize );
 
 	static constexpr int SandSinkChance = 75;
 	static constexpr int WoodFlamability = 50;
@@ -353,16 +354,18 @@ public:
 	}
 	Element* GetElem(Vec2I& pos)
 	{
-		return &Elements[pos.y * SandboxDim.width + pos.x];
+		return &Elements[(pos.y) * SandboxDim.width + pos.x];
 	}
 
 	Vec2I IndexToPos(int index)
 	{
-		return Vec2I(int(index % SandboxDim.width) , int(index / SandboxDim.width ));
+		return Vec2I(int(index % SandboxDim.width) , int(index / SandboxDim.width));
 	}
 	Vec2I ScreenToMatrixPos(Vec2I& pos)
 	{
-		return Vec2I(pos.x / ElemSize , pos.y / ElemSize);
+		//adding half of the sandbox dimensions because the matrix goes equaly in the - and + directions
+		// 
+		return Vec2I(pos.x / ElemSize + SandboxDim.width / 2, pos.y / ElemSize + SandboxDim.height / 2);
 	}
 	int MatrixPosToIndex(Vec2I& pos)
 	{
@@ -405,10 +408,9 @@ struct MoveableElement {
 
 		Convert = false;
 	}
-	void Draw(Graphics& gfx , CoordinateTransformer& ct)
+	void Draw(Graphics& gfx , Camera& ct)
 	{
-
-		gfx.DrawRect(Rect(HitBox.GetDimensions() , ct.Transform(HitBox.GetPos())), Colors::Magenta, Effects::Copy{}, gfx.GetScreenRect());
+		gfx.DrawRect(RectI(HitBox.GetDimensions() , ct.Transform(HitBox.GetPos())), Colors::Magenta, Effects::Copy{}, gfx.GetScreenRect());
 	}
 	Rect HitBox;
 	Attributes atr;
@@ -445,12 +447,12 @@ public:
 
 			if (vel.y > 0)
 			{
-				MoveDown(elem, time, vel.y);
+				MoveUp(elem, time, vel.y);
 				elem.Convert = elem.HitBox.top == pos.y;
 			}
 			else if (vel.y < 0)
 			{
-				MoveUp(elem, time, vel.y);
+				MoveDown(elem, time, vel.y);
 				elem.Convert = elem.HitBox.top == pos.y;
 			}
 
@@ -459,7 +461,7 @@ public:
 				continue;
 			}
 
-			vel.y += Gravity * time * 60.0f;
+			vel.y -= Gravity * time * 60.0f;
 
 			Vec2D new_pos = elem.HitBox.GetPos();
 
@@ -623,7 +625,7 @@ public:
 		}
 	}
 
-	void MoveDown(MoveableElement& elem, float time, float vel)
+	void MoveUp(MoveableElement& elem, float time, float vel)
 	{
 		float AddY = vel * time * 60.0f;
 		//basically i am getting the modulus for a float 
@@ -698,7 +700,7 @@ public:
 		}
 	}
 
-	void MoveUp(MoveableElement& elem, float time, float vel)
+	void MoveDown(MoveableElement& elem, float time, float vel)
 	{
 		float AddY = std::abs(vel * time * 60.0f);
 		int LineY = elem.HitBox.top - World::ElemSize;
@@ -780,7 +782,7 @@ public:
 
 		elem.atr.PassAttributes(*matrix_element);
 	}
-	void DrawWorld(Graphics& gfx , CoordinateTransformer& ct) override {
+	void DrawWorld(Graphics& gfx , Camera& ct) override {
 		World::DrawWorld(gfx , ct);
 		for (auto& particle : particle_list)
 		{

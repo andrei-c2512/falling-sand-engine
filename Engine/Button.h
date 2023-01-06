@@ -6,14 +6,14 @@
 #include "World.h"
 #include "Dimensions.h"
 #include "Weather.h"
-#include "CoordinateTransformer.h"
+#include "Camera.h"
 
 class Button {
 public:
 	Button(RectI& rect);
 	Button(RectI& rect, Color& c);
 	Button(RectI& rect, Sprite& sprite);
-	virtual void Draw(Graphics& gfx , CoordinateTransformer& ct);
+	virtual void Draw(Graphics& gfx , Camera& ct);
 	virtual void SelectSprite(){};
 	bool         IsPressed(Mouse& mouse) const;
 	bool         IsHovered(Mouse& mouse) const;
@@ -119,7 +119,7 @@ public:
 	}
 	void  Update(Mouse& mouse);
 	void  DetermineSpeed();
-	void  Draw(Graphics& gfx, CoordinateTransformer& ct) override;
+	void  Draw(Graphics& gfx, Camera& ct) override;
 	void  Go(Mouse& mouse);
 	float GetSpeed() const;
 
@@ -142,7 +142,7 @@ public:
 	GameSpeedButton(Button& button, float Speed0)
 		:Speed(Speed0) , Button(button)
 	{}
-	void Draw(Graphics& gfx, CoordinateTransformer& ct) override;
+	void Draw(Graphics& gfx, Camera& ct) override;
 	float GetSpeed()const { return Speed; };
 private:
 	float Speed;

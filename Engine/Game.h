@@ -30,7 +30,8 @@
 #include "Weather.h"
 #include <string>
 #include "Bench.h"
-#include "CoordinateTransformer.h"
+#include "Camera.h"
+#include "CoordinateShower.h"
 
 class Game
 {
@@ -53,6 +54,8 @@ private:
 
 	Graphics gfx;
 	CoordinateTransformer ct;
+	CoordinateShower cs;
+	Camera cam;
 
 	FrameTimer Timer;
 	FrameShower FPS;

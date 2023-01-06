@@ -4,12 +4,12 @@ Creator::Creator(RectI& ButtonSize, int Radius , Simulation& world , Weather& we
 	:world(world), Chance(1 , 100),weather(weather0),explosion(Explosion(world))
 {
 	SpawnRadius = 15;
-	ToBeSpawned = Type::Steam;
+	ToBeSpawned = Type::Stone;
 
 	for (size_t i = 0; i < (int)Type::Count ; i++)
 	{
-		int x = ElemButtonPos.x + (i % Max_rows)* (ElementButton::dim + space);
-		int y = ElemButtonPos.y + (i) / Max_rows  * (ElementButton::dim + space);
+		int x = ElemButtonPos.x + (i % Max_rows) * (ElementButton::dim + space);
+		int y = ElemButtonPos.y - (i / Max_rows) * (ElementButton::dim + space);
 		EButtons.emplace_back(Vec2I{ x , y },Type(i));
 	}
 
@@ -41,7 +41,7 @@ Creator::Creator(RectI& ButtonSize, int Radius , Simulation& world , Weather& we
 }
 
 
-void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& sandbox ,ParticleEffect& list)
+void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& sandbox ,ParticleEffect& list , Camera& camera)
 {
 	if (!IsHoveringAButton(mouse) && ToBeSpawned != Type::None)
 	{
@@ -49,7 +49,7 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 		{
 			if (mouse.LeftIsPressed())
 			{
-				auto elem_list = GetSpawnableElements(mouse);
+				auto elem_list = GetSpawnableElements(mouse , camera);
 				for (auto& n : elem_list)
 				{
 					if (ToBeSpawned == Type::Water)
@@ -110,15 +110,15 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 	}
 }
 
-void Creator::DrawButtons(Graphics& gfx , CoordinateTransformer& ct)
+void Creator::DrawButtons(Graphics& gfx , Camera& cam)
 {
 	for (size_t i = 0; i < (int)Type::Count; i++)
 	{
-		EButtons[i].Draw(gfx , ct);
+		EButtons[i].Draw(gfx , cam);
 	}
 	for (size_t i = 0; i < (int)WeatherType::Count; i++)
 	{
-		WButtons[i].Draw(gfx , ct);
+		WButtons[i].Draw(gfx , cam);
 	}
 }
 
@@ -148,7 +148,7 @@ bool Creator::CheckButtons(Mouse& mouse)
 }
 
 
-void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransformer& ct)
+void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , Camera& cam)
 {
 	Vec2_<int> MousePos = Vec2_<int>( mouse.GetPosX() , mouse.GetPosY() );
 
@@ -184,7 +184,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransfo
 
 			InfoPos.x = Graphics::ScreenWidth - ElemName.size() * dim1.width - Space - (count.length() + 2) * dim1.width;
 			const std::string result = ElemName + "(" + count + ")";
-			font.DrawWords(result, gfx, ct , InfoPos);
+			font.DrawWords(result, gfx, cam , InfoPos);
 		}
 		else
 		{
@@ -199,7 +199,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransfo
 					const std::string elem_name = ElemName_map[Type(bIndex)];
 					const int ElemNameX = (Graphics::ScreenWidth - elem_name.length() * font_dim.width) / 2;
 
-					font.DrawWords(elem_name, gfx, ct , Vec2I(ElemNameX, InfoY));
+					font.DrawWords(elem_name, gfx, cam , Vec2I(ElemNameX, InfoY));
 					break;
 				}
 			}
@@ -215,7 +215,7 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransfo
 						const std::string weather_name = WeatherName_map[WeatherType(bIndex)];
 						const int WeatherNameX = (Graphics::ScreenWidth - weather_name.length() * font_dim.width) / 2;
 
-						font.DrawWords(weather_name, gfx, ct , Vec2I(WeatherNameX, InfoY));
+						font.DrawWords(weather_name, gfx, cam , Vec2I(WeatherNameX, InfoY));
 						break;
 					}
 				}
@@ -225,13 +225,14 @@ void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransfo
 	}
 }
 
-void Creator::DrawSpawnSurface(Graphics& gfx , CoordinateTransformer& ct ,  Mouse& mouse)
+void Creator::DrawSpawnSurface(Graphics& gfx , Camera& ct ,  Mouse& mouse)
 {
 
 	if (ToBeSpawned != Type::None)
 	{
 		if (!mouse.RightIsPressed())
 		{
+
 			int Radius = 0;
 			Color circle_color;
 			if (ToBeSpawned != Type::Explosion)
@@ -244,22 +245,29 @@ void Creator::DrawSpawnSurface(Graphics& gfx , CoordinateTransformer& ct ,  Mous
 				Radius = ExplosionRadius;
 				circle_color = Colors::Yellow;
 			}
+			//things are calculated to matrix level and not screen coords
+			auto SandboxDim = world.GetSandboxDim();
 
-			auto WorldPos = world.ScreenToMatrixPos(mouse.GetPos());
+			auto WorldPos = CoordinateShower::DetermineCoordinates(mouse , ct);
+			WorldPos = Vec2I(WorldPos.x / World::ElemSize + SandboxDim.width / 2,
+				             WorldPos.y / World::ElemSize + SandboxDim.height / 2);
+
 			int dim = Radius * 2;
 			RectI surf = RectI(dim, dim, Vec2I(WorldPos.x - Radius, WorldPos.y - Radius));
 
 			std::vector<size_t> Elements;
 
-			auto SandboxDim = world.GetSandboxDim();
 			for (int y = surf.top; y < surf.bottom(); y++)
 			{
 				for (int x = surf.left; x < surf.right(); x++)
 				{
-					size_t ind = y * SandboxDim.width + x;
-					if (ind < SandboxDim.GetArea())
+					int ind = (y) * SandboxDim.width + x;
+					if (ind < SandboxDim.GetArea() && ind >= 0)
 					{
-						Vec2I ElemLoc = world.IndexToPos(ind);
+						//Vec2I ElemLoc = world.IndexToPos(ind);
+						int x = ind % SandboxDim.width, y = ind / SandboxDim.width;
+						Vec2I ElemLoc = Vec2I(int(x) ,
+											  int(y ));
 
 						float dist = ElemLoc.GetLenght(WorldPos);
 
@@ -274,7 +282,9 @@ void Creator::DrawSpawnSurface(Graphics& gfx , CoordinateTransformer& ct ,  Mous
 			for (auto& n : Elements)
 			{
 				RectI rect = world.GetElem(n)->GetRect();
-				Vec2I pos = ct.Transform(rect.GetPos());
+				Vec2I pos = rect.GetPos();
+				//pos.y -= Graphics::ScreenHeight;
+				pos = ct.Transform(pos);
 				gfx.DrawRect(RectI(rect.GetDimensions() , std::move(pos)), circle_color, Effects::Copy{});
 			}
 		}
@@ -307,10 +317,14 @@ bool Creator::IsHoveringAButton(Mouse& mouse) const
 	}
 	return false;
 }
-std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse)
+std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse , Camera& camera)
 {
-	auto WorldPos = world.ScreenToMatrixPos(mouse.GetPos());
+	auto WorldPos = CoordinateShower::DetermineCoordinates(mouse , camera);
+	//converting to matrix coordinates
+	WorldPos /= World::ElemSize;
+	WorldPos = { WorldPos.x + World::SandboxDim.width / 2 , WorldPos.y + World::SandboxDim.height / 2};
 
+	// // // // //
 	int dim = SpawnRadius * 2;
 	RectI surf = RectI(dim, dim, Vec2I(WorldPos.x - SpawnRadius, WorldPos.y - SpawnRadius));
 

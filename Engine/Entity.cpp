@@ -23,7 +23,7 @@ Entity::Entity(const Entity& entity)
 	hp_bar = entity.hp_bar;
 	sprite = entity.sprite;
 }
-void Entity::Draw(Graphics& gfx , CoordinateTransformer& ct)
+void Entity::Draw(Graphics& gfx , Camera& cam)
 {
 	//gfx.DrawSprite(HitBox.left, HitBox.top, sprite,
 	//	RectI(sprite.GetWidth(), sprite.GetHeight(), Vec2I(0, 0)),
@@ -32,17 +32,17 @@ void Entity::Draw(Graphics& gfx , CoordinateTransformer& ct)
 	int space = 10; // the space between the health bar and the entity
 	Effects::Copy eCopy{};
 
-	Vec2D pos = ct.Transform(HitBox.GetPos());
+	Vec2I pos = cam.Transform(HitBox.GetPos());
 
-	gfx.DrawRect(Rect(HitBox.GetDimensions() , std::move(pos)), Colors::Red, eCopy);
+	gfx.DrawRect(RectI(HitBox.GetDimensions() , std::move(pos)), Colors::Red, eCopy);
 
 	if (hp_bar.show_timer.IsReady() == false)
 	{
 		float cnt = hp_bar.show_timer.GetTime();
 		float limit = hp_bar.show_timer.GetTimeLimit();
 
-		int x = ct.TransformX(HitBox.left - HpBar::offset);
-		int y = ct.TransformY(HitBox.top - space);
+		int x = cam.TransformX(HitBox.left - HpBar::offset);
+		int y = cam.TransformY(HitBox.top - space);
 		int bar_width = hp_bar.HpBarWidth();
 
 		if (cnt < limit / 2)
@@ -82,11 +82,11 @@ void Entity::Move(World& world , float time)
 	
 	if (vel.y > 0.0f)
 	{
-		MoveDown(world, time);
+		MoveUp(world, time);
 	}
 	else if (vel.y < 0.0f)
 	{
-		MoveUp(world, time);
+		MoveDown(world, time);
 	}
 
 	hp_bar.show_timer.Update(time);
@@ -682,7 +682,7 @@ void Entity::MoveLeft(World& world, float time)
 	}
 }
 
-void Entity::MoveDown(World& world, float time)
+void Entity::MoveUp(World& world, float time)
 {
 	float AddY = vel.y * time * 60.0f;
 
@@ -754,7 +754,7 @@ void Entity::MoveDown(World& world, float time)
 	}
 }
 
-void Entity::MoveUp(World& world, float time)
+void Entity::MoveDown(World& world, float time)
 {
 	float AddY = std::abs(vel.y * time * 60.0f);
 	int LineY = HitBox.top - World::ElemSize;

@@ -121,7 +121,7 @@ public:
 	static constexpr int AcidDestroyChance = 30;
 public:
 	Element(RectI& rect);
-	void DrawElement(Graphics& gfx, CoordinateTransformer& ct , Sprite& background);
+	void DrawElement(Graphics& gfx, Camera& ct , Sprite& background);
 	void Update(Vec2D newpos);
 	void SetVel(Vec2D newvel);
 	void SwapPositions(Element& elem);

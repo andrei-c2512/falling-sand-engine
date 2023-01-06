@@ -27,11 +27,13 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
+	ct(gfx),
+	cam(ct),
+	cs(cam),
 	Timer(),
 	sprite("dib.bmp"),
 	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather()),
-	World(wnd.mouse , particle_list),
-	ct(gfx)
+	World(wnd.mouse , particle_list , cam)
 {
 }
 
@@ -57,7 +59,7 @@ void Game::UpdateModel()
 	CheckButtons();
 
 	if(AreButtonsHovered() == false)
-		Builder.Spawn(wnd.mouse , MouseStats , World , particle_list);
+		Builder.Spawn(wnd.mouse , MouseStats , World , particle_list , cam);
 	
 	Builder.CheckButtons(wnd.mouse);
 	Builder.ChangeSpawnArea(wnd.mouse);
@@ -68,7 +70,26 @@ void Game::UpdateModel()
 		World.UpdateSandbox(wnd.mouse , wnd.kbd, dt);
 	}
 	MouseStats.Update(wnd.mouse);
+	if (wnd.kbd.KeyIsPressed(VK_LEFT))
+	{
+		cam.MoveLeft(-5);
+	}
+	else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+	{
+		cam.MoveRight(5);
+	}
 
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		cam.MoveUp(5);
+	}
+	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		cam.MoveDown(-5);
+	}
+
+	cam.MouseMovement(wnd.mouse);
+	cam.UpdateMovement(dt);
 }
 
 void Game::ComposeFrame()
@@ -77,24 +98,24 @@ void Game::ComposeFrame()
 	
 	gfx.ResetBloom();
 	
-	World.DrawSandbox(gfx , ct ,  wnd.mouse);
-	Builder.DrawButtons(gfx , ct);
-	Builder.ShowHoveredElement(wnd.mouse, gfx, ct);
-	Builder.DrawSpawnSurface(gfx, ct , wnd.mouse);
+	World.DrawSandbox(gfx , cam ,  wnd.mouse);
+	Builder.DrawButtons(gfx , cam);
+	//Builder.ShowHoveredElement(wnd.mouse, gfx, cam);
+	Builder.DrawSpawnSurface(gfx, cam , wnd.mouse);
 	
-	//FPS.DrawFrameCounter(gfx, dt);
-	particle_list.Draw(gfx , ct);
+	//FPS.DrawFrameCounter(gfx, cam , dt);
+	particle_list.Draw(gfx , cam);
 	
 	for (auto& button : button_list)
 	{
-		button.Draw(gfx , ct);
+		button.Draw(gfx , cam);
 	}
 	/////////////////////////////////////////////////////////
 	//gfx.ApplyBloom();
-	
+	cs.ShowCoordinates(gfx, wnd.mouse);
 	bench.UploadTime();
-	bench.DrawFrameCounter(gfx , ct);
-
+	bench.DrawFrameCounter(gfx , cam);
+	gfx.DrawRect_Border(Graphics::WorldArea, Colors::Magenta, Effects::Copy{}, Graphics::GetScreenRect());
 	//if (wnd.mouse.LeftIsPressed())
 	//{
 	//	auto list = AStarAlgorithm::ApplyAlgorithm(Vec2I(200, 200), wnd.mouse.GetPos(),

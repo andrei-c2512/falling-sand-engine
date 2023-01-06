@@ -1,9 +1,9 @@
 #include "Sandbox.h"
 #include "assert.h"
 
-Sandbox::Sandbox(Mouse& mouse , ParticleEffect& effect) 
+Sandbox::Sandbox(Mouse& mouse , ParticleEffect& effect , Camera& camera) 
 	:weather(simulation , WeatherType::Clear , size_t(2)),
-	mob_list(simulation ,effect , mouse)
+	mob_list(simulation ,effect , mouse , camera)
 {
 	{
 		auto dim = simulation.GetSandboxDim();
@@ -101,11 +101,11 @@ void Sandbox::UpdateTime(float time)
 	UpdateTimer.Update(time);
 }
 
-void Sandbox::DrawSandbox(Graphics& gfx , CoordinateTransformer& ct , Mouse& mouse)
+void Sandbox::DrawSandbox(Graphics& gfx , Camera& cam , Mouse& mouse)
 {
-	simulation.DrawWorld(gfx , ct);
-	mob_list.DrawMobs(gfx , ct);
-	DrawChunkBorders(gfx , ct);
+	simulation.DrawWorld(gfx , cam);
+	mob_list.DrawMobs(gfx , cam);
+	DrawChunkBorders(gfx , cam);
 }
 
 void Sandbox::ActivateChunk(int index)
@@ -114,11 +114,11 @@ void Sandbox::ActivateChunk(int index)
 	Chunk_list[ChunkInd].Active = true;
 }
 
-void Sandbox::DrawChunkBorders(Graphics& gfx ,CoordinateTransformer& ct )
+void Sandbox::DrawChunkBorders(Graphics& gfx ,Camera& cam )
 {
 	for (auto& chunk : Chunk_list)
 	{
-		//chunk.DrawBorder(gfx , ct);
+		//chunk.DrawBorder(gfx , cam);
 	}
 }
 

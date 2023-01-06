@@ -6,8 +6,8 @@
 template <typename T , typename D>
 class Rect_ {
 public:
-	Rect_() = default;
-	Rect_(T left0, T top0, T right0, T bottom0)
+	constexpr Rect_() = default;
+	constexpr Rect_(T left0, T top0, T right0, T bottom0)
 		:left(left0),
 		top(top0),
 		width(D(std::abs(right0 - left0))),
@@ -15,7 +15,7 @@ public:
 	{
 	}
 
-	Rect_(Vec2_<T>& TopLeft0, Vec2_<T>& BottomRight0)
+	constexpr Rect_(Vec2_<T>& TopLeft0, Vec2_<T>& BottomRight0)
 		:left(TopLeft0.x),
 		top(TopLeft0.y),
 		width(T(std::abs(TopLeft0.x - BottomRight0.x))),
@@ -37,12 +37,12 @@ public:
 
 	}
 
-	Rect_(D width0, D height0, Vec2_<T>& pos)
+	constexpr Rect_(D width0, D height0, Vec2_<T>& pos)
 		:left(pos.x), top(pos.y),
 		width(width0), height(height0)
 	{
 	}
-	Rect_(Dimensions<D> dim, Vec2_<T>& pos)
+	constexpr Rect_(Dimensions<D> dim, Vec2_<T>& pos)
 		:left(pos.x), top(pos.y),
 		width(dim.width), height(dim.height)
 	{
@@ -68,7 +68,7 @@ public:
 
 	bool PointInRect(Vec2_<T>& point) const {
 		return (point.x <= left + width && point.x >= left &&
-			point.y <= top + height && point.y >= top);
+			point.y >= top - height && point.y <= top);
 	}
 
 	Rect_ operator* (T number) {

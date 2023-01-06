@@ -4,7 +4,7 @@
 #include <memory>
 #include "NPC.h"
 #include "World.h"
-
+#include "Camera.h"
 class MobList {
 public:
 	enum class MobType {
@@ -13,10 +13,10 @@ public:
 		BigMama
 	};
 public:
-	MobList(Simulation& world0 , ParticleEffect& effect , Mouse& mouse)
+	MobList(Simulation& world0 , ParticleEffect& effect , Mouse& mouse , Camera& camera)
 		:Zombie(Entity(Rect(25, 25, Vec2D(0, 0)), Sprite(Dimensions<short>(10, 15), Colors::Red), 10, 100, 2.0f)),
-		player(mouse , Sprite(Dimensions<short>(10, 20), Colors::Yellow), Sprite(Dimensions<short>(10, 10), Colors::Yellow)
-			, 10.0f),
+		player(mouse , Sprite(Dimensions<short>(10, 20), Colors::Yellow), Sprite(Dimensions<short>(10, 10), Colors::Yellow) ,
+			 camera , 5.0f),
 		simulation(world0)
 	{
 		auto proj = std::make_unique<Explosive>(Explosive(Projectile(Rect(5, 5, Vec2D(5, 5)), simulation, 10.0f), effect));
@@ -51,13 +51,13 @@ public:
 				return npc->IsDead();
 			});
 	}
-	void DrawMobs(Graphics& gfx , CoordinateTransformer& ct)
+	void DrawMobs(Graphics& gfx , Camera& cam)
 	{
 		for (auto& entity : entity_list)
 		{
-			entity->Draw(gfx , ct);
+			entity->Draw(gfx , cam);
 		}
-		player.Draw(gfx , ct);
+		player.Draw(gfx , cam);
 	}
 	void SpawnMob(MobType mobtype)
 	{

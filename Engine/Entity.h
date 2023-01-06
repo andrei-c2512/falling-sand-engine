@@ -207,7 +207,7 @@ public:
 	Entity() = default;
 	Entity(Rect rect, Sprite sprite, float dmg, int health, float speed);
 	Entity(const Entity& entity);
-	virtual void Draw(Graphics& gfx , CoordinateTransformer& ct);
+	virtual void Draw(Graphics& gfx , Camera& ct);
 	void SetPos(Vec2I& pos);
 	void Move (World& world  ,float time);
 	void MoveX(World& world , float time);

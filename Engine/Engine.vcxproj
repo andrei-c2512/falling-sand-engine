@@ -141,8 +141,10 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlurProcessor.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="CiobanuMath.h" />
+    <ClInclude Include="CoordinateShower.h" />
     <ClInclude Include="CoordinateTransformer.h" />
     <ClInclude Include="Creator.h" />
     <ClInclude Include="Dimensions.h" />
@@ -184,6 +186,7 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="CoordinateShower.cpp" />
     <ClCompile Include="Creator.cpp" />
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Element.cpp" />

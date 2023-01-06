@@ -17,10 +17,10 @@ Button::Button(RectI& rect, Sprite& sprite0)
 	Selected = false;
 
 }
-void Button::Draw(Graphics& gfx, CoordinateTransformer& ct)
+void Button::Draw(Graphics& gfx, Camera& cam)
 {
 	Effects::Copy e;
-	Vec2I button_pos = ct.Transform(HitBox.GetPos());
+	Vec2I button_pos = cam.ToCamera(HitBox.GetPos());
 	gfx.DrawSprite(std::move(button_pos), sprite, RectI(HitBox.width, HitBox.height, Vec2I(0, 0))
 		, Graphics::GetScreenRect(), e);
 }
@@ -86,7 +86,7 @@ bool Button::IsPressed(Mouse& mouse) const
 
 	if(mouse.LeftIsPressed())
 	{
-		if (HitBox.PointInRect(MousePos))
+		if (HitBox.PointInRect(CoordinateTransformer::TransformMousePos(mouse)))
 		{
 			return true;
 		}
@@ -105,7 +105,7 @@ Type ElementButton::GetType() const
 
 bool Button::IsHovered(Mouse& mouse) const
 {
-	return HitBox.PointInRect(mouse.GetPos());
+	return HitBox.PointInRect(CoordinateTransformer::TransformMousePos(mouse));
 }
 
 void GameSpeedButtonV1::Update(Mouse& mouse)
@@ -144,22 +144,22 @@ void GameSpeedButtonV1::Go(Mouse& mouse) {
 	}
 }
 
-void GameSpeedButtonV1::Draw(Graphics& gfx, CoordinateTransformer& ct)
+void GameSpeedButtonV1::Draw(Graphics& gfx, Camera& cam)
 {
 	//pos of the unfilled part of the bar
-	Vec2I unfilled_pos = ct.Transform(HitBox.GetPos());
+	Vec2I unfilled_pos = cam.ToCamera(HitBox.GetPos());
 	gfx.DrawRect(RectI(HitBox.width, HitBox.height - last_pressY, Vec2I(std::move(unfilled_pos))),
 		default_color , Effects::Copy{});
 
 	//pos of the filled part of the bar
-	Vec2I filled_pos = ct.Transform(Vec2I(HitBox.left , HitBox.top + (HitBox.height - last_pressY)));
+	Vec2I filled_pos = cam.ToCamera(Vec2I(HitBox.left , HitBox.top + (HitBox.height - last_pressY)));
 	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(std::move(filled_pos))),
 		filler_color, Effects::Copy{});
 }
 
-void GameSpeedButton::Draw(Graphics& gfx, CoordinateTransformer& ct)
+void GameSpeedButton::Draw(Graphics& gfx, Camera& cam)
 {
 	Effects::Chroma chroma = { Colors::Magenta };
-	Vec2I pos = ct.Transform(Vec2I(HitBox.GetPos()));
+	Vec2I pos = cam.ToCamera(Vec2I(HitBox.GetPos()));
 	gfx.DrawSprite(std::move(pos), sprite, sprite.GetRect(), Graphics::GetScreenRect(), chroma);
 }

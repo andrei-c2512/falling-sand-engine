@@ -139,11 +139,11 @@ void Element::Create(Type newtype)
 	}
 }
 
-void Element::DrawElement(Graphics& gfx, CoordinateTransformer& ct , Sprite& sprite)
+void Element::DrawElement(Graphics& gfx, Camera& cam , Sprite& sprite)
 {
 	if (state != State::Empty)
 	{
-		Vec2I pos = ct.Transform(hBox.GetPos());
+		Vec2I pos = cam.Transform(hBox.GetPos());
 		RectI new_rect = RectI(hBox.GetDimensions(), std::move(pos));
 		if (type == Type::Water)
 		{

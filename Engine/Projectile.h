@@ -16,7 +16,7 @@ public:
 	virtual void Destroy();
 	void Launch(Vec2D& vel0, Vec2D& pos0);
 	virtual void Travel(float time);
-	void DrawProjectile(Graphics& gfx , CoordinateTransformer& ct , Color c);
+	void DrawProjectile(Graphics& gfx , Camera& ct , Color c);
 protected:
 	void MoveX(float time);
 	void MoveY(float time);

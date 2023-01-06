@@ -5,13 +5,14 @@
 #include "Entity.h"
 #include "NPC.h"
 #include <forward_list>
+#include "Camera.h"
 
 class Player : public Entity{
 public:
-	Player(Mouse& mouse ,Sprite& bodysprite  , Sprite& headsprite,  float speed);
+	Player(Mouse& mouse ,Sprite& bodysprite  , Sprite& headsprite, Camera& camera ,  float speed);
 	void GiveWeapon(std::unique_ptr<Weapon> wp);
 	void UpdateMovement(World& world ,Keyboard& kbd , float time);
-	void Draw(Graphics& gfx , CoordinateTransformer& ct) override; 
+	void Draw(Graphics& gfx , Camera& ct) override; 
 	bool CheckCollision(Entity& entity) override;
 	bool CheckCollision(NPC& entity);
 	void UseWeapon(float time);
@@ -26,8 +27,8 @@ private:
 	Mouse& mouse;
 	Sprite sBody;
 	Sprite sHead;
-
-	float Speed = 10.0f;
+	Camera& camera;
+	float Speed = 5.0f;
 
 	float Gravity = 15.0f;
 	float Friction = 0.5f;

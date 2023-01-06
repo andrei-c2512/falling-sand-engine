@@ -7,7 +7,7 @@
 #include "Element.h"
 #include <functional>
 #include <assert.h>
-#include "CoordinateTransformer.h"
+#include "Camera.h"
 
 extern RNG Chance;
 
@@ -76,7 +76,7 @@ public:
 	void Update_Gas(int index, float time);
 	void Update_Acid(int index);
 	bool InBounds(int index, World& world) const;
-	void DrawBorder(Graphics& gfx, CoordinateTransformer& ct);
+	void DrawBorder(Graphics& gfx, Camera& ct);
 
 	static int  GetDelta(int index, Direction direction , Dimensions<int> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
 

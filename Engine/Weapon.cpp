@@ -92,14 +92,14 @@ void RangedWp::CoolDowns(float time)
 	Weapon::CoolDowns(time);
 }
 
-void RangedWp::DrawProjectiles(Graphics& gfx , CoordinateTransformer& ct , Color c)
+void RangedWp::DrawProjectiles(Graphics& gfx , Camera& ct , Color c)
 {
 	for (auto& proj : proj_list)
 	{
 		proj->DrawProjectile(gfx, ct , c);
 	}
 }
-void RangedWp::Draw(Graphics& gfx , CoordinateTransformer& ct)
+void RangedWp::Draw(Graphics& gfx , Camera& ct)
 {
 	DrawProjectiles(gfx, ct ,  Colors::Red);
 }

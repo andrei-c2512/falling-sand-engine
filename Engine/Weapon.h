@@ -11,7 +11,7 @@ class Weapon {
 public:
 	Weapon(const Rect* owner, int damage , float usetimer);
 
-	virtual void Draw(Graphics& gfx , CoordinateTransformer& ct) {};
+	virtual void Draw(Graphics& gfx , Camera& ct) {};
 	virtual void CoolDowns(float time);
 	virtual void Use(Vec2D& pos) {};
 	virtual void Update(float time);
@@ -42,14 +42,14 @@ public:
 
 	//overrides
 	std::forward_list<Rect> GetWeaponHitBoxes() const override;
-	void Draw(Graphics& gfx , CoordinateTransformer& ct) override;
+	void Draw(Graphics& gfx , Camera& ct) override;
 	void Use(Vec2D& pos)                              override;
 	bool Collision(Rect& rect)						  override;
 	void Update(float time)							  override;
 	void CoolDowns(float time)						  override;
 	void Update_projectiles(float time);
 
-	void DrawProjectiles(Graphics& gfx, CoordinateTransformer& ct , Color c);
+	void DrawProjectiles(Graphics& gfx, Camera& ct , Color c);
 	// getters
 	int GetCapacity() const;
 	virtual int GetDamage() const override;

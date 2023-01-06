@@ -8,7 +8,8 @@
 #include "Weather.h"
 #include "Explosion.h"
 #include <map>
-#include "CoordinateTransformer.h"
+#include "Camera.h"
+#include "CoordinateShower.h"
 class Creator {
 public:
 	enum class Action {
@@ -20,16 +21,15 @@ public:
 	};
 public:
 	Creator(RectI& ButtonSize, int Radius , Simulation& world , Weather& weather);
-	void Spawn(Mouse& mouse , MouseLastFrameStats& previous_stats, Sandbox& sandbox , ParticleEffect& list);
+	void Spawn(Mouse& mouse , MouseLastFrameStats& previous_stats, Sandbox& sandbox , ParticleEffect& list , Camera& camera);
 	void ChangeSpawnArea(Mouse& mouse);
-	void DrawButtons(Graphics& gfx , CoordinateTransformer& ct);
-	void DrawSpawnSurface(Graphics& gfx , CoordinateTransformer& ct , Mouse& mouse);
+	void DrawButtons(Graphics& gfx , Camera& ct);
+	void DrawSpawnSurface(Graphics& gfx , Camera& ct , Mouse& mouse);
 	bool CheckButtons(Mouse& mouse);
 	bool IsHoveringAButton(Mouse& mouse) const;
-	
-	std::vector<size_t> GetSpawnableElements(Mouse& mouse);
+	std::vector<size_t> GetSpawnableElements(Mouse& mouse , Camera& camera);
 
-	void ShowHoveredElement(Mouse& mouse, Graphics& gfx , CoordinateTransformer& ct);
+	void ShowHoveredElement(Mouse& mouse, Graphics& gfx , Camera& ct);
 	
 private:
 	float SpawnRadius;
@@ -49,7 +49,7 @@ private:
 	Font font = { "Fixedsys16x28.bmp" };
 
 	RNG Chance;
-	Vec2I ElemButtonPos = { 10 , 10 };
+	Vec2I ElemButtonPos = { 10 , 590 };
 	Vec2I WeatherButtonPos = { 10 , 30 + ((int(Type::Count) / (Max_rows)) + 1) * (ElementButton::dim + space)};
 
 	int InfoY = 30;
