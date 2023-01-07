@@ -37,6 +37,13 @@ public:
 		pos.y -= Graphics::ScreenHeight;
 		pos.y = -pos.y;
 		return pos;
+
+	}
+	static Vec2I TransformScrPos(Vec2I pos)
+	{
+		pos.y -= Graphics::ScreenHeight;
+		pos.y = -pos.y;
+		return pos;
 	}
 private:
 	Graphics& gfx;

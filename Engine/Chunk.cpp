@@ -34,7 +34,7 @@ void Chunk::Evaluate_Moves(float time ,Order order)
 		}
 		auto dim = world.GetSandboxDim();
 		std::vector<World::Move> result;
-		for (int y = Size.top ; y < Size.bottom() ; y++)
+		for (int y = Size.bottom ; y < Size.top() ; y++)
 		{
 			for (int x = StartX; x != EndX; x += AddX)
 			{
@@ -132,7 +132,7 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 	int Spread = 5;
 
 	int right = Size.right();
-	int bottom = Size.bottom();
+	int top = Size.top();
 
 	if (pos.x >= Size.left && pos.x <= Size.left + (Spread))
 	{
@@ -143,11 +143,11 @@ std::pair<bool , Chunk::NextMove> Chunk::IsElemAtBorder(int index)
 		Dir.dir1 = Direction::Right;
 	}
 
-	if (pos.y >= Size.top && pos.y <= Size.top + (Spread))
+	if (pos.y >= Size.bottom && pos.y <= Size.bottom + (Spread))
 	{
 		Dir.dir2 = Direction::Up;
 	}
-	else if (pos.y <= bottom && pos.y >= bottom - (Spread))
+	else if (pos.y <= top && pos.y >= top - (Spread))
 	{
 		Dir.dir2 = Direction::Down;
 	}
@@ -172,8 +172,8 @@ bool Chunk::InBounds(int index, World& world) const
 	auto dim = world.GetSandboxDim();
 	const Vec2_<int> pos = Vec2I( int(index / dim.width) , int(index % dim.width ));
 
-	return pos.x >= Size.left && pos.x <= Size.left + Size.width &&
-		pos.y >= Size.top && pos.y <= Size.top + Size.height;
+	return pos.x >= Size.left && pos.x <= Size.right() &&
+		pos.y >= Size.bottom && pos.y <= Size.top();
 }
 
 

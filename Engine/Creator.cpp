@@ -69,23 +69,19 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 			}
 			else if (mouse.RightIsPressed())
 			{
-				if (previous_stats.RightIsPressed())
+				if (!previous_stats.RightIsPressed())
 				{
-
-				}
-				else
-				{
-					SpawnLoc = mouse.GetPos();
+					SpawnLoc = CoordinateShower::DetermineCoordinates(mouse , camera);
 				}
 			}
 			else if (!mouse.RightIsPressed() && previous_stats.RightIsPressed())
 			{
-				Vec2I last_pos = previous_stats.GetPos();
+				Vec2I last_pos = CoordinateShower::DetermineCoordinates(previous_stats.GetPos() , camera);
 				RectI Zone = RectI(world.ScreenToMatrixPos(SpawnLoc),
 					world.ScreenToMatrixPos(last_pos));
 
 				auto dim = world.GetSandboxDim();
-				for (int y = Zone.top; y != Zone.bottom(); y += 1)
+				for (int y = Zone.bottom; y != Zone.top(); y += 1)
 				{
 					for (int x = Zone.left; x != Zone.right(); x += 1)
 					{
@@ -257,7 +253,7 @@ void Creator::DrawSpawnSurface(Graphics& gfx , Camera& ct ,  Mouse& mouse)
 
 			std::vector<size_t> Elements;
 
-			for (int y = surf.top; y < surf.bottom(); y++)
+			for (int y = surf.bottom; y < surf.top(); y++)
 			{
 				for (int x = surf.left; x < surf.right(); x++)
 				{
@@ -283,14 +279,16 @@ void Creator::DrawSpawnSurface(Graphics& gfx , Camera& ct ,  Mouse& mouse)
 			{
 				RectI rect = world.GetElem(n)->GetRect();
 				Vec2I pos = rect.GetPos();
-				//pos.y -= Graphics::ScreenHeight;
 				pos = ct.Transform(pos);
 				gfx.DrawRect(RectI(rect.GetDimensions() , std::move(pos)), circle_color, Effects::Copy{});
 			}
 		}
 		else
 		{
-			RectI Zone = RectI(ct.Transform(mouse.GetPos()), ct.Transform(SpawnLoc));
+			RectI Zone = RectI(ct.Transform(CoordinateShower::DetermineCoordinates(mouse , ct))
+							 , ct.Transform(SpawnLoc));
+
+			gfx.DrawRect(RectI(10 , 10 , ct.Transform(CoordinateShower::DetermineCoordinates(mouse, ct))), Colors::Green, Effects::Copy{});
 			gfx.DrawRect_Border(std::move(Zone), Colors::Green, Effects::Copy{});
 		}
 	}
@@ -331,7 +329,7 @@ std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse , Camera& camera)
 	std::vector<size_t> Elements;
 
 	auto SandboxDim = world.GetSandboxDim();
-	for (int y = surf.top; y < surf.bottom(); y++)
+	for (int y = surf.bottom; y < surf.top(); y++)
 	{
 		for (int x = surf.left; x < surf.right(); x++)
 		{

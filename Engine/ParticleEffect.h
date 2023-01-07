@@ -44,12 +44,12 @@ private:
 
 		float AddX = 60.0f * time * vel.x;
 		float AddY = 60.0f * time * vel.y;
-		RectI rect = RectI(HitBox.width, HitBox.height, Vec2I(HitBox.left + int(AddX), HitBox.top + int(AddY)));
+		RectI rect = RectI(HitBox.width, HitBox.height, Vec2I(HitBox.left + int(AddX), HitBox.bottom + int(AddY)));
 
 		if (Graphics::WithinScreen(rect))
 		{
 			HitBox.left = std::move(rect.left);
-			HitBox.top = std::move(rect.top);
+			HitBox.bottom = std::move(rect.bottom);
 		}
 		else
 			Active = false;

@@ -6,12 +6,12 @@ Player::Player(Mouse& mouse0 , Sprite& bodysprite, Sprite& headsprite,  Camera& 
 {
 	sBody.ScaleSprite(World::ElemSize);
 	sHead.ScaleSprite(World::ElemSize);
-	HitBox.left = HitBox.top = 400;
+	HitBox.left = HitBox.bottom = 400;
 	HitBox.width = sHead.GetWidth();
 	HitBox.height = sHead.GetHeight() + sBody.GetHeight();
 
 	HitBox.left = sBody.GetWidth() / 2;
-	HitBox.top = sBody.GetHeight() / 2;
+	HitBox.bottom = sBody.GetHeight() / 2;
 
 	vel = { 0.0f , 0.0f }; 
 }
@@ -20,13 +20,14 @@ void Player::Draw(Graphics& gfx , Camera& cam)
 {
 	Effects::Copy e;
 	int x = HitBox.left - (std::abs(sHead.GetWidth() - sBody.GetWidth()) / 2);
-	Vec2I pos_body = cam.Transform(Vec2D(x, HitBox.top + sHead.GetHeight()));
+
+	Vec2I pos_body = cam.Transform(Vec2D(x, HitBox.bottom - sHead.GetHeight()));
 
 	gfx.DrawSprite(std::move(pos_body), sBody, RectI(sBody.GetWidth(),
 		sBody.GetHeight(), Vec2I{ 0 , 0 }), Graphics::GetScreenRect() , e);
 	
 	
-	Rect Head = Rect(sHead.GetWidth(), sHead.GetHeight(), Vec2D(HitBox.pos()));
+	RectI Head = RectI(sHead.GetWidth(), sHead.GetHeight(), cam.Transform(Vec2I(HitBox.left , HitBox.bottom + sBody.GetHeight())));
 	
 	auto pos = Head.GetCenter();
 	auto MousePos = mouse.GetPos();
@@ -62,7 +63,7 @@ void Player::UpdateMovement(World& world , Keyboard& kbd , float time)
 		//	MoveX(world, time);
 		}
 		Entity::Move(world, time);
-		Vec2I new_pos = Vec2I(HitBox.left - Graphics::ScreenWidth / 2, HitBox.top - Graphics::ScreenHeight / 2);
+		Vec2I new_pos = Vec2I(HitBox.left - Graphics::ScreenWidth / 2, HitBox.bottom - Graphics::ScreenHeight / 2);
 		camera.SetPos(new_pos);
 	}
 

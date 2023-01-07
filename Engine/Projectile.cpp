@@ -30,14 +30,14 @@ void Projectile::Launch(Vec2D& vel0, Vec2D& pos0)
 	Destroyed = false;
 	vel = vel0;
 	HitBox.left = pos0.x;
-	HitBox.top = pos0.y;
+	HitBox.bottom = pos0.y;
 }
 
 void Projectile::Destroy()
 {
 	Destroyed = true;
 	vel = { 0.0f , 0.0f };
-	HitBox.left = HitBox.top = NULL;
+	HitBox.left = HitBox.bottom = NULL;
 }
 
 void Projectile::Travel(float time)
@@ -48,7 +48,7 @@ void Projectile::Travel(float time)
 		float addX = 60.0f * vel.x * time * Speed, addY = 60.0f * vel.y * time * Speed;
 
 		float x = HitBox.left + addX;
-		float y = HitBox.top + addY;
+		float y = HitBox.bottom + addY;
 
 		Rect rect(HitBox.GetDimensions(), Vec2D(x, y));
 		if (Graphics::WithinScreen(rect))
@@ -107,7 +107,7 @@ Vec2D Projectile::GetVel() const
 }
 void Explosive::Destroy()
 {
-	Vec2I pos = Vec2I(HitBox.left + HitBox.width / 2, HitBox.top + HitBox.height / 2);
+	Vec2I pos = Vec2I(HitBox.left + HitBox.width / 2, HitBox.bottom + HitBox.height / 2);
 	explosion.ExplodeZone(pos, effect_list , ExplosionRadius , DarkeningRadius);
 
 	Projectile::Destroy();
@@ -128,11 +128,11 @@ void Projectile::MoveX(float time)
 
 	if (vel.x >= 0.0f)
 	{
-		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.right(), HitBox.top));
+		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.right(), HitBox.bottom));
 	}
 	else if (vel.x < 0.0f)
 	{
-		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.left - Size, HitBox.top));
+		ZoneX = RectI(Size, HitBox.height, Vec2I(HitBox.left - Size, HitBox.bottom));
 	}
 
 	int StartX, EndX, Add;
@@ -164,7 +164,7 @@ void Projectile::MoveX(float time)
 		for (int x = StartX; Condition(x, EndX); x += Add)
 		{
 			bool Move = true;
-			for (int y = ZoneX.top; y < ZoneX.bottom(); y += World::ElemSize)
+			for (int y = ZoneX.bottom; y < ZoneX.top(); y += World::ElemSize)
 			{
 
 				size_t ind = simulation.GetElemIndScr(Vec2I(x, y));
@@ -231,125 +231,7 @@ void Projectile::MoveX(float time)
 	}
 }
 
-void Projectile::MoveY(float time)
-{
-	float AddY;
-	AddY = float(std::abs(vel.y * 60.0f * time * Speed));
 
-	int Size = std::ceil(AddY);
-	if (int(AddY) % World::ElemSize != 0)
-	{
-		Size += World::ElemSize - int(AddY) % World::ElemSize;
-		Size = int(AddY);
-	}
-	RectI ZoneY;
-
-	if (vel.y >= 0.0f)
-	{
-		ZoneY = RectI(HitBox.width, Size, Vec2I(HitBox.left, HitBox.bottom()));
-	}
-	else if (vel.y < 0.0f)
-	{
-		ZoneY = RectI(HitBox.width, Size, Vec2I(HitBox.left, HitBox.top - Size));
-	}
-	auto dim = simulation.GetSandboxDim();
-
-
-	int StartY, EndY, Add;
-
-	std::function<bool(int, int)> Condition;
-	if (vel.y > 0.0f)
-	{
-		StartY = ZoneY.top;
-		EndY = ZoneY.bottom();
-		Add = World::ElemSize;
-
-		Condition = [=](int nr1, int nr2)
-		{
-			return nr1 < nr2;
-		};
-	}
-	else
-	{
-		StartY = ZoneY.bottom();
-		EndY = ZoneY.top;
-		Add = -World::ElemSize;
-
-		Condition = [=](int nr1, int nr2)
-		{
-			return nr1 > nr2;
-		};
-	}
-
-
-	{
-		std::vector<Element> ElementsY;
-		for (int y = StartY; Condition(y, EndY) == true; y += Add)
-		{
-			bool Move = true;
-			for (int x = ZoneY.left; x < ZoneY.right(); x += World::ElemSize)
-			{
-				size_t ind = simulation.GetElemIndScr(Vec2I(x, y));
-				if (ind > 0 && ind < dim.GetArea())
-				{
-					Element& element = *simulation.GetElem(ind);
-
-					ElementsY.emplace_back(element);
-				}
-				else
-					Move = false;
-			}
-
-			for (auto& n : ElementsY)
-			{
-				if (n.GetState() == State::Solid)
-				{
-					Move = false;
-					break;
-				}
-			}
-
-			if (Move)
-			{
-				float add;
-				if (y == StartY)
-				{
-					add = World::ElemSize;
-					if (vel.y < 0)
-					{
-						add = (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
-					}
-					else
-					{
-						add -= (HitBox.left - (World::ElemSize * (int(HitBox.left / World::ElemSize))));
-					}
-				}
-				else if (AddY < World::ElemSize)
-				{
-					add = AddY;
-					int sign = std::abs(vel.y) / vel.y;
-					HitBox.top += sign * add;
-					break;
-				}
-				else
-				{
-					add = World::ElemSize;
-					AddY -= World::ElemSize;
-				}
-				int sign = std::abs(vel.y) / vel.y;
-				HitBox.top += sign * add;
-			}
-			else
-			{
-				Destroy();
-				break;
-			}
-
-			ElementsY.clear();
-		}
-	}
-
-}
 
 void Explosive::Travel(float time)
 {
@@ -359,7 +241,7 @@ void Explosive::Travel(float time)
 		float addX = 60.0f * vel.x * time * Speed, addY = 60.0f * vel.y * time * Speed;
 
 		float x = HitBox.left + addX;
-		float y = HitBox.top + addY;
+		float y = HitBox.bottom + addY;
 
 		Rect rect(HitBox.GetDimensions(), Vec2D(x, y));
 		if (Graphics::WithinScreen(rect))
@@ -412,7 +294,7 @@ void Projectile::MoveRight( float time)
 
 		bool Move = true;
 		std::vector<State> elem_list;
-		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+		for (int y = HitBox.bottom; y < HitBox.top(); y += World::ElemSize)
 		{
 			Vec2I pos = simulation.ScreenToMatrixPos(Vec2I(LineX, y));
 			int index = pos.y * World::SandboxDim.width + pos.x;
@@ -477,7 +359,7 @@ void Projectile::MoveLeft(float time)
 		}
 		bool Move = true;
 		std::vector<State> elem_list;
-		for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+		for (int y = HitBox.bottom; y < HitBox.top(); y += World::ElemSize)
 		{
 			Vec2I pos = simulation.ScreenToMatrixPos(Vec2I(LineX, y));
 			int index = pos.y * World::SandboxDim.width + pos.x;
@@ -532,9 +414,9 @@ void Projectile::MoveLeft(float time)
 void Projectile::MoveDown(float time)
 {
 	float AddY = vel.y * time * 60.0f;
-	float offset = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+	float offset = HitBox.bottom - (int(HitBox.bottom) / World::ElemSize) * World::ElemSize;
 
-	int LineY = HitBox.bottom();
+	int LineY = HitBox.top();
 	if (offset != 0.0f)
 	{
 		LineY += World::ElemSize;
@@ -568,30 +450,30 @@ void Projectile::MoveDown(float time)
 		{
 			if (AddY < World::ElemSize)
 			{
-				HitBox.top += AddY;
+				HitBox.bottom += AddY;
 				AddY = 0;
 			}
 			else
 			{
-				HitBox.top += World::ElemSize;
+				HitBox.bottom += World::ElemSize;
 				AddY -= World::ElemSize;
 			}
 		}
 		else
 		{
 			//basically i am getting the modulus for a float 
-			float offset = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+			float offset = HitBox.bottom - (int(HitBox.bottom) / World::ElemSize) * World::ElemSize;
 			//distance to the next cell
 			float dist = World::ElemSize - offset;
 
 			if (AddY <= dist)
 			{
-				HitBox.top += AddY;
+				HitBox.bottom += AddY;
 				break;
 			}
 			else
 			{
-				HitBox.top += dist;
+				HitBox.bottom += dist;
 				Destroy();
 				break;
 			}
@@ -604,7 +486,7 @@ void Projectile::MoveDown(float time)
 void Projectile::MoveUp(float time)
 {
 	float AddY = std::abs(vel.y * time * 60.0f);
-	int LineY = HitBox.top - World::ElemSize;
+	int LineY = HitBox.bottom - World::ElemSize;
 	while (AddY)
 	{
 		if (LineY < 0)
@@ -633,12 +515,12 @@ void Projectile::MoveUp(float time)
 		{
 			if (AddY < World::ElemSize)
 			{
-				HitBox.top -= AddY;
+				HitBox.bottom -= AddY;
 				AddY = 0;
 			}
 			else
 			{
-				HitBox.top -= World::ElemSize;
+				HitBox.bottom -= World::ElemSize;
 				AddY -= World::ElemSize;
 			}
 		}
@@ -646,16 +528,16 @@ void Projectile::MoveUp(float time)
 		{
 			//basically i am getting the modulus for a float 
 			//distance to the next cell
-			float dist = HitBox.top - (int(HitBox.top) / World::ElemSize) * World::ElemSize;
+			float dist = HitBox.bottom - (int(HitBox.bottom) / World::ElemSize) * World::ElemSize;
 
 			if (AddY <= dist)
 			{
-				HitBox.top -= AddY;
+				HitBox.bottom -= AddY;
 				break;
 			}
 			else
 			{
-				HitBox.top -= dist;
+				HitBox.bottom -= dist;
 				Destroy();
 				break;
 			}

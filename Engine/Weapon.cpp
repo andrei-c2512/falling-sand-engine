@@ -53,7 +53,7 @@ void RangedWp::Use(Vec2D& target_pos)
 	if(CanShoot())
 	{
 		assert(Rounds > 0);
-		Vec2D start_pos = { pOwner->left , pOwner->top };
+		Vec2D start_pos = { pOwner->left , pOwner->bottom };
 		Vec2D vel = { target_pos.x - start_pos.x , target_pos.y - start_pos.y };
 
 		float dist = sqrt(vel.x * vel.x + vel.y * vel.y);

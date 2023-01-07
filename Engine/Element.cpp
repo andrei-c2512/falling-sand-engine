@@ -17,7 +17,7 @@ Element::Element(RectI& rect)
 void Element::Update(Vec2D newpos)
 {
 	hBox.left = newpos.x;
-	hBox.top = newpos.y;
+	hBox.bottom = newpos.y;
 }
 
 Type Element::GetType() const {
@@ -370,7 +370,7 @@ void Element::Explode(ParticleEffect& list)
 			add = XRange.GetVal();
 		} while (hBox.left + add + 4 > Graphics::ScreenWidth);
 
-		auto particle = Particle(RectI(ParticleSize, ParticleSize, Vec2I(hBox.left + add, hBox.top))
+		auto particle = Particle(RectI(ParticleSize, ParticleSize, Vec2I(hBox.left + add, hBox.bottom))
 			, RandColor(&FireColorRange[0]), Vec2D{ 0.0f , -4.0f }, Timer(0.3f));
 
 		list.AddParticle(std::move(particle));

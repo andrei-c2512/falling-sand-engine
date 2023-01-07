@@ -61,7 +61,7 @@ public:
 		PhysicalSize = Size * World::ElemSize;
 
 		auto dim = world.GetSandboxDim();
-		for (int y = Size.top; y < Size.top + Size.height; y++)
+		for (int y = Size.bottom; y < Size.top(); y++)
 		{
 			for (int x = Size.left; x < Size.left + Size.width; x++)
 			{

@@ -113,7 +113,7 @@ void GameSpeedButtonV1::Update(Mouse& mouse)
 	assert(IsPressed(mouse));
 	auto MouseY = mouse.GetPosY();
 	
-	last_pressY = HitBox.bottom() - MouseY;
+	last_pressY = HitBox.top() - MouseY;
 	DetermineSpeed();
 
 }
@@ -152,7 +152,7 @@ void GameSpeedButtonV1::Draw(Graphics& gfx, Camera& cam)
 		default_color , Effects::Copy{});
 
 	//pos of the filled part of the bar
-	Vec2I filled_pos = cam.ToCamera(Vec2I(HitBox.left , HitBox.top + (HitBox.height - last_pressY)));
+	Vec2I filled_pos = cam.ToCamera(Vec2I(HitBox.left , HitBox.bottom + (HitBox.height - last_pressY)));
 	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(std::move(filled_pos))),
 		filler_color, Effects::Copy{});
 }

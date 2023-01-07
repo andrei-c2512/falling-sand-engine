@@ -30,6 +30,13 @@ public:
 		Vec2I cPos = Vec2I(pos0.x, pos0.y);
 		return ct.Transform(Vec2I(cPos - GetPos()));
 	}
+	//transforms only to the camera
+	template <typename T>
+	Vec2I CameraTransformation(Vec2_<T> pos0)
+	{
+		Vec2I cPos = Vec2I(pos0.x, pos0.y);
+		return Vec2I(cPos - GetPos());
+	}
 	template <typename T>
 	void MoveBy(Vec2_<T> pos0)
 	{
@@ -55,7 +62,7 @@ public:
 	void MoveUp(int y)
 	{
 		assert(y > 0);
-		if (WorldPos.y + Graphics::ScreenHeight + y < Graphics::WorldArea.bottom())
+		if (WorldPos.y + Graphics::ScreenHeight + y < Graphics::WorldArea.top())
 		{
 			WorldPos.y += y;
 		}
@@ -63,7 +70,7 @@ public:
 	void MoveDown(int y)
 	{
 		assert(y < 0);
-		if (WorldPos.y + y >= Graphics::WorldArea.top)
+		if (WorldPos.y + y >= Graphics::WorldArea.bottom)
 		{
 			WorldPos.y += y;
 		}
@@ -74,7 +81,7 @@ public:
 	}
 	template<typename T>
 	bool WithinWorldY(T y) const {
-		return int(y) >= Graphics::WorldArea.top && int(y) + Graphics::ScreenHeight < Graphics::WorldArea.bottom();
+		return int(y) >= Graphics::WorldArea.bottom && int(y) + Graphics::ScreenHeight < Graphics::WorldArea.top();
 	}
 	template <typename T>
 	void SetPos(Vec2_<T> pos0)
@@ -106,16 +113,16 @@ public:
 		}
 		else
 		{
-			int dist_top    = std::abs(Graphics::WorldArea.top      - int(pos0.y));
-			int dist_bottom = std::abs(Graphics::WorldArea.bottom() - int(pos0.y));
+			int dist_top    = std::abs(Graphics::WorldArea.bottom  - int(pos0.y));
+			int dist_bottom = std::abs(Graphics::WorldArea.top()   - int(pos0.y));
 
 			if (dist_top < dist_bottom)
 			{
-				WorldPos.y = Graphics::WorldArea.top;
+				WorldPos.y = Graphics::WorldArea.bottom;
 			}
 			else
 			{
-				WorldPos.y = Graphics::WorldArea.bottom() - Graphics::ScreenHeight;
+				WorldPos.y = Graphics::WorldArea.top() - Graphics::ScreenHeight;
 			}
 		}
 		CheckIfOffBounds();
@@ -184,9 +191,9 @@ public:
 			ZonePos.x -= GetX() + Graphics::ScreenWidth - Graphics::WorldArea.right();
 		}
 
-		if (GetY() + Graphics::ScreenHeight >= Graphics::WorldArea.bottom())
+		if (GetY() + Graphics::ScreenHeight >= Graphics::WorldArea.top())
 		{
-			ZonePos.y -= GetY() + Graphics::ScreenHeight - Graphics::WorldArea.bottom();
+			ZonePos.y -= GetY() + Graphics::ScreenHeight - Graphics::WorldArea.top();
 		}
 
 		if (GetX() < Graphics::WorldArea.left)
@@ -194,9 +201,9 @@ public:
 			ZonePos.x += Graphics::WorldArea.left - GetX() - 1;
 		}
 
-		if (GetY() < Graphics::WorldArea.top)
+		if (GetY() < Graphics::WorldArea.bottom)
 		{
-			ZonePos.y += Graphics::WorldArea.top - GetY() - 1;
+			ZonePos.y += Graphics::WorldArea.bottom - GetY() - 1;
 		}
 	}
 	template <typename T>

@@ -140,7 +140,7 @@ public:
 		{
 			for (int x = 0; x < width; x++)
 			{
-				Vec2D Pos = Vec2D(float(x * ElemSize) + Graphics::WorldArea.left , float(y * ElemSize) + Graphics::WorldArea.top);
+				Vec2D Pos = Vec2D(float(x * ElemSize) + Graphics::WorldArea.left , float(y * ElemSize) + Graphics::WorldArea.bottom);
 				Elements[y * width + x].Update(Pos);
 			}
 		}
@@ -217,7 +217,7 @@ public:
 		}
 	}
 
-	static constexpr int ElemSize = 2;
+	static constexpr int ElemSize = 4;
 	static constexpr Dimensions<int> SandboxDim = Dimensions<int>( Graphics::WorldArea.width  / ElemSize , 
 																   Graphics::WorldArea.height / ElemSize );
 
@@ -403,7 +403,7 @@ struct MoveableElement {
 	{
 		atr.GetAttributes(element);
 		RectI elem_hitbox = element.GetRect();
-		HitBox = Rect(elem_hitbox.width, elem_hitbox.height, Vec2D(elem_hitbox.left, elem_hitbox.top));
+		HitBox = Rect(elem_hitbox.width, elem_hitbox.height, Vec2D(elem_hitbox.left, elem_hitbox.bottom));
 		vel = std::move(vel0);
 
 		Convert = false;
@@ -448,12 +448,12 @@ public:
 			if (vel.y > 0)
 			{
 				MoveUp(elem, time, vel.y);
-				elem.Convert = elem.HitBox.top == pos.y;
+				elem.Convert = elem.HitBox.bottom == pos.y;
 			}
 			else if (vel.y < 0)
 			{
 				MoveDown(elem, time, vel.y);
-				elem.Convert = elem.HitBox.top == pos.y;
+				elem.Convert = elem.HitBox.bottom == pos.y;
 			}
 
 			if (elem.Convert)
@@ -498,7 +498,7 @@ public:
 			}
 			bool Move = true;
 			std::vector<State> elem_list;
-			for (int y = HitBox.top; y < HitBox.bottom(); y += World::ElemSize)
+			for (int y = HitBox.bottom; y < HitBox.top(); y += World::ElemSize)
 			{
 				Vec2I pos = ScreenToMatrixPos(Vec2I(LineX, y));
 				int index = pos.y * World::SandboxDim.width + pos.x;
@@ -567,7 +567,7 @@ public:
 			}
 			bool Move = true;
 			std::vector<State> elem_list;
-			for (int y = elem.HitBox.top; y < elem.HitBox.bottom(); y += World::ElemSize)
+			for (int y = elem.HitBox.bottom; y < elem.HitBox.top(); y += World::ElemSize)
 			{
 				Vec2I pos = ScreenToMatrixPos(Vec2I(LineX, y));
 				int index = pos.y * World::SandboxDim.width + pos.x;
@@ -580,7 +580,7 @@ public:
 				{
 					if (ind > elem_list.size() - 5)
 					{
-						elem.HitBox.top -= (ind - (elem_list.size() - 5)) * World::ElemSize;
+						elem.HitBox.bottom -= (ind - (elem_list.size() - 5)) * World::ElemSize;
 					}
 					else
 					{
@@ -629,9 +629,9 @@ public:
 	{
 		float AddY = vel * time * 60.0f;
 		//basically i am getting the modulus for a float 
-		float offset = elem.HitBox.top - (int(elem.HitBox.top) / World::ElemSize) * World::ElemSize;
+		float offset = elem.HitBox.bottom - (int(elem.HitBox.bottom) / World::ElemSize) * World::ElemSize;
 
-		int LineY = elem.HitBox.bottom();
+		int LineY = elem.HitBox.top();
 		if (offset != 0.0f)
 		{
 			LineY += World::ElemSize;
@@ -665,12 +665,12 @@ public:
 			{
 				if (AddY < World::ElemSize)
 				{
-					elem.HitBox.top += AddY;
+					elem.HitBox.bottom += AddY;
 					AddY = 0;
 				}
 				else
 				{
-					elem.HitBox.top += World::ElemSize;
+					elem.HitBox.bottom += World::ElemSize;
 					AddY -= World::ElemSize;
 				}
 			}
@@ -683,12 +683,12 @@ public:
 				{
 					if (AddY < dist)
 					{
-						elem.HitBox.top += AddY;
+						elem.HitBox.bottom += AddY;
 						break;
 					}
 					else
 					{
-						elem.HitBox.top += dist;
+						elem.HitBox.bottom += dist;
 						break;
 					}
 				}
@@ -703,7 +703,7 @@ public:
 	void MoveDown(MoveableElement& elem, float time, float vel)
 	{
 		float AddY = std::abs(vel * time * 60.0f);
-		int LineY = elem.HitBox.top - World::ElemSize;
+		int LineY = elem.HitBox.bottom - World::ElemSize;
 		bool HitObstacle = false;
 
 		while (AddY)
@@ -734,12 +734,12 @@ public:
 			{
 				if (AddY < World::ElemSize)
 				{
-					elem.HitBox.top -= AddY;
+					elem.HitBox.bottom -= AddY;
 					AddY = 0;
 				}
 				else
 				{
-					elem.HitBox.top -= World::ElemSize;
+					elem.HitBox.bottom -= World::ElemSize;
 					AddY -= World::ElemSize;
 				}
 			}
@@ -747,16 +747,16 @@ public:
 			{
 				//basically i am getting the modulus for a float 
 				//distance to the next cell
-				float dist = elem.HitBox.top - int(int(elem.HitBox.top) / World::ElemSize) * World::ElemSize;
+				float dist = elem.HitBox.bottom - int(int(elem.HitBox.bottom) / World::ElemSize) * World::ElemSize;
 
 				if (AddY < dist)
 				{
-					elem.HitBox.top -= AddY;
+					elem.HitBox.bottom -= AddY;
 					break;
 				}
 				else
 				{
-					elem.HitBox.top -= dist;
+					elem.HitBox.bottom -= dist;
 					break;
 				}
 			}

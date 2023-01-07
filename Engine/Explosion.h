@@ -90,14 +90,14 @@ public:
 			Zone.width -= (Zone.right() - Graphics::ScreenWidth);
 		}
 
-		if (Zone.top < 0)
+		if (Zone.bottom < 0)
 		{
-			Zone.height -= std::abs(Zone.top);
-			Zone.top = 0;
+			Zone.height -= std::abs(Zone.bottom);
+			Zone.bottom = 0;
 		}
-		else if (Zone.bottom() > Graphics::ScreenHeight)
+		else if (Zone.top() > Graphics::ScreenHeight)
 		{
-			Zone.height -= (Zone.bottom() - Graphics::ScreenHeight);
+			Zone.height -= (Zone.top() - Graphics::ScreenHeight);
 		}
 
 
@@ -111,7 +111,7 @@ public:
 		//top segment
 		for (int x = Zone.left; x < Zone.right(); x++)
 		{
-			pos = Vec2I(x, Zone.top);
+			pos = Vec2I(x, Zone.bottom);
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
 
@@ -129,7 +129,7 @@ public:
 						float VerticalPower =   sin * power * (3.0f / power_rng.GetVal());
 						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
 
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower , VerticalPower ) , world , list);
 					}
 					else
@@ -144,7 +144,7 @@ public:
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Darken(index);
 					}
 					else
@@ -156,7 +156,7 @@ public:
 		//bottom segment
 		for (int x = Zone.left; x < Zone.right(); x++)
 		{
-			pos = Vec2I(x, Zone.bottom());
+			pos = Vec2I(x, Zone.top());
 			float sin = center.GetSin(pos);
 			float cos = center.GetCos(pos);
 
@@ -174,7 +174,7 @@ public:
 						float VerticalPower =  sin * power * (3.0f / power_rng.GetVal());
 						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
 
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower, VerticalPower), world , list);
 					}
 					else
@@ -189,7 +189,7 @@ public:
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Darken(index);
 					}
 					else
@@ -199,7 +199,7 @@ public:
 		}
 
 		//right segment
-		for (int y = Zone.top + 1; y < (Zone.bottom() - 1); y++)
+		for (int y = Zone.bottom + 1; y < (Zone.top() - 1); y++)
 		{
 			pos = Vec2I(Zone.right(), y);
 			float sin = center.GetSin(pos);
@@ -218,7 +218,7 @@ public:
 						float VerticalPower = sin * power * (3.0f / power_rng.GetVal());
 						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
 		
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower, VerticalPower), world , list);
 					}
 					else
@@ -233,7 +233,7 @@ public:
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Darken(index);
 					}
 					else
@@ -243,7 +243,7 @@ public:
 		}
 
 		//left segment
-		for (int y = Zone.top + 1; y < Zone.bottom() - 1; y++)
+		for (int y = Zone.bottom + 1; y < Zone.top() - 1; y++)
 		{
 			pos = Vec2I(Zone.left, y);
 			float sin = center.GetSin(pos);
@@ -262,7 +262,7 @@ public:
 						float VerticalPower = sin * power * (3.0f / power_rng.GetVal());
 						float HorizontalPower = cos * power * (3.0f / power_rng.GetVal());
 
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Explode(index, Vec2D(HorizontalPower, VerticalPower), world , list);
 					}
 					else
@@ -277,7 +277,7 @@ public:
 				{
 					if (Chance.GetVal() <= 80)
 					{
-						unsigned int eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
+						unsigned int eIndex = (matrix_pos.y - Zone.bottom) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
 						eBuffer[eIndex] = new Darken(index);
 					}
 					else

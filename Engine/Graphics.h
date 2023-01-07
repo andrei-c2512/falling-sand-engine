@@ -72,30 +72,30 @@ public:
 		{
 			SpritePortion.left += std::abs(clip.left - x);
 			SpritePortion.width -= std::abs(clip.left - x);
-			x = clip.left;
+			pos.x = clip.left;
 		}
-		if (clip.top > y)
+		if (clip.bottom > y)
 		{
-			SpritePortion.top += clip.top - y;
-			SpritePortion.height -= clip.top - y;
-			y = clip.top;
+			SpritePortion.bottom += clip.bottom - y;
+			SpritePortion.height -= clip.bottom - y;
+			y = clip.bottom;
 		}
 
 		if (clip.right() < x + SpritePortion.width)
 		{
 			SpritePortion.width -= std::abs(x + SpritePortion.width - clip.right());
 		}
-		if (clip.bottom() < y + SpritePortion.height)
+		if (clip.top() < y + SpritePortion.height)
 		{
-			SpritePortion.height -= std::abs(y + SpritePortion.height - clip.bottom());
+			SpritePortion.height -= std::abs(y + SpritePortion.height - clip.top());
 		}
 
-		for (int sy = SpritePortion.top; sy < SpritePortion.bottom(); sy++)
+		for (int sy = SpritePortion.bottom; sy < SpritePortion.top(); sy++)
 		{
 			for (int sx = SpritePortion.left; sx < SpritePortion.right(); sx++)
 			{
 				Color c = s.GetPixel(sx, sy);
-				effect(std::move(c), *this, x + sx - SpritePortion.left, y + sy - SpritePortion.top);
+				effect(std::move(c), *this, x + sx - SpritePortion.left, y + sy - SpritePortion.bottom);
 			}
 		}
 	}
@@ -110,28 +110,28 @@ public:
 			SpritePortion.width -= std::abs(clip.left - pos.x);
 			pos.x = clip.left;
 		}
-		if (clip.top > pos.y)
+		if (clip.bottom > pos.y)
 		{
-			SpritePortion.top +=    clip.top - pos.y;
-			SpritePortion.height -= clip.top - pos.y;
-			pos.y = clip.top;
+			SpritePortion.bottom += clip.bottom - pos.y;
+			SpritePortion.height -= clip.bottom - pos.y;
+			pos.y = clip.bottom;
 		}
 
 		if (clip.right() < pos.x + SpritePortion.width)
 		{
 			SpritePortion.width -= std::abs(pos.x + SpritePortion.width - clip.right());
 		}
-		if (clip.bottom() < pos.y + SpritePortion.height)
+		if (clip.top() < pos.y + SpritePortion.height)
 		{
-			SpritePortion.height -= std::abs(pos.y + SpritePortion.height - clip.bottom());
+			SpritePortion.height -= std::abs(pos.y + SpritePortion.height - clip.top());
 		}
 
-		for (int sy = SpritePortion.top; sy < SpritePortion.bottom(); sy++)
+		for (int sy = SpritePortion.bottom; sy < SpritePortion.top(); sy++)
 		{
 			for (int sx = SpritePortion.left; sx < SpritePortion.right(); sx++)
 			{
 				Color c = s.GetPixel(sx, sy);
-				effect(std::move(c), *this, pos.x + sx - SpritePortion.left, pos.y + sy - SpritePortion.top);
+				effect(std::move(c), *this, pos.x + sx - SpritePortion.left, pos.y + sy - SpritePortion.bottom);
 			}
 		}
 	}
@@ -140,26 +140,29 @@ public:
 	template <typename T, typename D , typename E>
 	void DrawRect(Rect_<T , D> rect, Color c , E effect , RectI clip = GetScreenRect())
 	{
-		RectI new_rect = RectI(rect.width , rect.height , Vec2I(rect.left , rect.top));
-		if (int(rect.top) <= clip.top)
+		RectI new_rect = RectI(rect.width , rect.height , Vec2I(rect.left , rect.bottom));
+		if (int(rect.bottom) <= clip.bottom)
 		{
-			new_rect.top += clip.top - rect.top;
+			int dif = clip.bottom - rect.bottom;
+			new_rect.bottom += dif;
+			new_rect.height -= dif;
 		}
 		if (int(rect.left) <= clip.left)
 		{
-			new_rect.left += clip.left - rect.left;
+			int dif = clip.left - rect.left;
+			new_rect.left += dif;
+			new_rect.width -= dif;
 		}
-		if (int(rect.bottom()) > clip.bottom())
+		if (int(rect.top()) > clip.top())
 		{
-			new_rect.height += (clip.bottom() - rect.bottom() - 1);
+			new_rect.height += (clip.top() - rect.top() - 1);
 		}
 		if (int(rect.right()) > clip.right())
 		{
 			new_rect.width += (clip.right() - rect.right() - 1);
 		}
 
-
-		for (int y = new_rect.top; y < new_rect.bottom() ; y++)
+		for (int y = new_rect.bottom; y < new_rect.top() ; y++)
 		{
 			for (int x = new_rect.left; x < new_rect.right(); x++)
 				effect(c, *this, x, y);
@@ -171,17 +174,21 @@ public:
 	{
 		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
 
-		if (int(rect.top) <= clip.top)
+		if (int(rect.bottom) <= clip.bottom)
 		{
-			new_rect.top += clip.top - rect.top;
+			int dif = clip.bottom - rect.bottom;
+			new_rect.bottom += dif;
+			new_rect.height -= dif;
 		}
 		if (int(rect.left) <= clip.left)
 		{
-			new_rect.left += clip.left - rect.left;
+			int dif = clip.left - rect.left;
+			new_rect.left += dif;
+			new_rect.width -= dif;
 		}
-		if (int(rect.bottom()) > clip.bottom())
+		if (int(rect.top()) > clip.top())
 		{
-			new_rect.height += (clip.bottom() - rect.bottom() - 1);
+			new_rect.height += (clip.top() - rect.top() - 1);
 		}
 		if (int(rect.right()) > clip.right())
 		{
@@ -206,19 +213,23 @@ public:
 	{
 		if (rect.Collision(GetScreenRect()))
 		{
-			RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
+			RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.bottom));
 
-			if (int(rect.top) <= clip.top)
+			if (int(rect.bottom) <= clip.bottom)
 			{
-				new_rect.top += clip.top - rect.top;
+				int dif = clip.bottom - rect.bottom;
+				new_rect.bottom += dif;
+				new_rect.height -= dif;
 			}
 			if (int(rect.left) <= clip.left)
 			{
-				new_rect.left += clip.left - rect.left;
+				int dif = clip.left - rect.left;
+				new_rect.left += dif;
+				new_rect.width -= dif;
 			}
-			if (int(rect.bottom()) > clip.bottom())
+			if (int(rect.top()) > clip.top())
 			{
-				new_rect.height += (clip.bottom() - rect.bottom() - 1);
+				new_rect.height += (clip.top() - rect.top() - 1);
 			}
 			if (int(rect.right()) > clip.right())
 			{
@@ -226,7 +237,7 @@ public:
 			}
 
 			float tFactor = float(transparency / 100.0f);
-			for (int y = new_rect.top; y < new_rect.bottom(); y++)
+			for (int y = new_rect.bottom; y < new_rect.top(); y++)
 			{
 				for (int x = new_rect.left; x < new_rect.right(); x++)
 				{
@@ -245,25 +256,29 @@ public:
 	template<typename T, typename D>
 	static bool WithinScreen(Rect_<T  , D>& rect){
 		return (rect.left >= 0 && rect.left + rect.width <= Graphics::ScreenWidth &&
-			rect.top >= 0 && rect.top + rect.height <= Graphics::ScreenHeight);
+			rect.bottom >= 0 && rect.bottom + rect.height <= Graphics::ScreenHeight);
 
 	}
 	template <typename T , typename D , typename E>
 	void DrawRect_Border(Rect_<T , D> rect, Color c , E effect , RectI clip = GetScreenRect())
 	{
-		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.top));
+		RectI new_rect = RectI(rect.width, rect.height, Vec2I(rect.left, rect.bottom));
 
-	    if (int(rect.top) <= clip.top)
+		if (int(rect.bottom) <= clip.bottom)
+		{
+			int dif = clip.bottom - rect.bottom;
+			new_rect.bottom += dif;
+			new_rect.height -= dif;
+		}
+		if (int(rect.left) <= clip.left)
+		{
+			int dif = clip.left - rect.left;
+			new_rect.left += dif;
+			new_rect.width -= dif;
+		}
+	    if (int(rect.top()) > clip.top())
 	    {
-	    	new_rect.top += clip.top - rect.top;
-	    }
-	    if (int(rect.left) <= clip.left)
-	    {
-	    	new_rect.left += clip.left - rect.left;
-	    }
-	    if (int(rect.bottom()) > clip.bottom())
-	    {
-	    	new_rect.height += (clip.bottom() - rect.bottom() - 1);
+	    	new_rect.height += (clip.top() - rect.top() - 1);
 	    }
 	    if (int(rect.right()) > clip.right())
 	    {
@@ -271,16 +286,16 @@ public:
 	    }
 
 
-		if(new_rect.top == rect.top)
+		if(new_rect.bottom == rect.bottom)
 			for (int x = new_rect.left; x < new_rect.right(); x++)
 			{
-				effect(c, *this, x, new_rect.top);
+				effect(c, *this, x, new_rect.bottom);
 			}
 
 		bool left_border = new_rect.left == rect.left;
 		bool right_border = new_rect.right() == rect.right();
 
-		for (int y = new_rect.top + 1; y < new_rect.bottom() - 1; y++)
+		for (int y = new_rect.bottom + 1; y < new_rect.top() - 1; y++)
 		{
 
 			if (left_border);
@@ -289,10 +304,10 @@ public:
 				effect(c, *this, new_rect.right() - 1, y);
 		}
 
-		if(new_rect.bottom() == rect.bottom())
+		if(new_rect.top() == rect.top())
 		for (int x = new_rect.left; x < new_rect.right(); x++)
 		{
-			effect(c, *this, x, new_rect.bottom() - 1);
+			effect(c, *this, x, new_rect.bottom - 1);
 		}
 	}
 	static bool WithinScreen(Vec2I& pos)
@@ -304,9 +319,9 @@ public:
 	void DrawAngledSprite(int x, int y, Sprite& s, Rect_<T , D>& SpritePortion, Vec2I& pos)
 	{
 		const short StartX = SpritePortion.left - SpritePortion.width / 2;
-		const short StartY = SpritePortion.top - SpritePortion.height / 2;
+		const short StartY = SpritePortion.bottom - SpritePortion.height / 2;
 	
-		const short StopY = SpritePortion.top + SpritePortion.height / 2;
+		const short StopY = SpritePortion.bottom + SpritePortion.height / 2;
 		const short StopX = SpritePortion.left + SpritePortion.width / 2;
 	
 		RectI SRect = { SpritePortion.width , SpritePortion.height , Vec2I{x , y } };
@@ -318,9 +333,9 @@ public:
 	
 		short hWidth = SpritePortion.width / 2;
 		short hHeight = SpritePortion.height / 2;
-		for (short sy = StartX; sy < StopY; sy++)
+		for (short sy = StartY; sy < StopY; sy++)
 		{
-			for (short sx = StartY; sx < StopX; sx++)
+			for (short sx = StartX; sx < StopX; sx++)
 			{
 				Color c = s.GetPixel(sx + hWidth, sy + hHeight);
 	
@@ -338,10 +353,10 @@ public:
 	void DrawAngledSprite(Vec2_<P> pos1, Sprite& s, Rect_<T, D>& SpritePortion, Vec2I& pos2)
 	{
 		//pos1 is the position from where its drawn and pos2 is the point that its facing
-		const short StartX = SpritePortion.top - SpritePortion.width / 2;
-		const short StartY = SpritePortion.top - SpritePortion.height / 2;
+		const short StartX = SpritePortion.left - SpritePortion.width / 2;
+		const short StartY = SpritePortion.bottom - SpritePortion.height / 2;
 
-		const short StopY = SpritePortion.top + SpritePortion.height / 2;
+		const short StopY = SpritePortion.bottom + SpritePortion.height / 2;
 		const short StopX = SpritePortion.left + SpritePortion.width / 2;
 
 		RectI SRect = { SpritePortion.width , SpritePortion.height , Vec2I(pos1.x , pos1.y ) };
@@ -469,7 +484,7 @@ public:
 
 	void DrawRectI_Bloom(RectI& rect, Color c)
 	{
-		for (int y = rect.top; y < rect.top + rect.height; y++)
+		for (int y = rect.bottom; y < rect.top(); y++)
 		{
 			for (int x = rect.left; x < rect.left + rect.width; x++)
 				ChangePixel_Bloom(x, y, c);
