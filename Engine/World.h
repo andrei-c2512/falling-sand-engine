@@ -209,11 +209,9 @@ public:
 		const int width = BackGround.GetWidth();
 		const int height = BackGround.GetHeight();
 
-		Effects::Copy e{};
-
 		for (auto& n : Elements)
 		{
-			n.DrawElement(gfx , ct , BackGround);
+			n.DrawElement(gfx , ct);
 		}
 	}
 
@@ -492,7 +490,7 @@ public:
 
 		while (AddX)
 		{
-			if (LineX >= Graphics::ScreenWidth)
+			if (LineX >= Graphics::WorldArea.right())
 			{
 				break;
 			}
@@ -561,7 +559,7 @@ public:
 		int LineX = elem.HitBox.left - World::ElemSize;
 		while (AddX)
 		{
-			if (LineX < 0)
+			if (LineX < Graphics::WorldArea.left)
 			{
 				break;
 			}
@@ -639,7 +637,7 @@ public:
 
 		while (AddY)
 		{
-			if (LineY >= Graphics::ScreenHeight)
+			if (LineY >= Graphics::WorldArea.top())
 			{
 				break;
 			}
@@ -708,7 +706,7 @@ public:
 
 		while (AddY)
 		{
-			if (LineY < 0)
+			if (LineY < Graphics::WorldArea.bottom)
 			{
 				break;
 			}

@@ -7,7 +7,7 @@ Entity::Entity(Rect rect, Sprite sprite0, float dmg, int health, float speed)
 	hp_bar.Health = (health);
 	hp_bar.MaxHealth = { health };
 
-	hp_bar.dim = {  HitBox.width + 2 * HpBar::offset , HitBox.height / 5 };
+	hp_bar.dim = Dimensions<short>(   (int)HitBox.width + 2 * HpBar::offset , (int)HitBox.height / 5 );
 
 }
 
@@ -512,6 +512,10 @@ void Entity::MoveRight(World& world, float time)
 	while (AddX)
 	{
 		bool Move = true;
+		if (LineX > Graphics::WorldArea.right())
+		{
+			break;
+		}
 		std::vector<State> elem_list;
 		for (int y = HitBox.bottom; y < HitBox.top(); y += World::ElemSize)
 		{
@@ -519,6 +523,7 @@ void Entity::MoveRight(World& world, float time)
 			int index = pos.y * World::SandboxDim.width + pos.x;
 			elem_list.emplace_back(world.GetElem(index)->GetState());
 		}
+
 
 		for(int ind = 0 ; ind < elem_list.size() ; ind++)
 		{
@@ -580,6 +585,10 @@ void Entity::MoveLeft(World& world, float time)
 	int LineX = HitBox.left - World::ElemSize;
 	while (AddX)
 	{
+		if (LineX < Graphics::WorldArea.left)
+		{
+			break;
+		}
 		bool Move = true;
 		std::vector<State> elem_list;
 		for (int y = HitBox.bottom; y < HitBox.top(); y += World::ElemSize)
@@ -655,6 +664,10 @@ void Entity::MoveUp(World& world, float time)
 
 	while (AddY)
 	{
+		if (LineY > Graphics::WorldArea.top())
+		{
+			break;
+		}
 		bool Move = true;
 		std::vector<State> elem_list;
 		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
@@ -719,6 +732,10 @@ void Entity::MoveDown(World& world, float time)
 	while (AddY)
 	{
 		bool Move = true;
+		if (LineY < Graphics::WorldArea.bottom)
+		{
+			break;
+		}
 		std::vector<State> elem_list;
 		for (int x = HitBox.left; x < HitBox.right(); x += World::ElemSize)
 		{

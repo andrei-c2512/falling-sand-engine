@@ -168,6 +168,36 @@ public:
 				effect(c, *this, x, y);
 		}
 	}
+	void DrawElementRect(RectI rect, Color c, RectI clip = GetScreenRect())
+	{
+		if (rect.bottom <= clip.bottom)
+		{
+			int dif = clip.bottom - rect.bottom;
+			rect.bottom += dif;
+			rect.height -= dif;
+		}
+		if (rect.left <= clip.left)
+		{
+			int dif = clip.left - rect.left;
+			rect.left += dif;
+			rect.width -= dif;
+		}
+		if (rect.top() > clip.top())
+		{
+			rect.height += (clip.top() - rect.top() - 1);
+		}
+		if (rect.right() > clip.right())
+		{
+			rect.width += (clip.right() - rect.right() - 1);
+		}
+
+		int dist = rect.right() - rect.left - 1;
+		for (int y = rect.bottom; y < rect.top(); y++)
+		{
+			for (int x = rect.left; x < rect.right(); x++)
+				PutPixel(x, y , c);
+		}
+	}
 
 	template<typename T, typename D>
 	void DrawRect_Transparent(Rect_<T , D> rect, Color c, Sprite& sprite, int transparency, RectI& clip = GetScreenRect())
@@ -604,12 +634,6 @@ private:
 		}
 	};
 private:
-	class Camera {
-	public:
-		Camera();
-	private:
-		RectI surface;
-	};
 	BlurProcessor blur_processor = { Bloom };
 	CoordinateTransformer ct;
 	Sprite Bloom  = Sprite(ScreenWidth, ScreenHeight);
@@ -628,11 +652,11 @@ private:
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Color*                                              pSysBuffer = nullptr;
 public:
-	static constexpr int ScreenWidth = 800; 
-	static constexpr int ScreenHeight = 600;
+	static constexpr int ScreenWidth = 1920; 
+	static constexpr int ScreenHeight = 1080;
 
-	static constexpr int WorldWidth  = 1600;
-	static constexpr int WorldHeight = 1200;
+	static constexpr int WorldWidth  = ScreenWidth * 2;
+	static constexpr int WorldHeight = ScreenHeight * 2;
 
 	//adding half of the screen dimensions because the Origin is in the center of the screen
 	static constexpr RectI WorldArea = RectI(WorldWidth, WorldHeight, 

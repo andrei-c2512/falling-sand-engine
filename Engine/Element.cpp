@@ -139,7 +139,7 @@ void Element::Create(Type newtype)
 	}
 }
 
-void Element::DrawElement(Graphics& gfx, Camera& cam , Sprite& sprite)
+void Element::DrawElement(Graphics& gfx, const Camera& cam)
 {
 	if (state != State::Empty)
 	{
@@ -155,10 +155,11 @@ void Element::DrawElement(Graphics& gfx, Camera& cam , Sprite& sprite)
 		}
 		else if (type == Type::Acid || state == State::Plasma)
 		{
-			gfx.DrawRectI_Bloom(std::move(new_rect), color);
+			//gfx.DrawRectI_Bloom(std::move(new_rect), color);
+			gfx.DrawElementRect(std::move(new_rect), color);
 		}
 		else
-			gfx.DrawRect(std::move(new_rect), color , Effects::Copy{});
+			gfx.DrawElementRect(std::move(new_rect), color);
 	}
 }
 

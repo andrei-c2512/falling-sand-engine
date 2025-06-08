@@ -4,6 +4,7 @@
 #include "Rng.h"
 #include "ParticleEffect.h"
 #include "CoordinateTransformer.h"
+
 extern RNG Chance;
 
 enum class Type {
@@ -121,7 +122,7 @@ public:
 	static constexpr int AcidDestroyChance = 30;
 public:
 	Element(RectI& rect);
-	void DrawElement(Graphics& gfx, Camera& ct , Sprite& background);
+	void DrawElement(Graphics& gfx, const Camera& ct);
 	void Update(Vec2D newpos);
 	void SetVel(Vec2D newvel);
 	void SwapPositions(Element& elem);

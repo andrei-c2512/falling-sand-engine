@@ -16,16 +16,16 @@ public:
 		TargetPos = { 0 , 0 };
 		vel = { 0.0f , 0.0f };
 	}
-	int TransformX(int x)
+	int TransformX(int x) const
 	{
 		return ct.TransformX(x - WorldPos.x);
 	}
-	int TransformY(int y)
+	int TransformY(int y) const
 	{
 		return ct.TransformY(y - WorldPos.y);
 	}
 	template <typename T>
-	Vec2I Transform(Vec2_<T> pos0)
+	Vec2I Transform(Vec2_<T> pos0) const
 	{
 		Vec2I cPos = Vec2I(pos0.x, pos0.y);
 		return ct.Transform(Vec2I(cPos - GetPos()));

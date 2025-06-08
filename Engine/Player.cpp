@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Effects.h"
+#include "CoordinateShower.h"
 #include <cmath>
 Player::Player(Mouse& mouse0 , Sprite& bodysprite, Sprite& headsprite,  Camera& camera0 ,float speed0)
 	: sBody(bodysprite) , sHead(headsprite), Speed(speed0), mouse(mouse0), camera(camera0)
@@ -21,20 +22,17 @@ void Player::Draw(Graphics& gfx , Camera& cam)
 	Effects::Copy e;
 	int x = HitBox.left - (std::abs(sHead.GetWidth() - sBody.GetWidth()) / 2);
 
-	Vec2I pos_body = cam.Transform(Vec2D(x, HitBox.bottom - sHead.GetHeight()));
+	Vec2I pos_body = cam.Transform(Vec2D(x, HitBox.top() - sHead.GetHeight()));
 
 	gfx.DrawSprite(std::move(pos_body), sBody, RectI(sBody.GetWidth(),
 		sBody.GetHeight(), Vec2I{ 0 , 0 }), Graphics::GetScreenRect() , e);
 	
 	
-	RectI Head = RectI(sHead.GetWidth(), sHead.GetHeight(), cam.Transform(Vec2I(HitBox.left , HitBox.bottom + sBody.GetHeight())));
-	
-	auto pos = Head.GetCenter();
 	auto MousePos = mouse.GetPos();
-	gfx.DrawAngledSprite(cam.Transform(HitBox.GetPos()), sHead, RectI(sHead.GetWidth(),
+	gfx.DrawAngledSprite(cam.Transform(Vec2I(HitBox.left , HitBox.top())), sHead, RectI(sHead.GetWidth(),
 		sHead.GetHeight(), Vec2I{ 0 , 0 }) , cam.Transform(MousePos));
 	
-	gfx.DrawRect_Border(RectI(HitBox.GetDimensions(), cam.Transform(HitBox.GetPos())), Colors::Green, Effects::Copy{});
+	gfx.DrawRect_Border(RectI(HitBox.GetDimensions(), cam.Transform(Vec2I(HitBox.left , HitBox.top()))), Colors::Green, Effects::Copy{});
 	
 	pWeapon->Draw(gfx, cam);
 }
@@ -76,12 +74,12 @@ void Player::GiveWeapon(std::unique_ptr<Weapon> wp)
 	pWeapon = std::move(wp);
 }
 
-void Player::UseWeapon( float time)
+void Player::UseWeapon(  float time)
 {
 	if (mouse.LeftIsPressed())
 	{
-		Vec2D mouse_pos = Vec2D(mouse.GetPosX() , mouse.GetPosY());
-		pWeapon->Use(mouse_pos);
+		Vec2I mouse_pos = CoordinateShower::DetermineCoordinates(mouse , camera);
+		pWeapon->Use(Vec2D(float(std::move(mouse_pos.x)) , float(std::move(mouse_pos.y))));
 	}
 	pWeapon->Update(time);
 }

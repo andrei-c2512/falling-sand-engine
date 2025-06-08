@@ -100,32 +100,34 @@ public:
 		else
 			vel = std::abs(effect.gravity);
 
+		
+		auto onNoYDir = []() {
+
+			};
 		for (unsigned char origin = 0; origin < vel; origin++)
 		{
 			int NextIndex;
 
+			if (dir2 == Direction::None && origin % 6 == 5 &&
+				unsigned char(dir1) >= 0 && unsigned char(dir1) <= 1)
 			{
-				if (dir2 == Direction::None && origin % 6 == 5 &&
-					unsigned char(dir1) >= 0 && unsigned char(dir1) <= 1)
+				Direction yDir;
+				if (effect.gravity > 0)
 				{
-					Direction yDir;
-					if (effect.gravity > 0)
-					{
-						yDir = Direction::Down;
-					}
-					else
-						yDir = Direction::Up;
-
-					int new_index = GetNextElem(CurInd, dir1, yDir);
-					Element& elem = *world.GetElem(new_index);
-					if (elem1.CanMove(elem))
-					{
-						break;
-					}
+					yDir = Direction::Down;
 				}
+				else
+					yDir = Direction::Up;
 
-				NextIndex = GetNextElem(CurInd, dir1, dir2);
+				int new_index = GetNextElem(CurInd, dir1, yDir);
+				Element& elem = *world.GetElem(new_index);
+				if (elem1.CanMove(elem))
+				{
+					break;
+				}
 			}
+
+			NextIndex = GetNextElem(CurInd, dir1, dir2);
 
 			Element& elem2 = *world.GetElem(NextIndex);
 

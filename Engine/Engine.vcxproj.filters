@@ -165,6 +165,9 @@
     <ClInclude Include="CoordinateShower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ElementDrawer.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">
@@ -241,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="CoordinateShower.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementDrawer.cpp">
+      <Filter>Source Files\SandSimulation - .cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
