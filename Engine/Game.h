@@ -29,8 +29,9 @@
 #include "Creator.h"
 #include "Weather.h"
 #include <string>
-#include "player.h"
 #include "Bench.h"
+#include "Camera.h"
+#include "CoordinateShower.h"
 
 class Game
 {
@@ -40,6 +41,8 @@ public:
 	Game& operator=( const Game& ) = delete;
 	~Game();
 	void Go();
+	bool AreButtonsHovered()const;
+	void CheckButtons();
 private:
 	void ComposeFrame();
 	void UpdateModel();
@@ -48,7 +51,12 @@ private:
 	/********************************/
 private:
 	MainWindow& wnd;
+
 	Graphics gfx;
+	CoordinateTransformer ct;
+	CoordinateShower cs;
+	Camera cam;
+
 	FrameTimer Timer;
 	FrameShower FPS;
 	Sprite sprite;
@@ -57,6 +65,15 @@ private:
 	MouseLastFrameStats MouseStats;
 	ParticleEffect particle_list;
 	Bench bench;
+
+	Vec2I SpeedButton_pos = Vec2I(Graphics::ScreenWidth - 60 , 60);
+
+	std::vector<GameSpeedButton> button_list;
+
+	float GameSpeed = 3.0f;
+	//GameSpeedButton GameSpeed_button = { Colors::Gray , Colors::White ,
+	//	RectI(30 , 60 , Vec2I(SpeedButton_pos)) };
+
 	/********************************/
 	/*  User Variables              */
 	/********************************/

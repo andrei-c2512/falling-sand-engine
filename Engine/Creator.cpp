@@ -1,17 +1,16 @@
 #include "Creator.h"
 #include "assert.h"
-Creator::Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather0)
-	:world(world), Chance(1 , 100),weather(weather0)
+Creator::Creator(RectI& ButtonSize, int Radius , Simulation& world , Weather& weather0)
+	:world(world), Chance(1 , 100),weather(weather0),explosion(Explosion(world))
 {
-
 	SpawnRadius = 15;
-	ToBeSpawned = Type::Steam;
+	ToBeSpawned = Type::Stone;
 
-	int space = 10;
 	for (size_t i = 0; i < (int)Type::Count ; i++)
 	{
-		int x = ElemButtonPos.x + i * (ElementButton::dim + space);
-		EButtons.emplace_back(Vec2I{ x , ElemButtonPos.y },Type(i));
+		int x = ElemButtonPos.x + (i % Max_rows) * (ElementButton::dim + space);
+		int y = ElemButtonPos.y - (i / Max_rows) * (ElementButton::dim + space);
+		EButtons.emplace_back(Vec2I{ x , y },Type(i));
 	}
 
 	for (size_t i = 0; i < (int)WeatherType::Count; i++)
@@ -19,18 +18,38 @@ Creator::Creator(RectI& ButtonSize, int Radius , World& world , Weather& weather
 		int x = WeatherButtonPos.x + i * (ElementButton::dim + space);
 		WButtons.emplace_back(Vec2I{ x , WeatherButtonPos.y }, WeatherType(i));
 	}
+
+	//elem name list
+	ElemName_map.emplace(Type::Empty   , "Empty"   );
+	ElemName_map.emplace(Type::Water   , "Water"   );
+	ElemName_map.emplace(Type::Sand    , "Sand"    );
+	ElemName_map.emplace(Type::Fire    , "Fire"    );
+	ElemName_map.emplace(Type::FireAura, "FireAura");
+	ElemName_map.emplace(Type::Steam   , "Steam"   );
+	ElemName_map.emplace(Type::Snow    , "Snow"    );
+	ElemName_map.emplace(Type::Smoke   , "Smoke"   );
+	ElemName_map.emplace(Type::ToxicGas, "ToxicGas");
+	ElemName_map.emplace(Type::Acid    , "Acid"    );
+	ElemName_map.emplace(Type::Wood    , "Wood"    );
+	ElemName_map.emplace(Type::Stone   , "Stone"   );
+
+	//weather name list
+	WeatherName_map.emplace(WeatherType::Clear , "Clear");
+	WeatherName_map.emplace(WeatherType::Rain  , "Rain");
+	WeatherName_map.emplace(WeatherType::Snowy , "Snowy");
+
 }
 
 
-void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& sandbox ,ParticleEffect& list)
+void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& sandbox ,ParticleEffect& list , Camera& camera)
 {
-	if (!IsHoveringAButton(mouse))
+	if (!IsHoveringAButton(mouse) && ToBeSpawned != Type::None)
 	{
 		if (ToBeSpawned != Type::Explosion)
 		{
 			if (mouse.LeftIsPressed())
 			{
-				auto elem_list = GetSpawnableElements(mouse);
+				auto elem_list = GetSpawnableElements(mouse , camera);
 				for (auto& n : elem_list)
 				{
 					if (ToBeSpawned == Type::Water)
@@ -38,7 +57,7 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 						if (Chance.GetVal() > 50)
 						{
 							if (world.CreateElem(n, ToBeSpawned) == true)
-								sandbox.ActivateChunk(n);
+								sandbox.ActivateChunk(int(n));
 						}
 					}
 					else
@@ -50,23 +69,19 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 			}
 			else if (mouse.RightIsPressed())
 			{
-				if (previous_stats.RightIsPressed())
+				if (!previous_stats.RightIsPressed())
 				{
-
-				}
-				else
-				{
-					SpawnLoc = mouse.GetPos();
+					SpawnLoc = CoordinateShower::DetermineCoordinates(mouse , camera);
 				}
 			}
 			else if (!mouse.RightIsPressed() && previous_stats.RightIsPressed())
 			{
-				Vec2I last_pos = previous_stats.GetPos();
+				Vec2I last_pos = CoordinateShower::DetermineCoordinates(previous_stats.GetPos() , camera);
 				RectI Zone = RectI(world.ScreenToMatrixPos(SpawnLoc),
 					world.ScreenToMatrixPos(last_pos));
 
 				auto dim = world.GetSandboxDim();
-				for (int y = Zone.top; y != Zone.bottom(); y += 1)
+				for (int y = Zone.bottom; y != Zone.top(); y += 1)
 				{
 					for (int x = Zone.left; x != Zone.right(); x += 1)
 					{
@@ -83,8 +98,7 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 			if (mouse.LeftIsPressed())
 			{
 				auto MousePos = mouse.GetPos();
-				MousePos = world.ScreenToMatrixPos(MousePos);
-				ExplodeZone(MousePos , list);
+				explosion.ExplodeZone(MousePos , list , ExplosionRadius , DarkeningRadius);
 			}
 
 		}
@@ -92,15 +106,15 @@ void Creator::Spawn(Mouse& mouse ,MouseLastFrameStats& previous_stats, Sandbox& 
 	}
 }
 
-void Creator::DrawButtons(Graphics& gfx)
+void Creator::DrawButtons(Graphics& gfx , Camera& cam)
 {
 	for (size_t i = 0; i < (int)Type::Count; i++)
 	{
-		EButtons[i].Draw(gfx);
+		EButtons[i].Draw(gfx , cam);
 	}
 	for (size_t i = 0; i < (int)WeatherType::Count; i++)
 	{
-		WButtons[i].Draw(gfx);
+		WButtons[i].Draw(gfx , cam);
 	}
 }
 
@@ -130,138 +144,158 @@ bool Creator::CheckButtons(Mouse& mouse)
 }
 
 
-void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx)
+void Creator::ShowHoveredElement(Mouse& mouse, Graphics& gfx , Camera& cam)
 {
-	Vec2_<size_t> MousePos = Vec2_<size_t>( mouse.GetPosX() , mouse.GetPosY() );
-	bool WithinScreen = (MousePos.x >= 0 && MousePos.x < Graphics::ScreenWidth) &&
-		(MousePos.y >= 0 && MousePos.y < Graphics::ScreenHeight);
+	Vec2_<int> MousePos = Vec2_<int>( mouse.GetPosX() , mouse.GetPosY() );
 
-	if(WithinScreen)
+	if(Graphics::WithinScreen(MousePos))
 	{
-		Vec2_<size_t> WorldPos = Vec2_<size_t>( MousePos.x / World::ElemSize , MousePos.y / World::ElemSize );
-
-		auto dim0 = world.GetSandboxDim();
-
-		const int index = WorldPos.y * dim0.width + WorldPos.x;
-		Type type = world.GetElem(index)->GetType();
-
-		int Space = 10;
-
-		auto dim1 = font.GetLetterDim();
-
-		Vec2I InfoPos = Vec2I( 0  , Graphics::ScreenHeight - dim1.height - Space );
-
-		auto& matrix = world.GetMatrix();
-		std::vector<int> ElemCounter(int(Type::Count), 0);
-
-		for (const auto& n : matrix)
+		if (!IsHoveringAButton(mouse))
 		{
-			int index = int(n.GetType());
-			ElemCounter[index]++;
-		}
+			Vec2_<size_t> WorldPos = Vec2_<size_t>(MousePos.x / World::ElemSize, MousePos.y / World::ElemSize);
 
-		std::string ElemName = " ";
-		switch (type)
-		{
-		case Type::Empty:
-			ElemName = "Empty";
-			break;
-		case Type::Wood:
-			ElemName = "Wood";
-			break;
-		case Type::Fire:
-			ElemName = "Fire";
-			break;
-		case Type::Stone:
-			ElemName = "Stone";
-			break;
-		case Type::Smoke:
-			ElemName = "Smoke";
-			break;
-		case Type::Sand:
-			ElemName = "Sand";
-			break;
-		case Type::Water:
-			ElemName = "Water";
-			break;
-		case Type::Snow:
-			ElemName = "Snow";
-			break;
-		case Type::Steam:
-			ElemName = "Steam";
-			break;
-		case Type::ToxicGas:
-			ElemName = "ToxicGas";
-			break;
-		case Type::Acid:
-			ElemName = "Acid";
-			break;
-		}
-		const std::string count = std::to_string(ElemCounter[int(type)]);
+			auto dim0 = world.GetSandboxDim();
 
-		InfoPos.x = Graphics::ScreenWidth - ElemName.size() * dim1.width - Space - (count.length() + 2) * dim1.width;
-		const std::string result = ElemName + "(" + count + ")";
-		font.DrawWords(result, gfx, InfoPos);
-	}
-}
+			const int index = WorldPos.y * dim0.width + WorldPos.x;
+			Type type = world.GetElem(world.ScreenToMatrixPos(MousePos))->GetType();
 
-void Creator::DrawSpawnSurface(Graphics& gfx , Mouse& mouse)
-{
+			int Space = 10;
 
-	if (!mouse.RightIsPressed())
-	{
-		int Radius = 0;
-		Color circle_color;
-		if (ToBeSpawned != Type::Explosion)
-		{
-			Radius = SpawnRadius;
-			circle_color = Colors::Red;
+			auto dim1 = font.GetLetterDim();
+
+			Vec2I InfoPos = Vec2I(0, Graphics::ScreenHeight - dim1.height - Space);
+
+			auto& matrix = world.GetMatrix();
+			std::vector<int> ElemCounter(int(Type::Count), 0);
+
+			for (const auto& n : matrix)
+			{
+				int index = int(n.GetType());
+				ElemCounter[index]++;
+			}
+
+			std::string ElemName = ElemName_map[type];
+
+			const std::string count = std::to_string(ElemCounter[int(type)]);
+
+			InfoPos.x = Graphics::ScreenWidth - ElemName.size() * dim1.width - Space - (count.length() + 2) * dim1.width;
+			const std::string result = ElemName + "(" + count + ")";
+			font.DrawWords(result, gfx, cam , InfoPos);
 		}
 		else
 		{
-			Radius = ExplosionRadius;
-			circle_color = Colors::Yellow;
-		}
-
-		auto WorldPos = world.ScreenToMatrixPos(mouse.GetPos());
-		int dim = Radius * 2;
-		RectI surf = RectI(dim, dim, Vec2I(WorldPos.x - Radius, WorldPos.y - Radius));
-
-		std::vector<size_t> Elements;
-
-		auto SandboxDim = world.GetSandboxDim();
-		for (int y = surf.top; y < surf.bottom(); y++)
-		{
-			for (int x = surf.left; x < surf.right(); x++)
+			size_t bIndex = -1; // button index
+			for (size_t ind = 0; ind < int(Type::Count); ind++)
 			{
-				size_t ind = y * SandboxDim.width + x;
-				if (ind < SandboxDim.GetArea())
+				if (EButtons[ind].IsHovered(mouse))
 				{
-					Vec2I ElemLoc = world.IndexToPos(ind);
+					bIndex = ind;
+					auto font_dim = font.GetLetterDim();
 
-					float dist = ElemLoc.GetLenght(WorldPos);
+					const std::string elem_name = ElemName_map[Type(bIndex)];
+					const int ElemNameX = (Graphics::ScreenWidth - elem_name.length() * font_dim.width) / 2;
 
-					if (dist <= Radius && dist >= Radius - 1)
+					font.DrawWords(elem_name, gfx, cam , Vec2I(ElemNameX, InfoY));
+					break;
+				}
+			}
+			if (bIndex == -1)
+			{
+				for (size_t ind = 0; ind < int(WeatherType::Count); ind++)
+				{
+					if (WButtons[ind].IsHovered(mouse))
 					{
-						Elements.emplace_back(ind);
+						bIndex = ind;
+						auto font_dim = font.GetLetterDim();
+
+						const std::string weather_name = WeatherName_map[WeatherType(bIndex)];
+						const int WeatherNameX = (Graphics::ScreenWidth - weather_name.length() * font_dim.width) / 2;
+
+						font.DrawWords(weather_name, gfx, cam , Vec2I(WeatherNameX, InfoY));
+						break;
 					}
 				}
 			}
 		}
+	
+	}
+}
 
-		for (auto& n : Elements)
+void Creator::DrawSpawnSurface(Graphics& gfx , Camera& ct ,  Mouse& mouse)
+{
+
+	if (ToBeSpawned != Type::None)
+	{
+		if (!mouse.RightIsPressed())
 		{
-			RectI rect = world.GetElem(n)->GetRect();
 
-			gfx.DrawRectI(rect, circle_color);
+			int Radius = 0;
+			Color circle_color;
+			if (ToBeSpawned != Type::Explosion)
+			{
+				Radius = SpawnRadius;
+				circle_color = Colors::Red;
+			}
+			else
+			{
+				Radius = ExplosionRadius;
+				circle_color = Colors::Yellow;
+			}
+			//things are calculated to matrix level and not screen coords
+			auto SandboxDim = world.GetSandboxDim();
+
+			auto WorldPos = CoordinateShower::DetermineCoordinates(mouse , ct);
+			WorldPos = Vec2I(WorldPos.x / World::ElemSize + SandboxDim.width / 2,
+				             WorldPos.y / World::ElemSize + SandboxDim.height / 2);
+
+			int dim = Radius * 2;
+			RectI surf = RectI(dim, dim, Vec2I(WorldPos.x - Radius, WorldPos.y - Radius));
+
+			std::vector<size_t> Elements;
+
+			for (int y = surf.bottom; y < surf.top(); y++)
+			{
+				for (int x = surf.left; x < surf.right(); x++)
+				{
+					int ind = (y) * SandboxDim.width + x;
+					if (ind < SandboxDim.GetArea() && ind >= 0)
+					{
+						//Vec2I ElemLoc = world.IndexToPos(ind);
+						int x = ind % SandboxDim.width, y = ind / SandboxDim.width;
+						Vec2I ElemLoc = Vec2I(int(x) ,
+											  int(y ));
+
+						float dist = ElemLoc.GetLenght(WorldPos);
+
+						if (dist <= Radius && dist >= Radius - 1)
+						{
+							Elements.emplace_back(ind);
+						}
+					}
+				}
+			}
+
+			for (auto& n : Elements)
+			{
+				RectI rect = world.GetElem(n)->GetRect();
+				Vec2I pos = rect.GetPos();
+				pos = ct.Transform(pos);
+				gfx.DrawRect(RectI(rect.GetDimensions() , std::move(pos)), circle_color, Effects::Copy{});
+			}
+		}
+		else
+		{
+			RectI Zone = RectI(ct.Transform(CoordinateShower::DetermineCoordinates(mouse , ct))
+							 , ct.Transform(SpawnLoc));
+
+			gfx.DrawRect(RectI(10 , 10 , ct.Transform(CoordinateShower::DetermineCoordinates(mouse, ct))), Colors::Green, Effects::Copy{});
+			gfx.DrawRect_Border(std::move(Zone), Colors::Green, Effects::Copy{});
 		}
 	}
 	else
 	{
-		RectI Zone = RectI(mouse.GetPos(), SpawnLoc);
-		gfx.DrawRectI_Border(Zone, Colors::Green);
-	}
 
+	}
 }
 bool Creator::IsHoveringAButton(Mouse& mouse) const
 {
@@ -281,17 +315,21 @@ bool Creator::IsHoveringAButton(Mouse& mouse) const
 	}
 	return false;
 }
-std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse)
+std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse , Camera& camera)
 {
-	auto WorldPos = world.ScreenToMatrixPos(mouse.GetPos());
+	auto WorldPos = CoordinateShower::DetermineCoordinates(mouse , camera);
+	//converting to matrix coordinates
+	WorldPos /= World::ElemSize;
+	WorldPos = { WorldPos.x + World::SandboxDim.width / 2 , WorldPos.y + World::SandboxDim.height / 2};
 
+	// // // // //
 	int dim = SpawnRadius * 2;
 	RectI surf = RectI(dim, dim, Vec2I(WorldPos.x - SpawnRadius, WorldPos.y - SpawnRadius));
 
 	std::vector<size_t> Elements;
 
 	auto SandboxDim = world.GetSandboxDim();
-	for (int y = surf.top; y < surf.bottom(); y++)
+	for (int y = surf.bottom; y < surf.top(); y++)
 	{
 		for (int x = surf.left; x < surf.right(); x++)
 		{
@@ -313,190 +351,43 @@ std::vector<size_t> Creator::GetSpawnableElements(Mouse& mouse)
 	return Elements;
 }
 
-void Creator::ExplodeZone(Vec2I& center , ParticleEffect& list)
+void Creator::ChangeSpawnArea(Mouse& mouse)
 {
-	int Radius = ExplosionRadius + DarkeningRadius;
-	RectI Zone = RectI(Radius * 2, Radius * 2,
-					Vec2I(center.x - Radius, center.y - Radius));
+	auto e = mouse.Read();
 
-	//explosion buffer
-	std::vector<Explosion_verification> eBuffer(Zone.width * Zone.height , 
-												Explosion_verification(0 , Action::None));
-
-	auto dim = world.GetSandboxDim();
-
-
-	Vec2I pos;
-	//top segment
-	for (int x = Zone.left; x < Zone.right(); x++)
+	if (e.GetType() == Mouse::Event::Type::WheelUp)
 	{
-		pos = Vec2I( x , Zone.top );
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist < ExplosionRadius; dist++)
+		if (int(ToBeSpawned) < 12) // the types until 12 are ALL regular elements
 		{
-			Vec2I matrix_pos = Vec2I( center.x + dist * cos , center.y + dist * sin );
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			if (world.GetElem(index)->GetType() != Type::Stone)
+			SpawnRadius += 0.5f;
+		}
+		else if (ToBeSpawned == Type::Explosion)
+		{
+			ExplosionRadius += 0.5f;
+			DarkeningRadius = ExplosionRadius / 3.0f;
+		}
+	}
+	else if (e.GetType() == Mouse::Event::Type::WheelDown)
+	{
+		if (int(ToBeSpawned) < 12) // the types until 12 are ALL regular elements
+		{
+			SpawnRadius -= 0.5f;
+			if (SpawnRadius < MinSpawnRadius)
 			{
-				size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-				eBuffer[eIndex] = Explosion_verification(index ,Action::Explode);
+				SpawnRadius = MinSpawnRadius;
+			}
+		}
+		else if (ToBeSpawned == Type::Explosion)
+		{
+			ExplosionRadius -= 0.5f;
+			if (ExplosionRadius < MinExplosionRadius)
+			{
+				ExplosionRadius = MinExplosionRadius;
 			}
 			else
-				break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-		
-			if (index > 0 && index < dim.GetArea())
 			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
+				DarkeningRadius = ExplosionRadius / 3.0f;
 			}
-		}
-	}
-
-	//bottom segment
-	for (int x = Zone.left; x < Zone.right(); x++)
-	{
-		pos = Vec2I( x , Zone.bottom());
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist <= ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if(index > 0 && index < dim.GetArea())
-				if (world.GetElem(index)->GetType() != Type::Stone)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
-				}
-				else
-					break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	//right segment
-	for (int y = Zone.top + 1; y < (Zone.bottom() - 1); y++)
-	{
-		pos = Vec2I( Zone.right() , y);
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist <= ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			if (world.GetElem(index)->GetType() != Type::Stone)
-			{
-				size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-				eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
-			}
-			else
-				break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	//left segment
-	for (int y = Zone.top + 1; y < Zone.bottom() - 1; y++)
-	{
-		pos = Vec2I( Zone.left , y );
-		float sin = center.GetSin(pos);
-		float cos = center.GetCos(pos);
-
-		size_t dist = 0;
-		for (dist = 0; dist <= ExplosionRadius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			if (world.GetElem(index)->GetType() != Type::Stone)
-			{
-				size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-				eBuffer[eIndex] = Explosion_verification(index, Action::Explode);
-			}
-			else
-				break;
-		}
-		for (; dist <= Radius; dist++)
-		{
-			Vec2I matrix_pos = Vec2I(center.x + dist * cos, center.y + dist * sin);
-			size_t index = matrix_pos.y * dim.width + matrix_pos.x;
-
-			if (index > 0 && index < dim.GetArea())
-			{
-				if (Chance.GetVal() <= 80)
-				{
-					size_t eIndex = (matrix_pos.y - Zone.top) * (Zone.width - 1) + (matrix_pos.x - Zone.left);
-					eBuffer[eIndex] = Explosion_verification(index, Action::Darken);
-				}
-				else
-					break;
-			}
-		}
-	}
-
-	for (auto& elem : eBuffer)
-	{
-		if (elem.type == Action::Explode)
-		{
-			world.GetElem(elem.index)->Explode(list);
-		}
-		else if (elem.type == Action::Darken)
-		{
-			world.GetElem(elem.index)->Darken(70);
 		}
 	}
 }
-

@@ -34,8 +34,15 @@ public:
 	{
 		return Time != timer.Time;
 	}
+	float GetTime() const
+	{
+		return Cnt;
+	}
+	float GetTimeLimit() const {
+		return Time;
+	}
 private:
 	float Time;
-	float Cnt;
+	float Cnt; // counter
 	bool Ready;
 };

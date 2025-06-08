@@ -4,22 +4,20 @@
 #include <iterator>
 
 Element::Element(RectI& rect)
-	:hBox(rect), Chance(1, 100), RdLifeSpan_gas(10, 15), ColorRng(0, 2)
+	:hBox(rect),  RdLifeSpan_gas(10, 15), ColorRng(0, 2)
 {
 	type = Type::Empty;
 	state = State::Empty;
 	vel = { 1.0f , 1.0f };
-	Spread = 1;
-	Gravity = 1;
 	BurnChance = 0;
 	ChangeColor = { 0.0f };
 	LifeSpan = { 0.0f };
 	BurnDuration = { 0.0f };
 }
 void Element::Update(Vec2D newpos)
-{ 
+{
 	hBox.left = newpos.x;
-	hBox.top = newpos.y;
+	hBox.bottom = newpos.y;
 }
 
 Type Element::GetType() const {
@@ -35,20 +33,16 @@ Vec2D Element::GetVel() const {
 	return vel;
 }
 
-void Element::SwapPositions(Element& elem)  {
+void Element::SwapPositions(Element& elem) {
 	using namespace std;
 	//assert(SwapCnt == 0 && elem.SwapCnt == 0);
-	swap(type , elem.type);
+	swap(type, elem.type);
 	swap(color, elem.color);
-	swap(Spread, elem.Spread);
-	swap(Gravity, elem.Gravity);
 	swap(BurnDuration, elem.BurnDuration);
 	swap(BurnChance, elem.BurnChance);
 	swap(elem.LifeSpan, LifeSpan);
 	swap(elem.state, state);
-
-	elem.SwapCnt++;
-	SwapCnt++;
+	swap(elem.Updated, Updated);
 }
 
 void Element::SetType(Type newtype)
@@ -68,19 +62,20 @@ void Element::Create(Type newtype)
 	case Type::Sand:
 		color = RandColor(&SandColorRange[0]);
 		BurnChance = 0;
-		Gravity = 2.0f;
-		Spread = 2.0f;
 		state = State::Solid;
 		break;
 	case Type::Water:
 		color = Colors::Cyan;
 		BurnChance = 0;
-		Spread = 10.0f;
-		Gravity = 3.0f;
 		state = State::Liquid;
 		break;
 	case Type::Stone:
 		color = RandColor(&StoneColorRange[0]);
+		BurnChance = 0;
+		state = State::Solid;
+		break;
+	case Type::Metal:
+		color = RandColor(&MetalColorRange[0]);
 		BurnChance = 0;
 		state = State::Solid;
 		break;
@@ -109,38 +104,28 @@ void Element::Create(Type newtype)
 		color = RandColor(&SmokeColorRange[0]);
 		LifeSpan = RdLifeSpan_gas.GetVal();
 		BurnChance = 0;
-		Spread = 1;
-		Gravity = -1;
 		state = State::Gas;
 		break;
 	case Type::Steam:
 		color = RandColor(&SteamColorRange[0]);
 		LifeSpan = RdLifeSpan_gas.GetVal();
 		BurnChance = 0;
-		Spread = 1;
-		Gravity = -1;
 		state = State::Gas;
 		break;
 	case Type::Snow:
 		color = RandColor(&SnowColorRange[0]);;
 		BurnChance = 0;
 		state = State::Solid;
-		Spread = 1;
-		Gravity = 1;
 		break;
 	case Type::Acid:
 		color = RandColor(&AcidColorRange[0]);
 		BurnChance = 0;
 		state = State::Liquid;
-		Spread = 10;
-		Gravity = 2;
 		break;
 	case Type::ToxicGas:
 		color = RandColor(&ToxicGasColorRange[0]);
 		LifeSpan = RdLifeSpan_gas.GetVal();
 		BurnChance = 100;
-		Spread = 1;
-		Gravity = -1;
 		state = State::Gas;
 		BurnDuration = { 0.1f };
 		break;
@@ -154,30 +139,30 @@ void Element::Create(Type newtype)
 	}
 }
 
-void Element::DrawElement(Graphics& gfx , Sprite& sprite)
+void Element::DrawElement(Graphics& gfx, const Camera& cam)
 {
 	if (state != State::Empty)
 	{
-		if (state == State::Gas || type == Type::Water)
+		Vec2I pos = cam.Transform(hBox.GetPos());
+		RectI new_rect = RectI(hBox.GetDimensions(), std::move(pos));
+		if (type == Type::Water)
 		{
-			gfx.DrawRect_Transparent(hBox, color, 50);
+			gfx.DrawRect_Transparent(std::move(new_rect), color, 50);
+		}
+		else if (state == State::Gas)
+		{
+			gfx.DrawRect_Transparent(std::move(new_rect), DetermineGasColor(), 50);
 		}
 		else if (type == Type::Acid || state == State::Plasma)
 		{
-			gfx.DrawRectI_Bloom(hBox, color);
+			//gfx.DrawRectI_Bloom(std::move(new_rect), color);
+			gfx.DrawElementRect(std::move(new_rect), color);
 		}
 		else
-			gfx.DrawRectI(hBox, color);
+			gfx.DrawElementRect(std::move(new_rect), color);
 	}
 }
 
-int Element::GetSpread() const {
-	return Spread;
-}
-
-int Element::GetGravity() const {
-	return Gravity;
-}
 bool Element::IsFlammable() const {
 	return BurnChance > 0;
 }
@@ -241,7 +226,7 @@ bool Element::UpdateLifeSpan(float time)
 		return false;
 	}
 	return true;
- }
+}
 
 void Element::UpdateColorTime(float time)
 {
@@ -253,7 +238,7 @@ void Element::UpdateColorTime(float time)
 	}
 }
 
-int Element::GetBurnChance() const {
+unsigned char Element::GetBurnChance() const {
 	return BurnChance;
 
 }
@@ -281,16 +266,12 @@ Timer Element::GetColorTimer() const {
 	return ChangeColor;
 }
 
-void Element::SetSpread(int speed) {
-	Spread = speed;
-}
-
 bool Element::Update_Fire(float time)
 {
 	{
 		UpdateColorTime(time);
 	}
-	
+
 	if (UpdateLifeSpan(time) == false)
 	{
 		if (Chance.GetVal() > 95) // chance to convert to smoke (100 - x)
@@ -307,7 +288,7 @@ void Element::Update_Steam(float time)
 	{
 		if (Chance.GetVal() > 90) // chance to convert towater(100 - x) 
 		{
-			Create(Type::Water);
+			Create(Type::Water); 
 		}
 	}
 }
@@ -324,7 +305,7 @@ bool Element::IsEmpty() const {
 	return type == Type::Empty;
 }
 
-void Element::MergeElem(Element& elem , Type merging)
+void Element::MergeElem(Element& elem, Type merging)
 {
 	elem.Create(Type::Empty);
 	SwapPositions(elem);
@@ -337,13 +318,13 @@ bool Element::CanMove(Element& elem) const
 
 	bool Move = false;
 
-	auto Range = GetConditions();
+	auto Range = CondList[int(state)];
 	for (; Range.first != Range.second; Range.first++)
 	{
 		Move = Move || (*Range.first == type);
 	}
 
-	return Move;
+	return Move ;
 }
 
 State Element::GetState() const
@@ -381,10 +362,20 @@ std::pair<const State*, const State*> Element::GetConditions() const
 
 void Element::Explode(ParticleEffect& list)
 {
-	if (Chance.GetVal() <= 1)
+	if (Chance.GetVal() <= 20)
 	{
-		list.AddParticle(Particle(RectI(4, 4, Vec2I(hBox.left + XRange.GetVal(), hBox.top))
-			, RandColor(&FireColorRange[0]), Vec2D{ 0.0f , -4.0f }, Timer( 0.3f )));
+		unsigned char add = 0;
+		unsigned char ParticleSize = 4;
+		// make sure not to spawn beyond screen
+		do {
+			add = XRange.GetVal();
+		} while (hBox.left + add + 4 > Graphics::ScreenWidth);
+
+		auto particle = Particle(RectI(ParticleSize, ParticleSize, Vec2I(hBox.left + add, hBox.bottom))
+			, RandColor(&FireColorRange[0]), Vec2D{ 0.0f , -4.0f }, Timer(0.3f));
+
+		list.AddParticle(std::move(particle));
+
 	}
 
 	Create(Type::Empty);
@@ -392,11 +383,32 @@ void Element::Explode(ParticleEffect& list)
 
 void Element::Darken(int percentage)
 {
-	int r, g, b;
-	r = float(color.GetR()) * float(percentage) / 100.0f;
-	g = float(color.GetG()) * float(percentage) / 100.0f;
-	b = float(color.GetB()) * float(percentage) / 100.0f;
+	if (state == State::Solid)
+	{
+		unsigned char r, g, b;
+		r = float(color.GetR()) * float(percentage) / 100.0f;
+		g = float(color.GetG()) * float(percentage) / 100.0f;
+		b = float(color.GetB()) * float(percentage) / 100.0f;
 
-	if(r )
-	color = Color( r , g , b );
+		if (!(r < 30 && g < 30 && b < 30))
+			color = Color(r, g, b);
+	}
+}
+
+Color Element::DetermineGasColor() const {
+	assert(state == State::Gas);
+	if (LifeSpan.GetTime() >= LifeSpan.GetTimeLimit() - 2.0f)
+	{
+		float color_fade = 1.0f - LifeSpan.GetTime() / LifeSpan.GetTimeLimit();
+
+		unsigned char r = color.GetR() * color_fade,
+			g = color.GetG() * color_fade,
+			b = color.GetB() * color_fade;
+
+		return Color(r, g, b);
+	}
+	else
+	{
+		return color;
+	}
 }

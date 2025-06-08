@@ -20,7 +20,7 @@ public:
 
 		for (int x = 0; x < diameter; x++)
 		{
-			kernel[x] = (255 * (kernelFloat[x] / kernelFloat[diameter / 2]));
+			kernel[x] = unsigned int(255 * (kernelFloat[x] / kernelFloat[diameter / 2]));
 		}
 		for (int x = 0; x < diameter; x++)
 		{
@@ -32,42 +32,46 @@ public:
 	}
 	void DownSize()
 	{
-		int new_width = bloomed_sprite.GetWidth() / ScaleSize;
-		int new_height = bloomed_sprite.GetHeight() / ScaleSize;
-		
+		downBuffer = DownSize(bloomed_sprite, ScaleSize);
+	}
+	static Sprite DownSize(Sprite& sprite , int scale)
+	{
+		int new_width =  sprite.GetWidth() /  scale;
+		int new_height = sprite.GetHeight() / scale;
+
 		std::vector<Color> pColor;
-		pColor.resize(new_width *  new_height);
-		
-		for (size_t y = 0; y < bloomed_sprite.GetHeight(); y += ScaleSize)
+		pColor.resize(size_t(new_width * new_height));
+
+		for (int y = 0; y < sprite.GetHeight(); y += scale)
 		{
-			for (size_t x = 0; x < bloomed_sprite.GetWidth();x += ScaleSize)
+			for (int x = 0; x < sprite.GetWidth(); x += scale)
 			{
-		
+
 				unsigned int r, g, b;
 				r = g = b = 0u;
-		
+
 				// blending a ScaleSize x ScaleSize rect
-				for (size_t y0 = y; y0 < y + ScaleSize; y0++)
+				for (int y0 = y; y0 < y + scale; y0++)
 				{
-					for (size_t x0 = x; x0 < x + ScaleSize; x0++)
+					for (int x0 = x; x0 < x + scale; x0++)
 					{
-						const Color c = bloomed_sprite.GetPixel(x0, y0);
+						const Color c = sprite.GetPixel(int(x0), int(y0));
 						r += c.GetR();
 						g += c.GetG();
 						b += c.GetB();
 					}
 				}
-				auto Area = ScaleSize * ScaleSize;
+				auto Area = scale * scale;
 				r /= Area;
 				g /= Area;
 				b /= Area;
-		
+
 				const Color new_color = Color(r, g, b);
-		
-				pColor[(y / ScaleSize) * new_width + x / ScaleSize] = new_color;
+
+				pColor[size_t((y / scale) * new_width + x / scale)] = new_color;
 			}
 		}
-		downBuffer = Sprite(Dimensions<int>(new_width, new_height) , pColor);
+		return Sprite(Dimensions<short>(new_width, new_height), pColor);
 	}
 	void UpSize()
 	{
@@ -75,33 +79,33 @@ public:
 		int new_height = downBuffer.GetHeight() * ScaleSize;
 		
 		std::vector<Color> pColor;
-		pColor.resize(new_width * new_height);
+		pColor.resize(size_t(new_width * new_height));
 		
-		for (size_t y = 0; y < downBuffer.GetHeight(); y += 1)
+		for (int y = 0; y < downBuffer.GetHeight(); y += 1)
 		{
-			for (size_t x = 0; x < downBuffer.GetWidth(); x += 1)
+			for (int x = 0; x < downBuffer.GetWidth(); x += 1)
 			{
 				// filling a ScaleSize x ScaleSize rect
-				for (size_t y0 = y * ScaleSize; y0 < y * ScaleSize + ScaleSize; y0++)
+				for (int y0 = y * ScaleSize; y0 < int(y * ScaleSize + ScaleSize); y0++)
 				{
-					for (size_t x0 = x * ScaleSize; x0 < x * ScaleSize + ScaleSize; x0++)
+					for (int x0 = x * ScaleSize; x0 < int(x * ScaleSize + ScaleSize); x0++)
 					{
 						const Color c = downBuffer.GetPixel(x, y);
-						pColor[(y0 ) * new_width + x0 ] = c;
+						pColor[size_t((y0 ) * new_width + x0) ] = c;
 					}
 				}
 			}
 		}
-		bloomed_sprite = Sprite(Dimensions<int>(new_width, new_height), pColor);
+		bloomed_sprite = Sprite(Dimensions<short>(new_width, new_height), pColor);
 	}
 	void HorizontalPass()
 	{
 		Color* pColor = downBuffer.Data();
-		for (size_t y = 0; y < downBuffer.GetHeight(); y += 1)
+		for (int y = 0; y < downBuffer.GetHeight(); y += 1)
 		{
-			size_t index_height = y * downBuffer.GetWidth();
+			int index_height = y * downBuffer.GetWidth();
 
-			for (size_t x = 0; x < downBuffer.GetWidth() - diameter / 2; x += 1)
+			for (int x = 0; x < downBuffer.GetWidth() - diameter / 2; x += 1)
 			{
 				for (int i = 0; i < diameter; i++)
 				{
@@ -116,11 +120,11 @@ public:
 	void VerticalPass()
 	{
 		Color* pColor = downBuffer.Data();
-		for (size_t y = 0; y < downBuffer.GetHeight() - diameter / 2; y += 1)
+		for (int y = 0; y < downBuffer.GetHeight() - diameter / 2; y += 1)
 		{
-			size_t index_height = y * downBuffer.GetWidth();
+			int index_height = y * downBuffer.GetWidth();
 
-			for (size_t x = 0; x < downBuffer.GetWidth(); x += 1)
+			for (int x = 0; x < downBuffer.GetWidth(); x += 1)
 			{
 				for (int i = 0; i < diameter; i++)
 				{
@@ -140,11 +144,11 @@ public:
 		UpSize();
 	}
 private:
-	unsigned int ScaleSize = 10u;
+	unsigned int ScaleSize = 20u;
 	static constexpr int diameter = 8;
 	unsigned int kernel[diameter];
 	unsigned int sumKernel = 0;
-	unsigned int OverDriveFactor = 2.0f;
+	unsigned int OverDriveFactor = 2;
 	std::function<int(int, int)> minimum = [](int x1 , int x2) {
 		if (x2 > x1)
 		{

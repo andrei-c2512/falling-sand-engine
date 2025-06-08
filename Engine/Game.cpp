@@ -27,9 +27,13 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
+	ct(gfx),
+	cam(ct),
+	cs(cam),
 	Timer(),
 	sprite("dib.bmp"),
-	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather())
+	Builder(RectI(10, 10, Vec2I(10, 400)), 0 , World.GetWorld(), World.GetWeather()),
+	World(wnd.mouse , particle_list , cam)
 {
 }
 
@@ -46,35 +50,100 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	bench.Start();
-	const float dt = Timer.DeltaTime();
 
+	
+	const float dt = Timer.DeltaTime() * GameSpeed;
+	
 	particle_list.Update(dt);
-	Builder.Spawn(wnd.mouse , MouseStats , World , particle_list);
-	Builder.CheckButtons(wnd.mouse);
+	
+	CheckButtons();
 
+	if(AreButtonsHovered() == false)
+		Builder.Spawn(wnd.mouse , MouseStats , World , particle_list , cam);
+	
+	Builder.CheckButtons(wnd.mouse);
+	Builder.ChangeSpawnArea(wnd.mouse);
+	
 	if (!wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
 		World.UpdateTime(dt);
-		World.UpdateSandbox(wnd.kbd, dt);
+		World.UpdateSandbox(wnd.mouse , wnd.kbd, dt);
 	}
 	MouseStats.Update(wnd.mouse);
+	if (wnd.kbd.KeyIsPressed(VK_LEFT))
+	{
+		cam.MoveLeft(-5);
+	}
+	else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+	{
+		cam.MoveRight(5);
+	}
+
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		cam.MoveUp(5);
+	}
+	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		cam.MoveDown(-5);
+	}
+
+	cam.MouseMovement(wnd.mouse);
+	cam.UpdateMovement(dt);
 }
 
 void Game::ComposeFrame()
 {
 	const float dt = Timer.DeltaTime();
-
+	
 	gfx.ResetBloom();
-
-	World.DrawSandbox(gfx , wnd.mouse);
-	Builder.DrawButtons(gfx);
-	Builder.ShowHoveredElement(wnd.mouse, gfx);
-	Builder.DrawSpawnSurface(gfx, wnd.mouse);
-
-	//FPS.DrawFrameCounter(gfx, dt);
-	particle_list.Draw(gfx);
+	
+	World.DrawSandbox(gfx , cam ,  wnd.mouse);
+	Builder.DrawButtons(gfx , cam);
+	//Builder.ShowHoveredElement(wnd.mouse, gfx, cam);
+	Builder.DrawSpawnSurface(gfx, cam , wnd.mouse);
+	
+	//FPS.DrawFrameCounter(gfx, cam , dt);
+	particle_list.Draw(gfx , cam);
+	
+	for (auto& button : button_list)
+	{
+		button.Draw(gfx , cam);
+	}
+	/////////////////////////////////////////////////////////
 	//gfx.ApplyBloom();
+	cs.ShowCoordinates(gfx, wnd.mouse);
+	bench.UploadTime();
+	bench.DrawFrameCounter(gfx , cam);
+	gfx.DrawRect_Border(Graphics::WorldArea, Colors::Magenta, Effects::Copy{}, Graphics::GetScreenRect());
+	//if (wnd.mouse.LeftIsPressed())
+	//{
+	//	auto list = AStarAlgorithm::ApplyAlgorithm(Vec2I(200, 200), wnd.mouse.GetPos(),
+	//		World.GetWorld(), wnd.mouse , gfx ,  Graphics::GetScreenRect());
+	//
+	//	//gfx.DrawOpenPoly(list);
+	//}
+}
 
-	bench.End();
-	bench.UploadData();
+void Game::CheckButtons() 
+{
+	for (auto& button : button_list)
+	{
+		if (button.IsPressed(wnd.mouse))
+		{
+			GameSpeed = button.GetSpeed();
+		}
+	}
+}
+
+bool Game::AreButtonsHovered() const
+{
+	for (auto& button : button_list)
+	{
+		if (button.IsHovered(wnd.mouse))
+		{
+			return true;
+		}
+	}
+	return false;
 }

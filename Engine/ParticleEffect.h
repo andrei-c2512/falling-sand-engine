@@ -2,16 +2,21 @@
 #include "Graphics.h"
 #include "Timer.h"
 #include <forward_list>
+#include "Effects.h"
+#include "Camera.h"
 class Particle {
 public:
 	Particle(RectI& rect, Color& c, Vec2D& vel0, Timer& lifespan)
 		:HitBox(rect) , color(c) , vel(vel0) , LifeSpan(lifespan)
 	{
+		assert(Graphics::WithinScreen(HitBox));
 		Active = true;
 	}
-	void Draw(Graphics& gfx)
+	void Draw(Graphics& gfx , Camera& ct)
 	{
-		gfx.DrawRectI(HitBox, color);
+		Effects::Copy e;
+		Vec2I pos0 = ct.Transform(HitBox.GetPos());
+		gfx.DrawRect(RectI(HitBox.GetDimensions() , std::move(pos0)), color, e);
 	}
 	void Update(float time)
 	{
@@ -36,9 +41,18 @@ public:
 private:
 	void UpdateMovement(float time)
 	{
-		float Add = 60.0f * time;
-		HitBox.left += Add * vel.x;
-		HitBox.top  += Add * vel.y;
+
+		float AddX = 60.0f * time * vel.x;
+		float AddY = 60.0f * time * vel.y;
+		RectI rect = RectI(HitBox.width, HitBox.height, Vec2I(HitBox.left + int(AddX), HitBox.bottom + int(AddY)));
+
+		if (Graphics::WithinScreen(rect))
+		{
+			HitBox.left = std::move(rect.left);
+			HitBox.bottom = std::move(rect.bottom);
+		}
+		else
+			Active = false;
 	}
 private:
 	RectI HitBox;
@@ -65,11 +79,11 @@ public:
 			particle.Update(time);
 		}
 	}
-	void Draw(Graphics& gfx)
+	void Draw(Graphics& gfx , Camera& cam)
 	{
 		for (Particle& particle : particle_list)
 		{
-			particle.Draw(gfx);
+			particle.Draw(gfx , cam);
 		}
 	}
 	void AddParticle(Particle& particle)

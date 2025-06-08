@@ -1,11 +1,11 @@
 #include "Button.h"
 #include "Effects.h"
-Button::Button(RectI& rect)
-	:HitBox(rect)
+Button::Button( RectI& rect)
+	:HitBox(rect) 
 {
 	Selected = false;
 }
-Button::Button(RectI& rect, Color& c)
+Button::Button( RectI& rect, Color& c)
 	:HitBox(rect) , sprite(HitBox.GetDimensions() , c)
 {
 	Selected = false;
@@ -17,16 +17,17 @@ Button::Button(RectI& rect, Sprite& sprite0)
 	Selected = false;
 
 }
-void Button::Draw(Graphics& gfx)
+void Button::Draw(Graphics& gfx, Camera& cam)
 {
 	Effects::Copy e;
-	gfx.DrawSprite(HitBox.left, HitBox.top, sprite, RectI(HitBox.width, HitBox.height, Vec2I(0, 0)) 
+	Vec2I button_pos = cam.ToCamera(HitBox.GetPos());
+	gfx.DrawSprite(std::move(button_pos), sprite, RectI(HitBox.width, HitBox.height, Vec2I(0, 0))
 		, Graphics::GetScreenRect(), e);
 }
 
 void ElementButton::SelectSprite()
 {
-	auto dimensions = Dimensions<int>(dim, dim);
+	auto dimensions = Dimensions<short>(dim, dim);
 	switch (type) {
 	case Type::Water:
 		sprite = Sprite(dimensions, Colors::Cyan );
@@ -63,7 +64,7 @@ void ElementButton::SelectSprite()
 
 void WeatherButton::SelectSprite()
 {
-	auto dimensions = Dimensions<int>(dim, dim);
+	auto dimensions = Dimensions<short>(dim, dim);
 	switch (type) {
 	case WeatherType::Clear:
 		sprite = Sprite(dimensions, Colors::Yellow);
@@ -85,7 +86,7 @@ bool Button::IsPressed(Mouse& mouse) const
 
 	if(mouse.LeftIsPressed())
 	{
-		if (HitBox.PointInRect(MousePos))
+		if (HitBox.PointInRect(CoordinateTransformer::TransformMousePos(mouse)))
 		{
 			return true;
 		}
@@ -104,5 +105,61 @@ Type ElementButton::GetType() const
 
 bool Button::IsHovered(Mouse& mouse) const
 {
-	return HitBox.PointInRect(mouse.GetPos());
+	return HitBox.PointInRect(CoordinateTransformer::TransformMousePos(mouse));
+}
+
+void GameSpeedButtonV1::Update(Mouse& mouse)
+{
+	assert(IsPressed(mouse));
+	auto MouseY = mouse.GetPosY();
+	
+	last_pressY = HitBox.top() - MouseY;
+	DetermineSpeed();
+
+}
+
+void GameSpeedButtonV1::DetermineSpeed()
+{
+	//distance from the center , where the default value is established
+	int dist =  last_pressY - BaseY ;
+
+	float add = float(dist) * IncreaseFactor;
+
+	Speed = BaseSpeed + add;
+	if (Speed < 0.0f)
+	{
+		Speed = 0.0f;
+	}
+}
+
+float GameSpeedButtonV1::GetSpeed() const {
+	return Speed;
+}
+
+void GameSpeedButtonV1::Go(Mouse& mouse) {
+	DetermineSpeed();
+	if (IsPressed(mouse))
+	{
+		Update(mouse);
+	}
+}
+
+void GameSpeedButtonV1::Draw(Graphics& gfx, Camera& cam)
+{
+	//pos of the unfilled part of the bar
+	Vec2I unfilled_pos = cam.ToCamera(HitBox.GetPos());
+	gfx.DrawRect(RectI(HitBox.width, HitBox.height - last_pressY, Vec2I(std::move(unfilled_pos))),
+		default_color , Effects::Copy{});
+
+	//pos of the filled part of the bar
+	Vec2I filled_pos = cam.ToCamera(Vec2I(HitBox.left , HitBox.bottom + (HitBox.height - last_pressY)));
+	gfx.DrawRect(RectI(HitBox.width, last_pressY , Vec2I(std::move(filled_pos))),
+		filler_color, Effects::Copy{});
+}
+
+void GameSpeedButton::Draw(Graphics& gfx, Camera& cam)
+{
+	Effects::Chroma chroma = { Colors::Magenta };
+	Vec2I pos = cam.ToCamera(Vec2I(HitBox.GetPos()));
+	gfx.DrawSprite(std::move(pos), sprite, sprite.GetRect(), Graphics::GetScreenRect(), chroma);
 }

@@ -60,12 +60,6 @@
     <ClInclude Include="Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Weapon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Projectile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MobWp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,9 +93,6 @@
     <ClInclude Include="Sprite.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>SandSimulation - Headers</Filter>
     </ClInclude>
@@ -132,11 +123,50 @@
     <ClInclude Include="Bench.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CiobanuMath.h">
+    <ClInclude Include="Entity.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleEffect.h">
+    <ClInclude Include="CoordinateTransformer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MobList.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Explosion.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Attributes.h">
+      <Filter>SandSimulation - Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CiobanuMath.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateShower.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ElementDrawer.h">
+      <Filter>SandSimulation - Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +234,18 @@
       <Filter>Source Files\SandSimulation - .cpp</Filter>
     </ClCompile>
     <ClCompile Include="Sandbox.cpp">
+      <Filter>Source Files\SandSimulation - .cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\SandSimulation - .cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateShower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementDrawer.cpp">
       <Filter>Source Files\SandSimulation - .cpp</Filter>
     </ClCompile>
   </ItemGroup>

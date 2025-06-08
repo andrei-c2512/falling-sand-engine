@@ -1,61 +1,87 @@
 #include "Weapon.h"
 #include <cmath>
 #include <assert.h>
+#include <typeinfo>
 
-Weapon::Weapon(Rect* Owner0 , float speed0, int MaxRounds0, float rTime , float sTime )
-	:speed(speed0),
-	MaxRounds(MaxRounds0),
-	reload(rTime),
-	shoot(sTime)
+Weapon::Weapon(const Rect* owner , int damage0 , float timer)
+	:pOwner(owner) , use_timer(timer), damage(damage0)
+{}
+
+void Weapon::CoolDowns(float time)
 {
-	Initialized = false;
-	Rounds = 0;
-	BulletCnt = 0;
-
-	pProj = new Projectile[MaxRounds];
-	for (int i = 0; i < MaxRounds; i++)
-		pProj[i].InitProj(Rect(5, 5, Vec2D(NULL, NULL)) , Vec2D( 0.0f , 0.0f ) , true);
-
-	pOwner = Owner0;
-	Initialized = true;
+	use_timer.Update(time);
 }
 
-void Weapon::Shoot(const Mouse& mouse)
+void Weapon::Update(float time)
 {
-	if (mouse.LeftIsPressed() && reload.IsReady() && Rounds > 0)
+	CoolDowns(time);
+}
+
+int Weapon::GetDamage() const {
+	return damage + dmg_rng.GetVal();
+}
+
+RangedWp::RangedWp(const Rect* owner, int damage ,  float speed0, int MaxRounds0, float rTime , float sTime )
+	:proj_speed(speed0),
+	MaxRounds(MaxRounds0),
+	reload(rTime),
+	Weapon(owner , damage , sTime)
+{
+	Rounds = 0;
+	BulletCnt = 0;
+}
+
+bool RangedWp::CanShoot()const
+{
+	return (reload.IsReady() && Rounds > 0 && use_timer.IsReady());
+}
+bool RangedWp::Collision(Rect& rect)
+{
+	bool collision = false;
+	for (auto& proj : proj_list)
 	{
-		int x = mouse.GetPosX() , y = mouse.GetPosY();
-		if (shoot.IsReady())
+		if (proj->GethBox().Collision(rect))
 		{
-			assert(Rounds > 0);
-			Vec2D pos = { pOwner->left , pOwner->top };
-			Vec2D vel = { x - pos.x , y - pos.y };
-			
-			float dist = sqrt(vel.x * vel.x + vel.y * vel.y);
-			vel /= dist;
-			vel *= speed;
+			proj->Destroy();
+			collision = true;
+		}
+	}
+	return collision;
+}
+void RangedWp::Use(Vec2D& target_pos)
+{
+	if(CanShoot())
+	{
+		assert(Rounds > 0);
+		Vec2D start_pos = { pOwner->left , pOwner->bottom };
+		Vec2D vel = { target_pos.x - start_pos.x , target_pos.y - start_pos.y };
 
-			pProj[BulletCnt].Launch(vel , pos);
+		float dist = sqrt(vel.x * vel.x + vel.y * vel.y);
+		vel /= dist;
+		vel *= proj_speed;
 
-			BulletCnt++;
-			if (BulletCnt == MaxRounds)
-				BulletCnt = 0;
+		LaunchNewProj(vel, start_pos);
 
-			shoot.ResetTimer();
-			Rounds--;
-			if (Rounds == 0)
-			{
-				reload.ResetTimer();
-			}
+		use_timer.ResetTimer();
+		Rounds--;
+		if (Rounds == 0)
+		{
+			reload.ResetTimer();
 		}
 	}
 }
-void Weapon::BulLifeSpan(float time)
+void RangedWp::Update_projectiles(float time)
 {
-	for (int i = 0; i < MaxRounds; i++)
-		pProj[i].Travel(time);
+	proj_list.remove_if([](std::unique_ptr<Projectile>& proj) {
+		return proj->IsDestroyed();
+		});
+
+	for (auto& proj : proj_list)
+	{
+		proj->Travel(time);
+	}
 }
-void Weapon::CoolDowns(float time)
+void RangedWp::CoolDowns(float time)
 {
 	bool BeforeUpdate = reload.IsReady();
 	reload.Update(time);
@@ -63,26 +89,56 @@ void Weapon::CoolDowns(float time)
 	{
 		Rounds = 6;
 	}
-	shoot.Update(time);
-}
-void Weapon::DrawProjectiles(Graphics& gfx , Color c)
-{
-	for (int i = 0; i < MaxRounds; i++)
-		pProj[i].DrawProjectile(gfx,  c );
+	Weapon::CoolDowns(time);
 }
 
-int Weapon::GetCapacity() const {
+void RangedWp::DrawProjectiles(Graphics& gfx , Camera& ct , Color c)
+{
+	for (auto& proj : proj_list)
+	{
+		proj->DrawProjectile(gfx, ct , c);
+	}
+}
+void RangedWp::Draw(Graphics& gfx , Camera& ct)
+{
+	DrawProjectiles(gfx, ct ,  Colors::Red);
+}
+int RangedWp::GetCapacity() const {
 	return MaxRounds;
 }
-
-Projectile* Weapon::GetpProj() const {
-	return pProj;
+int RangedWp::GetDamage() const
+{
+	return damage / 2 + dmg_rng.GetVal();
 }
 
-bool Weapon::IsInitialized() const {
-	return Initialized;
-}
-
-Rect* Weapon::GetpOwner() const {
+const Rect* Weapon::GetpOwner() const {
 	return pOwner;
 }
+
+void RangedWp::Update(float time)
+{
+	CoolDowns(time);
+	Update_projectiles(time);
+}
+
+void ExplosiveLauncher::LaunchNewProj(Vec2D& vel, Vec2D& initpos)
+{
+	std::unique_ptr<Explosive> proj = std::make_unique<Explosive>(*InitProj);
+	proj->Launch(vel, initpos);
+	
+	proj_list.emplace_front(std::move(proj));
+}
+int ExplosiveLauncher::GetDamage() const
+{
+	return RangedWp::GetDamage() + InitProj->GetDamage();
+}
+std::forward_list<Rect> RangedWp::GetWeaponHitBoxes() const
+{
+	std::forward_list<Rect> HitBox_list;
+	for (auto& proj : proj_list)
+	{
+		HitBox_list.emplace_front(proj->GethBox());
+	}
+	return HitBox_list;
+}
+

@@ -6,31 +6,33 @@
 #include "World.h"
 #include "Dimensions.h"
 #include "Weather.h"
+#include "Camera.h"
 
 class Button {
 public:
 	Button(RectI& rect);
 	Button(RectI& rect, Color& c);
 	Button(RectI& rect, Sprite& sprite);
-	void Draw(Graphics& gfx);
+	virtual void Draw(Graphics& gfx , Camera& ct);
 	virtual void SelectSprite(){};
-	bool IsPressed(Mouse& mouse) const;
-	bool IsHovered(Mouse& mouse) const;
+	bool         IsPressed(Mouse& mouse) const;
+	bool         IsHovered(Mouse& mouse) const;
 protected:
 	bool Selected;
 	RectI HitBox;
 	Sprite sprite;
 	Color c;
+
 };
 
 class ElementButton : public Button
 {
 public:
 	static constexpr int dim = 20;
-	ElementButton(Vec2I& pos , Type type0)
+	ElementButton( Vec2I& pos , Type type0)
 		:Button(RectI(dim, dim, pos) , c) , type(type0)
 	{
-		auto dimensions = Dimensions<int>(dim, dim);
+		auto dimensions = Dimensions<short>(dim, dim);
 		switch (type) {
 		case Type::Water:
 			sprite = Sprite(dimensions, Colors::Cyan);
@@ -74,11 +76,11 @@ private:
 class WeatherButton : public Button
 {
 public:
-	static constexpr int dim = 20;
-	WeatherButton(Vec2I& pos,WeatherType type0)
-		:Button(RectI(dim , dim , pos)) , type(type0)
+	static constexpr short dim = 20;
+	WeatherButton( Vec2I& pos,WeatherType type0)
+		:Button( RectI(dim , dim , pos)) , type(type0)
 	{
-		auto dimensions = Dimensions<int>(dim, dim);
+		auto dimensions = Dimensions<short>(dim, dim);
 
 		switch (type) {
 		case WeatherType::Clear:
@@ -94,8 +96,54 @@ public:
 			break;
 		}
 	}
-	void SelectSprite() override;
+	void        SelectSprite() override;
 	WeatherType GetType() const;
 private:
 	WeatherType type = WeatherType::Clear;
+};
+
+class GameSpeedButtonV1 : public Button
+{
+public:
+	GameSpeedButtonV1( const Color& default, const Color& filler ,RectI& rect)
+		:Button(rect) , default_color(default) , filler_color(filler)
+	{
+		MaxSpeed = 5.0f;
+		MinSpeed = 0.0f;
+		
+
+		IncreaseFactor = (MaxSpeed - MinSpeed) / HitBox.height;
+		last_pressY = (BaseSpeed / IncreaseFactor);
+		BaseY = last_pressY;
+		Speed = 1.0f;
+	}
+	void  Update(Mouse& mouse);
+	void  DetermineSpeed();
+	void  Draw(Graphics& gfx, Camera& ct) override;
+	void  Go(Mouse& mouse);
+	float GetSpeed() const;
+
+private:
+	float MaxSpeed = 5.0f;
+	float MinSpeed = 0.0f;
+	static constexpr float BaseSpeed = 1.0f;
+	
+	float Speed = 1.0f;
+	float IncreaseFactor = 0.1f;
+	Color default_color = Colors::Gray;
+	Color filler_color  = Colors::White;
+
+	int BaseY;
+	int last_pressY;
+};
+
+class GameSpeedButton : public Button {
+public:
+	GameSpeedButton(Button& button, float Speed0)
+		:Speed(Speed0) , Button(button)
+	{}
+	void Draw(Graphics& gfx, Camera& ct) override;
+	float GetSpeed()const { return Speed; };
+private:
+	float Speed;
 };

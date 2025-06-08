@@ -2,16 +2,17 @@
 #include "Chunk.h"
 #include "World.h"
 #include "Weather.h"
-#include "Player.h"
+#include "MobList.h"
+#include "Camera.h"
 class Sandbox {
 public:
 	static constexpr int ChunkSize = 40;
-	Sandbox();
-	void UpdateSandbox(Keyboard& kbd , float time );
-	void DrawSandbox(Graphics& gfx , Mouse& mouse);
+	Sandbox(Mouse& mouse , ParticleEffect& effect , Camera& camera);
+	void UpdateSandbox(Mouse& mouse , Keyboard& kbd , float time );
+	void DrawSandbox(Graphics& gfx , Camera& , Mouse& mouse);
 	void ActivateChunk(int index);
 	// for testing
-	void DrawChunkBorders(Graphics& gfx);
+	void DrawChunkBorders(Graphics& gfx , Camera& ct);
 	void UpdateTime(float time);
 
 	Chunk* GetChunk(size_t elemindex);
@@ -23,18 +24,20 @@ public:
 	void ActivateNeededChunks(size_t elem);
 	// getters
 
-	World& GetWorld() {
-		return world;
+	Simulation& GetWorld() {
+		return simulation;
 	}
 	Weather& GetWeather() {
 		return weather;
 	}
 private:
-	World world;
+	Simulation simulation;
 	Weather weather;
-	Dimensions<size_t> SandboxDim_InChunks;
+	Dimensions<int> SandboxDim_InChunks;
 	Timer UpdateTimer;
 	std::vector<Chunk> Chunk_list;
 
-	Player player;
+	RNG rand = { 0 , 1 };
+
+	MobList mob_list;
 };

@@ -2,6 +2,8 @@
 #include "Graphics.h"
 #include "Vec2D.h"
 #include "Mouse.h"
+#include "Button.h"
+
 class GameSpeed {
 public:
 	GameSpeed() = default;

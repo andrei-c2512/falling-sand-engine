@@ -7,6 +7,9 @@
 #include "Element.h"
 #include <functional>
 #include <assert.h>
+#include "Camera.h"
+
+extern RNG Chance;
 
 class Chunk {
 public:
@@ -16,6 +19,10 @@ public:
 		Down,
 		Up,
 		None
+	};
+	enum class Order {
+		Ascending,
+		Descending
 	};
 public:
 	struct NextMove {
@@ -47,7 +54,6 @@ public:
 		Rand(0 , 1),
 		RandSpread(0 , 1),
 		RandFire(1,4),
-		Chance(1, 100),
 		RdMove(1,3)
 	{
 		Active = false;
@@ -55,7 +61,7 @@ public:
 		PhysicalSize = Size * World::ElemSize;
 
 		auto dim = world.GetSandboxDim();
-		for (int y = Size.top; y < Size.top + Size.height; y++)
+		for (int y = Size.bottom; y < Size.top(); y++)
 		{
 			for (int x = Size.left; x < Size.left + Size.width; x++)
 			{
@@ -66,185 +72,197 @@ public:
 		}
 
 	}
-	std::vector<World::Move> EmitFire_Aura(size_t index);
-	void Update_Gas(size_t index, float time);
-	void Update_Acid(size_t index);
+	std::vector<World::Move> EmitFire_Aura(int index);
+	void Update_Gas(int index, float time);
+	void Update_Acid(int index);
 	bool InBounds(int index, World& world) const;
-	void DrawBorder(Graphics& gfx);
+	void DrawBorder(Graphics& gfx, Camera& ct);
 
-	static int  GetDelta(const int index, Direction direction , Dimensions<size_t> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
+	static int  GetDelta(int index, Direction direction , Dimensions<int> dim);               // gets the number of indexes to pass to go to a certain direction on the 2D grid
 
-	int  GetNextElem(const int index, Direction dir1) const;				     // returns the index of the element in that direction
-	int  GetNextElem(const int index, Direction dir1, Direction dir2) const;    // 
+	int  GetNextElem(int index, Direction dir1) const;				     // returns the index of the element in that direction
+	int  GetNextElem(int index, Direction dir1, Direction dir2) const;    // 
 
-	void Move(const int index1, const int index2);
-	std::pair<bool , int> SpreadFire(size_t index);
+	std::pair<bool , int> SpreadFire(int index);
 
-	template<typename E>
-	World::Move GetNextMove(const int index, Direction dir1 , Direction dir2 ,E effect = SpecialBehaviour::DoNothing{})
+	template<typename E> 
+	void GetNextMove(int index, Direction dir1 , Direction dir2 ,E effect)
 	{
-		size_t CurInd = index;
+		int CurInd = index;
 
 		World::MoveType movetype = World::MoveType::Swap;
 
 		Element& elem1 = *world.GetElem(index);
-		int vel;
+		unsigned char vel;
 
-		if(int(dir1) >= 0 && int(dir1) <= 1 && dir2 == Direction::None)
-			vel = elem1.GetSpread();
+		if(short(dir1) >= 0 && short(dir1) <= 1 && dir2 == Direction::None)
+			vel = effect.spread;
 		else
-			vel = std::abs(elem1.GetGravity());
+			vel = std::abs(effect.gravity);
 
-		for (int origin = 0; origin < vel; origin++)
+		
+		auto onNoYDir = []() {
+
+			};
+		for (unsigned char origin = 0; origin < vel; origin++)
 		{
-			size_t NextIndex;
+			int NextIndex;
 
+			if (dir2 == Direction::None && origin % 6 == 5 &&
+				unsigned char(dir1) >= 0 && unsigned char(dir1) <= 1)
 			{
-				if (dir2 == Direction::None && origin % 3 == 2 &&
-					int(dir1) >= 0 && int(dir1) <= 1)
+				Direction yDir;
+				if (effect.gravity > 0)
 				{
-					Direction yDir;
-					if (elem1.GetGravity() > 0)
-					{
-						yDir = Direction::Down;
-					}
-					else
-						yDir = Direction::Up;
-
-					NextIndex = GetNextElem(CurInd, dir1, yDir);
-					Element& elem = *world.GetElem(NextIndex);
-					if (!elem1.CanMove(elem))
-					{
-						NextIndex = GetNextElem(CurInd, dir1, dir2);
-					}
+					yDir = Direction::Down;
 				}
 				else
-					NextIndex = GetNextElem(CurInd, dir1, dir2);
+					yDir = Direction::Up;
+
+				int new_index = GetNextElem(CurInd, dir1, yDir);
+				Element& elem = *world.GetElem(new_index);
+				if (elem1.CanMove(elem))
+				{
+					break;
+				}
 			}
+
+			NextIndex = GetNextElem(CurInd, dir1, dir2);
 
 			Element& elem2 = *world.GetElem(NextIndex);
 
 			if (elem1.CanMove(elem2))
 			{
-				auto next_move = effect(CurInd, NextIndex, elem2);
-				if (next_move.move != World::MoveType::Swap)
+				auto next_move = effect(world ,index, NextIndex, elem2);
+				//basically this is a function that verrifies the special encounters of an element
+				//ex: snow turns to water when meeting fire
+				if (effect(world, index, NextIndex, elem2))
 				{
-					return std::move(next_move);
+					elem1.Update();
+					goto END;
 				}
-				if (world.GetElem(CurInd)->GetState() == State::Solid &&
+				if (elem1.GetState() == State::Solid &&
 					elem2.GetState() == State::Plasma)
 				{
-					world.AddToSpawnList(World::Move{ NextIndex , World::MoveType::Create , Type::Empty });
+					world.AddToSpawnList(World::Spawn( NextIndex  , Type::Empty ));
 				}
 				CurInd = NextIndex;
 			}
 			else
 			{
-				if(origin == 0)
-					movetype = World::MoveType::Static;
-
+				if (origin == 0)
+				{
+					goto END;
+				}
 				break;
 			}
 		}
 		
-		World::Move move = World::Move(std::move(index) , std::move(CurInd) , std::move(movetype));
+		world.AddMoveToList(World::Swap(index , CurInd));
+		//World::Swap S(index, CurInd);
+		//S.Do(world);
+		elem1.Update();
 
-		return move;
+	END:
+		{
+		}
+		//end of the program lol
 	}
+
 
 	template<typename E> 
-	World::Move  GetNextMove(const int index, Direction dir1, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(int index, Direction dir1, E effect)
 	{
-		return GetNextMove(index, dir1, Direction::None,effect);
+		GetNextMove(index, dir1, Direction::None,effect);
 	}
 	template<typename E>
-	World::Move  GetNextMove(const int index, NextMove& nextmove, E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextMove(int index, NextMove& nextmove, E effect )
 	{
-		return GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
+		GetNextMove(index, nextmove.dir1, nextmove.dir2, effect);
 	}
 	template<typename E>
-	World::Move  GetNextSideMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void GetNextSideMove(int index, Direction dirY , E effect )
 	{
+		bool Option = Rand.GetVal();
 
-		World::Move move (World::MoveType::Static);
+		GetNextMove(index, Direction(Option) , dirY, effect);
+		auto elem = world.GetElem(index);
 
-		NextMove Move1 = { Direction::Left , dirY};
-		NextMove Move2 = { Direction::Right , dirY};
-
-		int Option = Rand.GetVal();
-		if (Option == 1)
+		if (elem->IsUpdated() == false)
 		{
-			std::swap(Move1, Move2);
+			GetNextMove(std::move(index), Direction(~Option) , dirY, effect);
 		}
-
-		move = GetNextMove(index, std::move(Move1), effect);
-
-		if (move.move == World::MoveType::Static)
-		{
-			return GetNextMove(std::move(index), std::move(Move2), effect);
-		}
-		else
-			return move;
 	}
 	template<typename E>
-	World::Move  GetNextRandomMove(int index, Direction dirY , E effect = SpecialBehaviour::DoNothing{})
+	void  GetNextRandomMove(int index, Direction dirY , E effect)
 	{
-		World::Move move(World::MoveType::Static);
-
-		NextMove Move1 = { Direction::Left , dirY };
-		NextMove Move2 = { Direction::Right , dirY };
-
-
 		int Option = RdMove.GetVal();
 
 		switch (Option)
 		{
 		case 1:
-			move = GetNextMove(std::move(index), std::move(Move1), std::move(effect));
+			GetNextMove(std::move(index), NextMove(Direction::Left, dirY), std::move(effect));
 			break;
 		case 2:
-			move = GetNextMove(std::move(index), std::move(Move2), std::move(effect));
+			GetNextMove(std::move(index), NextMove(Direction::Right, dirY), std::move(effect));
 			break;
 		case 3:
-			move = GetNextMove(std::move(index), std::move(dirY), std::move(effect));
+			GetNextMove(std::move(index), std::move(dirY), std::move(effect));
 			break;
 		}
-
-		return move;
 	}
 	template <typename E>
-	World::Move  GetNextMove_Liquid(size_t index, E effect = SpecialBehaviour::DoNothing)
+	void GetNextMove_Liquid(int index, E effect)
 	{
-		assert(world.GetWorld()[index].GetState() ==State::Liquid);
+		assert(world.GetWorld()[index].GetState() == State::Liquid);
 
-		World::Move move = GetNextMove(index, Direction::Down, effect);
+		auto elem = world.GetElem(index);
+		GetNextMove(index, Direction::Down, effect);
 
-		if (move.move == World::MoveType::Static)
+		if (elem->IsUpdated() == false)
 		{
-			move = GetNextSideMove(index, Direction::Down, effect);
-			if (move.move == World::MoveType::Static)
+			GetNextSideMove(index, Direction::Down, effect);
+			if (elem->IsUpdated() == false)
 			{
-				return GetNextSideMove(index, Direction::None, std::move(effect));
+			    GetNextSideMove(index, Direction::None, std::move(effect));
 			}
 		}
-		return move;
 	}
 	template <typename E>
-	World::Move	 GetNextMove_MoveableSolid(size_t index, E effect = SpecialBehaviour::DoNothing)
+	void GetNextMove_MoveableSolid(int index, E effect )
 	{
-		assert(world.GetWorld()[index].GetType() == Type::Sand);
+		assert(world.GetWorld()[index].GetState() == State::Solid);
 
-		World::Move move = GetNextMove(index, Direction::Down, effect);
+		GetNextMove(index, Direction::Down, effect);
 
-		if (move.move == World::MoveType::Static)
+		auto elem = world.GetElem(index);
+		if (elem->IsUpdated() == false)
 		{
-			return GetNextSideMove(index, Direction::Down, std::move(effect));
+			GetNextSideMove(index, Direction::Down, std::move(effect));
 		}
-		return move;
 	}
-	World::Move  GetNextMove_Fire(size_t index);
-	World::Move  GetNextMove_Gas(size_t index);
-	void Evaluate_Moves(float time);
+	template <typename E>
+	void GetNextMove_Gas(int index , E effect)
+	{
+		assert(world.GetWorld()[index].GetState() == State::Gas);
+
+		auto elem = world.GetElem(index);
+
+		//GetNextMove(index, Direction::Up, effect);
+		//
+		//if (elem->IsUpdated() == false)
+		//{
+		//	GetNextSideMove(index, Direction::Up, effect);
+		//	if (elem->IsUpdated() == false)
+		//	{
+		//		GetNextSideMove(index, Direction::None, effect);
+		//	}
+		//}
+		GetNextRandomMove(index, Direction::Up, effect);
+	}
+	void GetNextMove_Fire(int index);
+	
+	void Evaluate_Moves(float time , Order order);
 
 	void SetState(bool active);
 	void Necessary_Activation();
@@ -254,10 +272,9 @@ private:
 	RNG Rand;
 	RNG RandSpread;
 	RNG RandFire;
-	RNG Chance;
 	RNG RdMove;
 public:
-	std::vector<size_t> Chunk_matrix;
+	std::vector<int> Chunk_matrix;
 
 	RectI Size; // how many elements fit
 	RectI PhysicalSize;

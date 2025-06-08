@@ -10,8 +10,8 @@ public:
 	Sprite() = default;
 	Sprite(int width0, int height0);
 	Sprite(const std::string& filename);
-	Sprite(const Dimensions<int>& dim, Color c);
-	Sprite(const Dimensions<int>& dim, std::vector<Color>& pcolor);
+	Sprite(const Dimensions<short>& dim, Color c);
+	Sprite(const Dimensions<short>& dim, std::vector<Color>& pcolor);
 	void PutPixel(int x, int y, Color c);
 	Color GetPixel(int x, int y);
 	void PutPixel(size_t index , Color c)
@@ -38,6 +38,10 @@ public:
 	Color* Data()
 	{
 		return pColor.data();
+	}
+	RectI GetRect()
+	{
+		return RectI(width, height, Vec2I(0, 0));
 	}
 private:
 	std::vector<Color> pColor;

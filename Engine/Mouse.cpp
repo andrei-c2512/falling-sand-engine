@@ -23,17 +23,17 @@
 
 Vec2I Mouse::GetPos() const
 {
-	return { x,y };
+	return { x  ,y };
 }
 
 int Mouse::GetPosX() const
 {
-	return x;
+	return x ;
 }
 
 int Mouse::GetPosY() const
 {
-	return y;
+	return y ;
 }
 
 bool Mouse::LeftIsPressed() const

@@ -1,16 +1,19 @@
 #pragma once
-#include "Plant.h"
+
 #include <vector>
-#include "Projectile.h"
 #include "Rng.h"
 #include "ParticleEffect.h"
+#include "CoordinateTransformer.h"
+
+extern RNG Chance;
+
 enum class Type {
 	Water,
 	Sand,
 	Stone,
+	Metal,
 	Wood,
 	Fire,
-	FireAura,
 	Smoke,
 	Steam,
 	Snow,
@@ -18,6 +21,8 @@ enum class Type {
 	ToxicGas,
 	Empty,
 	Explosion,
+	FireAura,
+	None,
 	Count
 };
 enum class State {
@@ -30,14 +35,10 @@ enum class State {
 	Invalid
 };
 
-enum class Action {
-	Explode,
-	Darken,
-	None,
-	Count
-};
-class Element {
+class Attributes;
 
+class Element {
+	friend class Attributes;
 public:
 	static constexpr Color SandColorRange[3] = { { 255 , 220 , 0 } ,
 												 { 255 , 205 , 0 } ,
@@ -78,51 +79,73 @@ public:
 	static constexpr Color AcidColorRange[3] = { { 0 , 150 , 0 },
 												  {0 , 155 , 0 },
 												  {0 , 160 , 0} };
-	static constexpr Color ToxicGasColorRange[3] = {{0 , 150 , 0},
+	static constexpr Color ToxicGasColorRange[3] = { {0 , 150 , 0},
 												   {0 , 155 , 0 },
 												   {0 , 160 , 0} };
+	static constexpr Color MetalColorRange[3] = { { 130 , 130 , 130} ,
+												 { 150 , 150 , 150} ,
+												 { 175 , 175 , 175} };
 
-	static constexpr int WoodBurnChance = 3;
-
-	static constexpr State Conditions_liquid[] = {State::Empty , State::Plasma , State::Gas};
-	static constexpr State Conditions_solid[] = { State::Empty , State::Liquid , State::Gas , State::Plasma};
-	static constexpr State Conditions_gas[] = { State::Empty};
+//public:
+//	struct ElemInfo {
+//		ElemInfo( short spread0 , short gravity0 , short burnchance , float BurnDuration0)
+//			:spread(spread0),gravity(gravity0),BurnChance(burnchance),BurnDuration(BurnDuration0)
+//		{}
+//
+//		short spread = 0;
+//		short gravity = 0;
+//		unsigned char BurnChance = 0;
+//		float BurnDuration = 0.0f;
+//	};
+//public:
+//	static ElemInfo elemtype_info[int(Type::Count)] = {
+//		ElemInfo()
+//	};
 public:
-	static constexpr int WaterSpread = 4;
-	static constexpr int SandSinkChance = 15;
-	static constexpr int SnowToWaterChance = 10;
-	static constexpr int SnowSinkChance = 10;
+	static constexpr short WoodBurnChance = 3;
+
+	static constexpr State Conditions_liquid[] = { State::Empty , State::Plasma , State::Gas };
+	static constexpr State Conditions_solid[] = { State::Empty , State::Liquid , State::Gas , State::Plasma };
+	static constexpr State Conditions_gas[] = { State::Empty };
+
+	static constexpr std::pair<const State*, const State*> CondList[] =
+	{ {std::begin(Conditions_liquid) , std::end(Conditions_liquid)} ,
+	  {std::begin(Conditions_solid)  , std::end(Conditions_solid)} ,
+	  {std::begin(Conditions_gas)    , std::end(Conditions_gas)}};
+
+public:
+	static constexpr short WaterSpread = 4;
+	static constexpr short SandSinkChance = 15;
+	static constexpr short SnowToWaterChance = 10;
+	static constexpr short SnowSinkChance = 10;
 
 	static constexpr int AcidDestroyChance = 30;
 public:
 	Element(RectI& rect);
-	void DrawElement(Graphics& gfx , Sprite& background);
+	void DrawElement(Graphics& gfx, const Camera& ct);
 	void Update(Vec2D newpos);
 	void SetVel(Vec2D newvel);
 	void SwapPositions(Element& elem);
 	void SwapPositions_Gas(Element& elem);
-	
-	void MergeElem(Element& elem , Type merging);
+
+	void MergeElem(Element& elem, Type merging);
 
 	void Explode(ParticleEffect& list);
 	void Darken(int percentage);
 
 	void Create(Type newtype);
 	void SetType(Type newtype);
-	void SetState(State state);
 	void SetOnFire();
 
 	bool UpdateLifeSpan(float time);
 	void UpdateColorTime(float time);
 	void UpdateColor(); //if the elem is the type to change color periodically
 
-	int GetSpread() const;
-	int GetGravity() const;
 	Type GetType() const;
 	State GetState() const;
 	RectI GetRect() const;
 	Vec2D GetVel() const;
-	int GetBurnChance() const;
+	unsigned char GetBurnChance() const;
 	bool IsFlammable() const;
 	bool IsEmpty() const;
 
@@ -134,7 +157,6 @@ public:
 	void SetColor(Color c);
 	void SetLifeSpan(Timer& timer);
 	void SetColorTimer(Timer& timer);
-	void SetSpread(int Speed);
 
 	bool Update_Fire(float time);
 	bool CaughtOnFire();
@@ -142,11 +164,19 @@ public:
 	size_t GetChunkIndex() const;
 
 	void AssignChunk(size_t index);
+	Color DetermineGasColor() const;
 	bool CanMove(Element& elem) const;
 	std::pair<const State*, const State*> GetConditions() const;
 	void ResetStatus()
 	{
-		SwapCnt = 0;
+		Updated = false;
+	}
+	void Update()
+	{
+		Updated = true;
+	}
+	bool IsUpdated() const {
+		return Updated;
 	}
 private:
 	RectI hBox;
@@ -157,19 +187,18 @@ private:
 
 	Color color;
 
-	int Spread;
-	int Gravity;
-	int BurnChance;
+	unsigned char BurnChance;
 	float BurnDuration;
 
 	Timer LifeSpan;
 	Timer ChangeColor;
 
 	size_t ChunkIndex = 0;
-	int SwapCnt = 0;
+
+	bool Updated = false;
 private:
-	RNG Chance = { 1, 100 };
 	RNG RdLifeSpan_gas = { 10 , 15 };
 	RNG ColorRng = { 0 , 3 };
-	RNG XRange = { 0 , hBox.width };
+	RNG XRange = { 0 , hBox.width - 1 };
+	mutable RNG SpreadRange = { -2 , 2 };
 };
