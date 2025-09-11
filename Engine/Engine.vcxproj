@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FFCA512B-49FC-4FC8-8A73-C4F87D322FF2}</ProjectGuid>
     <RootNamespace>Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -148,9 +148,8 @@
     <ClInclude Include="CoordinateTransformer.h" />
     <ClInclude Include="Creator.h" />
     <ClInclude Include="Dimensions.h" />
-    <ClInclude Include="DynamicEvents.h" />
     <ClInclude Include="Effects.h" />
-    <ClInclude Include="ElementDrawer.h" />
+    <ClInclude Include="ElementRNG.hpp" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="Font.h" />
@@ -191,7 +190,6 @@
     <ClCompile Include="Creator.cpp" />
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Element.cpp" />
-    <ClCompile Include="ElementDrawer.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -290,6 +288,9 @@
     <Image Include="Chili.ico" />
     <Image Include="dotapose.bmp" />
     <Image Include="Fixedsys16x28.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Text.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

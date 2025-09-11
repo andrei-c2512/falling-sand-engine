@@ -13,14 +13,14 @@ extern RNG Chance;
 
 class Chunk {
 public:
-	enum class Direction {
+	enum class Direction : int8_t {
 		Left,
 		Right,
 		Down,
 		Up,
 		None
 	};
-	enum class Order {
+	enum class Order :int8_t {
 		Ascending,
 		Descending
 	};
@@ -158,7 +158,7 @@ public:
 			}
 		}
 		
-		world.AddMoveToList(World::Swap(index , CurInd));
+		world.AddMoveToList(World::SwapData(index , CurInd));
 		//World::Swap S(index, CurInd);
 		//S.Do(world);
 		elem1.Update();

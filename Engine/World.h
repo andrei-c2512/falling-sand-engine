@@ -12,8 +12,10 @@
 #include "Camera.h"
 
 class World {
+
 public:
-	enum class MoveType {
+	static constexpr int ElemSize = 2;
+	enum class MoveType : int8_t {
 		Conversion,
 		SetOnFire,
 		FireAura,
@@ -99,13 +101,13 @@ public:
 		MoveType move = MoveType::Static;
 		Type conversion = Type::Empty;
 	};
-	struct Swap {
-		Swap(int ind1 , int ind2)
+	struct SwapData {
+		SwapData(int ind1 , int ind2)
 			:index1(ind1) , index2(ind2)
 		{}
 		int index1;
 		int index2;
-		void Do(World& world)
+		void Do(World& world) const
 		{
 			assert(index2 != -1);
 
@@ -215,7 +217,6 @@ public:
 		}
 	}
 
-	static constexpr int ElemSize = 4;
 	static constexpr Dimensions<int> SandboxDim = Dimensions<int>( Graphics::WorldArea.width  / ElemSize , 
 																   Graphics::WorldArea.height / ElemSize );
 
@@ -227,7 +228,7 @@ public:
 	{
 		return Elements.data(); 
 	}
-	std::vector<Swap> GetMove_List()
+	std::vector<SwapData> GetMove_List()
 	{
 		return Move_List;
 	}
@@ -249,7 +250,7 @@ public:
 		return false;
 	}
 
-	void AddMoveToList(Swap& move)
+	void AddMoveToList(const SwapData& move)
 	{
 		Move_List.emplace_back(std::move(move));
 	}
@@ -311,7 +312,7 @@ public:
 		{
 			n.ResetStatus();
 		}
-		std::sort(Move_List.begin(), Move_List.end(), [](Swap& move1, Swap& move2)
+		std::sort(Move_List.begin(), Move_List.end(), [](const SwapData& move1, const SwapData& move2)
 			{
 				return move1.index2 > move2.index2;
 			});
@@ -387,7 +388,7 @@ public:
 protected:
 	std::vector<Element> Elements;
 
-	std::vector<Swap> Move_List;
+	std::vector<SwapData> Move_List;
 	std::vector<Move> Fire_list;
 	std::vector<Move> FireAura_list;
 	std::vector<Move> Conversion_list;

@@ -10,10 +10,8 @@ public:
 		Ready = false;
 	}
 	void Update(float time) {
-		if (float(Cnt) < float(Time))
-		{
+		if (Cnt < Time)
 			Cnt += time;
-		}
 		else
 			Ready = true;
 	}

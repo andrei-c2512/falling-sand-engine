@@ -3,6 +3,7 @@
 #include "CoordinateTransformer.h"
 #include <string>
 #include <fstream>
+#include <vector>
 
 class Bench {
 public:
@@ -32,6 +33,7 @@ public:
 	void UploadTime()
 	{
 		BuildTime = ft.DeltaTime();
+		BuildTimeList.emplace_back(BuildTime);
 
 		std::string aux = "Time: " + std::to_string(BuildTime * 1000.0f) + " ms\n";
 		OutputDebugStringA(aux.c_str());
@@ -62,8 +64,15 @@ public:
 
 		if (FrameTimer.IsReady())
 		{
-			Frames = int(1.0f / BuildTime);
+			float AverageTime = 0.0f;
+			for (float Time : BuildTimeList) {
+				AverageTime += Time;
+			}
+			AverageTime /= float(BuildTimeList.size());
+
+			Frames = int(1.0f / AverageTime);
 			FrameTimer.ResetTimer();
+			BuildTimeList.clear();
 		}
 
 		const std::string frame_str = std::to_string(Frames);
@@ -76,9 +85,10 @@ public:
 		font.DrawWords(frame_str, gfx, ct ,  pos);
 	}
 private:
+	// measures how quickly it should be updated
 	FrameTimer ft;
 	Font font = { "Fixedsys16x28.bmp" };
-
+	std::vector<float> BuildTimeList;
 
 	bool  Running = true;
 	float BuildTime = 0;
@@ -89,6 +99,6 @@ private:
 	float average = 0;
 
 	int   Frames = 0;
-	Timer FrameTimer = { 0.5f};
+	Timer FrameTimer = { 0.1f};
 	int   nMeasurements = 0;
 };

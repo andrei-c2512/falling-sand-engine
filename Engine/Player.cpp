@@ -24,7 +24,7 @@ void Player::Draw(Graphics& gfx , Camera& cam)
 
 	Vec2I pos_body = cam.Transform(Vec2D(x, HitBox.top() - sHead.GetHeight()));
 
-	gfx.DrawSprite(std::move(pos_body), sBody, RectI(sBody.GetWidth(),
+	/*gfx.DrawSprite(std::move(pos_body), sBody, RectI(sBody.GetWidth(),
 		sBody.GetHeight(), Vec2I{ 0 , 0 }), Graphics::GetScreenRect() , e);
 	
 	
@@ -34,7 +34,7 @@ void Player::Draw(Graphics& gfx , Camera& cam)
 	
 	gfx.DrawRect_Border(RectI(HitBox.GetDimensions(), cam.Transform(Vec2I(HitBox.left , HitBox.top()))), Colors::Green, Effects::Copy{});
 	
-	pWeapon->Draw(gfx, cam);
+	pWeapon->Draw(gfx, cam);*/
 }
 
 void Player::UpdateMovement(World& world , Keyboard& kbd , float time)

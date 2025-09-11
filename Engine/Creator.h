@@ -10,6 +10,7 @@
 #include <map>
 #include "Camera.h"
 #include "CoordinateShower.h"
+
 class Creator {
 public:
 	enum class Action {

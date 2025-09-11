@@ -126,9 +126,6 @@
     <ClInclude Include="Entity.h">
       <Filter>SandSimulation - Headers</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicEvents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CoordinateTransformer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -165,8 +162,8 @@
     <ClInclude Include="CoordinateShower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ElementDrawer.h">
-      <Filter>SandSimulation - Headers</Filter>
+    <ClInclude Include="ElementRNG.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -245,9 +242,6 @@
     <ClCompile Include="CoordinateShower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ElementDrawer.cpp">
-      <Filter>Source Files\SandSimulation - .cpp</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="FramebufferPS.hlsl">
@@ -284,5 +278,10 @@
     <Image Include="Fixedsys16x28.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Text.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@
 
 extern RNG Chance;
 
-enum class Type {
+enum class Type : int8_t {
 	Water,
 	Sand,
 	Stone,
@@ -25,7 +25,7 @@ enum class Type {
 	None,
 	Count
 };
-enum class State {
+enum class State : int8_t {
 	Liquid,
 	Solid,
 	Gas,
@@ -179,6 +179,11 @@ public:
 		return Updated;
 	}
 private:
+		RNG RdLifeSpan_gas = { 10 , 15 };
+		RNG ColorRng = { 0 , 3 };
+		RNG XRange = { 0 , hBox.width - 1 };
+		mutable RNG SpreadRange = { -2 , 2 };
+private:
 	RectI hBox;
 	Vec2D vel;
 
@@ -196,9 +201,4 @@ private:
 	size_t ChunkIndex = 0;
 
 	bool Updated = false;
-private:
-	RNG RdLifeSpan_gas = { 10 , 15 };
-	RNG ColorRng = { 0 , 3 };
-	RNG XRange = { 0 , hBox.width - 1 };
-	mutable RNG SpreadRange = { -2 , 2 };
 };
