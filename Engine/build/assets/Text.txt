@@ -1,7 +1,0 @@
-class Element {
-	- has the data necessary to represent a particle in a falling sand engine: color, type 
-	and other stuff necessary for special behaviour of some particles
-	- the data necessary for special behaviour has issues. Each element doesn't have to have rng stuff. Only the one that
-	tries to modify it, should. 
-	- it also has the configuration of all element types
-}
