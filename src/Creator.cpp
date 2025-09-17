@@ -1,4 +1,4 @@
-#include "Creator.h"
+#include "Creator.hpp"
 #include "assert.h"
 Creator::Creator(const RectI& ButtonSize, int Radius , Simulation& world , Weather& weather0)
 	:world(world), Chance(1 , 100),weather(weather0),explosion(Explosion(world))

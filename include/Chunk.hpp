@@ -1,13 +1,13 @@
 #pragma once
-#include "Graphics.h"
+#include "Graphics.hpp"
 #include <vector>
-#include "Dimensions.h"
-#include "World.h"
-#include "SpecialBehaviour.h"
-#include "Element.h"
+#include "Dimensions.hpp"
+#include "World.hpp"
+#include "SpecialBehaviour.hpp"
+#include "Element.hpp"
 #include <functional>
 #include <assert.h>
-#include "Camera.h"
+#include "Camera.hpp"
 
 extern RNG Chance;
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "FrameTimer.h"
-#include "CoordinateTransformer.h"
+#include "FrameTimer.hpp"
+#include "CoordinateTransformer.hpp"
 #include <string>
 #include <fstream>
 #include <vector>
@@ -36,7 +36,7 @@ public:
 		BuildTimeList.emplace_back(BuildTime);
 
 		std::string aux = "Time: " + std::to_string(BuildTime * 1000.0f) + " ms\n";
-		OutputDebugStringA(aux.c_str());
+		//OutputDebugStringA(aux.c_str());
 	}
 	void End()
 	{

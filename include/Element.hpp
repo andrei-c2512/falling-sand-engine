@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "Rng.h"
-#include "ParticleEffect.h"
-#include "CoordinateTransformer.h"
+#include "Rng.hpp"
+#include "ParticleEffect.hpp"
+#include "CoordinateTransformer.hpp"
 
 extern RNG Chance;
 

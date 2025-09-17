@@ -1,9 +1,9 @@
 #pragma once
-#include "Chunk.h"
-#include "World.h"
-#include "Weather.h"
-#include "MobList.h"
-#include "Camera.h"
+#include "Chunk.hpp"
+#include "World.hpp"
+#include "Weather.hpp"
+#include "MobList.hpp"
+#include "Camera.hpp"
 class Sandbox {
 public:
 	static constexpr int ChunkSize = 40;

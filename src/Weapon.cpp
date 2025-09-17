@@ -1,4 +1,4 @@
-#include "Weapon.h"
+#include "Weapon.hpp"
 #include <cmath>
 #include <assert.h>
 #include <typeinfo>

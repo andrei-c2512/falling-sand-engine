@@ -1,4 +1,4 @@
-#include "Entity.h"
+#include "Entity.hpp"
 
 Entity::Entity(Rect rect, Sprite sprite0, float dmg, int health, float speed)
 	:HitBox(rect),  sprite(sprite0), Damage(dmg) , Speed(speed)

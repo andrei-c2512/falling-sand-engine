@@ -1,11 +1,11 @@
 #pragma once
-#include "World.h"
-#include "Graphics.h"
-#include "Keyboard.h"
-#include "Entity.h"
-#include "NPC.h"
+#include "World.hpp"
+#include "Graphics.hpp"
+#include "Keyboard.hpp"
+#include "Entity.hpp"
+#include "NPC.hpp"
 #include <forward_list>
-#include "Camera.h"
+#include "Camera.hpp"
 
 class Player : public Entity{
 public:

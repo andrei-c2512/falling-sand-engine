@@ -1,6 +1,6 @@
-#include "Chunk.h"
+#include "Chunk.hpp"
 #include <assert.h>
-#include "SpecialBehaviour.h"
+#include "SpecialBehaviour.hpp"
 
 bool LotteryWon(int Chance)
 {

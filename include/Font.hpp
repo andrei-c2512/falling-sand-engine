@@ -1,9 +1,9 @@
 #pragma once
-#include "Graphics.h"
+#include "Graphics.hpp"
 #include "String.h"
-#include "Dimensions.h"
-#include "Rect.h"
-#include "Camera.h"
+#include "Dimensions.hpp"
+#include "Rect.hpp"
+#include "Camera.hpp"
 class Font {
 public:
 	Font(std::string sprite);

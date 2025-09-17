@@ -1,4 +1,4 @@
-#include "Rng.h"
+#include "Rng.hpp"
 extern std::mt19937 rng = std::mt19937(std::random_device{}());
 
 int RNG::GetVal()

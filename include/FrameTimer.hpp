@@ -1,9 +1,9 @@
 #pragma once
 #include <chrono>
-#include "Graphics.h"
-#include "Font.h"
-#include "Timer.h"
-#include "CoordinateTransformer.h"
+#include "Graphics.hpp"
+#include "Font.hpp"
+#include "Timer.hpp"
+#include "CoordinateTransformer.hpp"
 class FrameTimer {
 public:
 	FrameTimer();

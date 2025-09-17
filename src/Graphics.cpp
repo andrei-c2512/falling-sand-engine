@@ -18,10 +18,10 @@
 *	You should have received a copy of the GNU General Public License					  *
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
-#include "MainWindow.h"
-#include "Graphics.h"
-#include "DXErr.h"
-#include "ChiliException.h"
+#include "MainWindow.hpp"
+#include "Graphics.hpp"
+#include "DXErr.hpp"
+#include "ChiliException.hpp"
 #include <assert.h>
 #include <string>
 #include <array>
@@ -309,7 +309,8 @@ void Graphics::BeginFrame()
 
 void Graphics::PutPixel( int x,int y,Color c )
 {
-	if (x < ScreenWidth && y < ScreenHeight &&  x > 0 && y > 0)
+	//this is cheap bruh
+	 if (x < ScreenWidth && y < ScreenHeight &&  x > 0 && y > 0)
 	{
 		assert(x >= 0);
 		assert(x < int(Graphics::ScreenWidth));

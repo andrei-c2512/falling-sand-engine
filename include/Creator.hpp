@@ -1,15 +1,15 @@
 #pragma once
-#include "Sandbox.h"
-#include "Mouse.h"
-#include "Graphics.h"
-#include "Font.h"
-#include "Rng.h"
-#include "Button.h"
-#include "Weather.h"
-#include "Explosion.h"
+#include "Sandbox.hpp"
+#include "Mouse.hpp"
+#include "Graphics.hpp"
+#include "Font.hpp"
+#include "Rng.hpp"
+#include "Button.hpp"
+#include "Weather.hpp"
+#include "Explosion.hpp"
 #include <map>
-#include "Camera.h"
-#include "CoordinateShower.h"
+#include "Camera.hpp"
+#include "CoordinateShower.hpp"
 
 class Creator {
 public:

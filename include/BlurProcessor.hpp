@@ -1,8 +1,8 @@
 #pragma once
-#include "Sprite.h"
+#include "Sprite.hpp"
 #include <vector>
-#include "Dimensions.h"
-#include "CiobanuMath.h"
+#include "Dimensions.hpp"
+#include "CiobanuMath.hpp"
 #include <algorithm>
 #include <functional>
 

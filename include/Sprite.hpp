@@ -1,9 +1,9 @@
 #pragma once
-#include "Colors.h"
+#include "Colors.hpp"
 #include <string>
-#include "Rect.h"
-#include "Vec2D.h"
-#include "Dimensions.h"
+#include "Rect.hpp"
+#include "Vec2D.hpp"
+#include "Dimensions.hpp"
 #include <vector>
 
 class Sprite {

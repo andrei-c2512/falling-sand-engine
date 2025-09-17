@@ -1,15 +1,15 @@
 #pragma once
-#include "Element.h"
-#include "Graphics.h"
+#include "Element.hpp"
+#include "Graphics.hpp"
 #include <vector>
 #include <algorithm>
-#include "Dimensions.h"
-#include "Rect.h"
+#include "Dimensions.hpp"
+#include "Rect.hpp"
 #include "assert.h"
-#include "Effects.h"
-#include "Attributes.h"
+#include "Effects.hpp"
+#include "Attributes.hpp"
 #include <stdexcept>
-#include "Camera.h"
+#include "Camera.hpp"
 
 class World {
 

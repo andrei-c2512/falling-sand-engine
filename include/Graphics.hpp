@@ -21,12 +21,12 @@
 #pragma once
 #include <d3d11.h>
 #include <wrl.h>
-#include "ChiliException.h"
-#include "Colors.h"
-#include "Sprite.h"
-#include "Rect.h"
+#include "ChiliException.hpp"
+#include "Colors.hpp"
+#include "Sprite.hpp"
+#include "Rect.hpp"
 #include <memory>
-#include "BlurProcessor.h"
+#include "BlurProcessor.hpp"
 //#include "Effects.h"
 #include "assert.h"
 class Graphics

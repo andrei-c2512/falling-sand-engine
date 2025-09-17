@@ -1,4 +1,4 @@
-#include "NPC.h"
+#include "NPC.hpp"
 
 NPC::NPC(const Entity& entity)
 	:Entity(entity)

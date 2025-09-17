@@ -20,18 +20,17 @@
  ******************************************************************************************/
 #pragma once
 
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Graphics.h"
-#include "FrameTimer.h"
-#include "Font.h"
-#include "World.h"
-#include "Creator.h"
-#include "Weather.h"
-#include <string>
-#include "Bench.h"
-#include "Camera.h"
-#include "CoordinateShower.h"
+#include "Keyboard.hpp"
+#include "Mouse.hpp"
+#include "Graphics.hpp"
+#include "FrameTimer.hpp"
+#include "Font.hpp"
+#include "World.hpp"
+#include "Creator.hpp"
+#include "Weather.hpp"
+#include "Bench.hpp"
+#include "Camera.hpp"
+#include "CoordinateShower.hpp"
 
 class Game
 {

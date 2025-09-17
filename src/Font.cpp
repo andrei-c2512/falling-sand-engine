@@ -1,6 +1,6 @@
-#include "Font.h"
+#include "Font.hpp"
 #include "assert.h"
-#include "Effects.h"
+#include "Effects.hpp"
 
 Font::Font(std::string sprite)
 	:SpriteSheet(sprite)

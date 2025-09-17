@@ -1,6 +1,6 @@
 #pragma once
-#include "Colors.h"
-#include "Graphics.h"
+#include "Colors.hpp"
+#include "Graphics.hpp"
 
 namespace Effects{
 	class Chroma {

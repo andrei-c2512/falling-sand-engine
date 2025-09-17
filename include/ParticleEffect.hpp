@@ -1,9 +1,9 @@
 #pragma once
-#include "Graphics.h"
-#include "Timer.h"
+#include "Graphics.hpp"
+#include "Timer.hpp"
 #include <forward_list>
-#include "Effects.h"
-#include "Camera.h"
+#include "Effects.hpp"
+#include "Camera.hpp"
 class Particle {
 public:
 	Particle(const RectI& rect, Color c, const Vec2D& vel0, const Timer& lifespan)

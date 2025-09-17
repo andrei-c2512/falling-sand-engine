@@ -1,12 +1,12 @@
 #pragma once
-#include "Rect.h"
-#include "Graphics.h"
-#include "Sprite.h"
-#include "Element.h"
-#include "World.h"
-#include "Dimensions.h"
-#include "Weather.h"
-#include "Camera.h"
+#include "Rect.hpp"
+#include "Graphics.hpp"
+#include "Sprite.hpp"
+#include "Element.hpp"
+#include "World.hpp"
+#include "Dimensions.hpp"
+#include "Weather.hpp"
+#include "Camera.hpp"
 
 class Button {
 public:

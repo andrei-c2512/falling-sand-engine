@@ -1,10 +1,10 @@
 #pragma once
-#include "Graphics.h"
-#include "Vec2D.h"
-#include "Rect.h"
-#include "World.h"
-#include "ParticleEffect.h"
-#include "Explosion.h"
+#include "Graphics.hpp"
+#include "Vec2D.hpp"
+#include "Rect.hpp"
+#include "World.hpp"
+#include "ParticleEffect.hpp"
+#include "Explosion.hpp"
 
 class Projectile {
 public:

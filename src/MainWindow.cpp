@@ -18,11 +18,11 @@
 *	You should have received a copy of the GNU General Public License					  *
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
-#include "MainWindow.h"
-#include "Resource.h"
-#include "Graphics.h"
-#include "ChiliException.h"
-#include "Game.h"
+#include "MainWindow.hpp"
+#include "Resource.hpp"
+#include "Graphics.hpp"
+#include "ChiliException.hpp"
+#include "Game.hpp"
 #include <assert.h>
 
 MainWindow::MainWindow( HINSTANCE hInst,wchar_t * pArgs )
@@ -46,7 +46,7 @@ MainWindow::MainWindow( HINSTANCE hInst,wchar_t * pArgs )
 	wr.top = 0;  //original 100
 	wr.bottom = Graphics::ScreenHeight + wr.top;
 	AdjustWindowRect( &wr,WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,FALSE );
-	hWnd = CreateWindow( wndClassName,L"Chili DirectX Framework",
+	hWnd = CreateWindow( wndClassName,L"Falling Sand",
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
 		wr.left,wr.top,wr.right - wr.left,wr.bottom - wr.top,
 		nullptr,nullptr,hInst,this );
@@ -154,9 +154,13 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 		// ************ MOUSE MESSAGES ************ //
 	case WM_MOUSEMOVE:
 	{
+		RECT client;
+		GetClientRect(hWnd, &client);
+		int width = client.right - client.left;
+		int height = client.bottom - client.top;
 		int x = LOWORD( lParam );
 		int y = HIWORD( lParam );
-		if( x > 0 && x < Graphics::ScreenWidth && y > 0 && y < Graphics::ScreenHeight )
+		if( x > 0 && x < width && y > 0 && y < height )
 		{
 			mouse.OnMouseMove( x,y );
 			if( !mouse.IsInWindow() )
@@ -171,6 +175,7 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 			{
 				x = std::max( 0,x );
 				x = std::min( int( Graphics::ScreenWidth ) - 1,x );
+				//OutputDebugStringA(std::to_string(x).c_str());
 				y = std::max( 0,y );
 				y = std::min( int( Graphics::ScreenHeight ) - 1,y );
 				mouse.OnMouseMove( x,y );

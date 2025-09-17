@@ -1,4 +1,4 @@
-#include "Projectile.h"
+#include "Projectile.hpp"
 
 
 Projectile::Projectile(const Rect& rect, Simulation& world0 , const Vec2D& vel0, bool Destroyed0)

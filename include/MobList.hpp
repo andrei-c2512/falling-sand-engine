@@ -1,10 +1,10 @@
 #pragma once
-#include "Player.h"
+#include "Player.hpp"
 #include <map>
 #include <memory>
-#include "NPC.h"
-#include "World.h"
-#include "Camera.h"
+#include "NPC.hpp"
+#include "World.hpp"
+#include "Camera.hpp"
 class MobList {
 public:
 	enum class MobType {

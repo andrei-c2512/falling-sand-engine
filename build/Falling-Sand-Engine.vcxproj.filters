@@ -1,219 +1,222 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Button.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Chunk.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Chunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Creator.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Creator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\DXErr.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\DXErr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Element.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Entity.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Font.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\FrameTimer.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\FrameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Game.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\GameSpeed.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\GameSpeed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Graphics.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Keyboard.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Main.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\MainWindow.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Mouse.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\NPC.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\NPC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Player.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Projectile.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Rng.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Rng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Sandbox.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Sandbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Sprite.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Weapon.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\Engine\src\Weather.cpp">
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Weather.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Attributes.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Attributes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Bench.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Bench.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\BlurProcessor.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\BlurProcessor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Button.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Button.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Camera.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\ChiliException.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ChiliException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\ChiliWin.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ChiliWin.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Chunk.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Chunk.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\CiobanuMath.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CiobanuMath.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Colors.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Colors.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\CoordinateShower.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CoordinateShower.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\CoordinateTransformer.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CoordinateTransformer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Creator.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Creator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\DXErr.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\DXErr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Dimensions.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Dimensions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Drawable.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Drawable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Effects.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Effects.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Element.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Element.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Entity.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ElementRNG.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Explosion.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Entity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Font.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Explosion.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\FrameTimer.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Font.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Game.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\FrameTimer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\GameSpeed.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Graphics.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\GameSpeed.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Keyboard.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Graphics.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\MainWindow.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Keyboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\MobList.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\MainWindow.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Mouse.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\MobList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\NPC.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Mouse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\ParticleEffect.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\NPC.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Player.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ParticleEffect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Projectile.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Rect.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Projectile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Resource.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Rect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Rng.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Resource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Sandbox.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Rng.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\SpecialBehaviour.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Sandbox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Sprite.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\SpecialBehaviour.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Timer.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Sprite.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Vec2D.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Weapon.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Vec2D.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\Weather.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Weapon.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\Engine\include\World.h">
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Weather.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\World.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\Andrei C\Documents\Sandbox\Engine\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\Andrei C\Documents\Sandbox\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{E9309962-1FC9-30C0-BB82-FFD242BD2FDB}</UniqueIdentifier>
+      <UniqueIdentifier>{A6963B25-3B07-3D8B-A85B-49E6254E8622}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4D4B6DC6-9B3C-3864-A01A-DCF4F2D92A3F}</UniqueIdentifier>
+      <UniqueIdentifier>{BC446804-E940-35ED-9F16-6F4157FE572F}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

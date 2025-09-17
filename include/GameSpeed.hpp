@@ -1,8 +1,8 @@
 #pragma once
-#include "Graphics.h"
-#include "Vec2D.h"
-#include "Mouse.h"
-#include "Button.h"
+#include "Graphics.hpp"
+#include "Vec2D.hpp"
+#include "Mouse.hpp"
+#include "Button.hpp"
 
 class GameSpeed {
 public:

@@ -1,7 +1,7 @@
 #pragma once
-#include "Mouse.h"
-#include "Timer.h"
-#include "Projectile.h"
+#include "Mouse.hpp"
+#include "Timer.hpp"
+#include "Projectile.hpp"
 #include <forward_list>
 #include <typeinfo>
 #include <memory>

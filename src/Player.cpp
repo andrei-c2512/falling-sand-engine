@@ -1,6 +1,6 @@
-#include "Player.h"
-#include "Effects.h"
-#include "CoordinateShower.h"
+#include "Player.hpp"
+#include "Effects.hpp"
+#include "CoordinateShower.hpp"
 #include <cmath>
 Player::Player(Mouse& mouse0 , const Sprite& bodysprite, const Sprite& headsprite,  Camera& camera0 ,float speed0)
 	: sBody(bodysprite) , sHead(headsprite), Speed(speed0), mouse(mouse0), camera(camera0)

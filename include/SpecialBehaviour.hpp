@@ -1,6 +1,6 @@
 #pragma once
-#include "Element.h"
-#include "World.h"
+#include "Element.hpp"
+#include "World.hpp"
 
 extern RNG Chance;
 

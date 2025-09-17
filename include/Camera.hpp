@@ -1,6 +1,6 @@
 #pragma once
-#include "CoordinateTransformer.h"
-#include "Mouse.h"
+#include "CoordinateTransformer.hpp"
+#include "Mouse.hpp"
 
 class Camera {
 public:

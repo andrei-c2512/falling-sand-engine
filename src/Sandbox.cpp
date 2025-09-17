@@ -1,4 +1,4 @@
-#include "Sandbox.h"
+#include "Sandbox.hpp"
 #include "assert.h"
 
 Sandbox::Sandbox(Mouse& mouse , ParticleEffect& effect , Camera& camera) 

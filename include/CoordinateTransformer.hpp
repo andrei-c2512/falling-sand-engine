@@ -1,6 +1,6 @@
 #pragma once
-#include "Graphics.h"
-#include "Mouse.h"
+#include "Graphics.hpp"
+#include "Mouse.hpp"
 class CoordinateTransformer {
 public:
 	CoordinateTransformer(Graphics& gfx0)

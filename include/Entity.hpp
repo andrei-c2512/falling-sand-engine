@@ -1,12 +1,12 @@
 #pragma once
-#include "World.h"
-#include "Weapon.h"
+#include "World.hpp"
+#include "Weapon.hpp"
 #include <limits>
 #include <functional>
 #include <list>
 #include <algorithm>
 #include <iterator>
-#include "CoordinateTransformer.h"
+#include "CoordinateTransformer.hpp"
 
 #define INFINITY 100000
 

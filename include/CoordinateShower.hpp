@@ -1,7 +1,7 @@
 #pragma once
-#include "Camera.h"
-#include "Mouse.h"
-#include "Font.h"
+#include "Camera.hpp"
+#include "Mouse.hpp"
+#include "Font.hpp"
 #include <string>
 
 class CoordinateShower {

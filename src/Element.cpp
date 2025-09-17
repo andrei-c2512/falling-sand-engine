@@ -1,6 +1,6 @@
-#include "Element.h"
+#include "Element.hpp"
 #include <assert.h>
-#include "SpecialBehaviour.h"
+#include "SpecialBehaviour.hpp"
 #include <iterator>
 
 Element::Element(const RectI& rect)

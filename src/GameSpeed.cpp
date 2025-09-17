@@ -1,4 +1,4 @@
-#include "GameSpeed.h"
+#include "GameSpeed.hpp"
 
 GameSpeed::GameSpeed(int dim0 , Vec2D pos0 , float level0 , float Cld0) 
 	:Dim(dim0),

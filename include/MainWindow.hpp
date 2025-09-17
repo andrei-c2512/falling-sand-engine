@@ -19,11 +19,11 @@
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
 #pragma once
-#include "ChiliWin.h"
-#include "Graphics.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "ChiliException.h"
+#include "ChiliWin.hpp"
+#include "Graphics.hpp"
+#include "Keyboard.hpp"
+#include "Mouse.hpp"
+#include "ChiliException.hpp"
 #include <string>
 
 // for granting special access to hWnd only for Graphics constructor

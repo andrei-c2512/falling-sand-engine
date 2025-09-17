@@ -1,7 +1,7 @@
-#include "Sprite.h"
+#include "Sprite.hpp"
 #include <fstream>
 #include <assert.h>
-#include "ChiliWin.h"
+#include "ChiliWin.hpp"
 #include <algorithm>
 #include <iterator>
 #include <filesystem>

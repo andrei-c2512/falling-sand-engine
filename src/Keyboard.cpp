@@ -18,7 +18,7 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
-#include "Keyboard.h"
+#include "Keyboard.hpp"
 
 bool Keyboard::KeyIsPressed( unsigned char keycode ) const
 {

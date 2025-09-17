@@ -1,8 +1,8 @@
 #pragma once
-#include "Vec2D.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Dimensions.h"
+#include "Vec2D.hpp"
+#include "Keyboard.hpp"
+#include "Mouse.hpp"
+#include "Dimensions.hpp"
 template <typename T , typename D>
 class Rect_ {
 public:

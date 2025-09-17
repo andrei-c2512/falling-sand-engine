@@ -1,5 +1,5 @@
-#include "Button.h"
-#include "Effects.h"
+#include "Button.hpp"
+#include "Effects.hpp"
 Button::Button(const RectI& rect)
 	:HitBox(rect) 
 {
