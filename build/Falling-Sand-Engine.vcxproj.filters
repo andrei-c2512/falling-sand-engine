@@ -1,222 +1,276 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Button.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\DXErr.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Chunk.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Game.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Creator.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Graphics.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\DXErr.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Keyboard.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Element.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Main.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Entity.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\MainWindow.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Font.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Mouse.cpp">
+      <Filter>chili</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\FrameTimer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\FrameTimer.cpp">
+      <Filter>engine2d</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Game.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Font.cpp">
+      <Filter>engine2d\render</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\GameSpeed.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Sprite.cpp">
+      <Filter>engine2d\render</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Graphics.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\Button.cpp">
+      <Filter>engine2d\ui</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Keyboard.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Chunk.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Element.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\MainWindow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Entity.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Mouse.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\NPC.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\NPC.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Player.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Player.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Projectile.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Projectile.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Sandbox.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Rng.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weapon.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Sandbox.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weather.cpp">
+      <Filter>falling-sand</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Sprite.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\Creator.cpp">
+      <Filter>falling-sand\ui</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Weapon.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\ElementButton.cpp">
+      <Filter>falling-sand\ui</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Weather.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\GameSpeed.cpp">
+      <Filter>falling-sand\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\WeatherButton.cpp">
+      <Filter>falling-sand\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine2d\math\Rng.cpp">
+      <Filter>engine2d\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Attributes.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\ChiliException.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Bench.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\ChiliWin.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\BlurProcessor.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Colors.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Button.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\DXErr.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Camera.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Game.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ChiliException.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Graphics.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ChiliWin.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Keyboard.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Chunk.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\MainWindow.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CiobanuMath.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Mouse.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Colors.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Resource.hpp">
+      <Filter>chili</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CoordinateShower.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\FrameTimer.hpp">
+      <Filter>engine2d</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CoordinateTransformer.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\Timer.hpp">
+      <Filter>engine2d</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Creator.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\Graphics.hpp">
+      <Filter>engine2d\core</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\DXErr.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\GraphicsAPI.hpp">
+      <Filter>engine2d\core</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Dimensions.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\KeyboardAPI.hpp">
+      <Filter>engine2d\core</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Drawable.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\Mouse.hpp">
+      <Filter>engine2d\core</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Effects.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\MouseAPI.hpp">
+      <Filter>engine2d\core</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Element.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Math.hpp">
+      <Filter>engine2d\math</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ElementRNG.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Rect.hpp">
+      <Filter>engine2d\math</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Entity.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Rng.hpp">
+      <Filter>engine2d\math</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Explosion.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Size.hpp">
+      <Filter>engine2d\math</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Font.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Vec2D.hpp">
+      <Filter>engine2d\math</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\FrameTimer.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\pipeline\Camera.hpp">
+      <Filter>engine2d\pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Game.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\pipeline\CoordinateTransformer.hpp">
+      <Filter>engine2d\pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\GameSpeed.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\BlurProcessor.hpp">
+      <Filter>engine2d\render</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Graphics.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Drawable.hpp">
+      <Filter>engine2d\render</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Keyboard.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Effects.hpp">
+      <Filter>engine2d\render</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\MainWindow.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Font.hpp">
+      <Filter>engine2d\render</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\MobList.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Sprite.hpp">
+      <Filter>engine2d\render</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Mouse.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\Bench.hpp">
+      <Filter>engine2d\ui</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\NPC.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\Button.hpp">
+      <Filter>engine2d\ui</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ParticleEffect.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\CoordinateShower.hpp">
+      <Filter>engine2d\ui</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Player.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Attributes.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Projectile.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Chunk.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Rect.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ColorUpdater.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Resource.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Element.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Rng.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Entity.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Sandbox.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Explosion.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\SpecialBehaviour.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\FSConfig.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Sprite.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\FSConfigInit.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Timer.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\MobList.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Vec2D.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\NPC.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Weapon.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ParticleEffect.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Weather.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Player.hpp">
+      <Filter>falling-sand</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\World.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Projectile.hpp">
+      <Filter>falling-sand</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Sandbox.hpp">
+      <Filter>falling-sand</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\SpecialBehaviour.hpp">
+      <Filter>falling-sand</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weapon.hpp">
+      <Filter>falling-sand</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weather.hpp">
+      <Filter>falling-sand</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\World.hpp">
+      <Filter>falling-sand</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\Creator.hpp">
+      <Filter>falling-sand\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\ElementButton.hpp">
+      <Filter>falling-sand\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\GameSpeed.hpp">
+      <Filter>falling-sand\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\WeatherButton.hpp">
+      <Filter>falling-sand\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\Andrei C\Documents\Sandbox\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{A6963B25-3B07-3D8B-A85B-49E6254E8622}</UniqueIdentifier>
+    <Filter Include="chili">
+      <UniqueIdentifier>{CB1269A0-B407-357D-A7FE-B0B267C54A96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{BC446804-E940-35ED-9F16-6F4157FE572F}</UniqueIdentifier>
+    <Filter Include="engine2d">
+      <UniqueIdentifier>{ED9AA3D6-7D46-3947-88CB-98B793EBE071}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine2d\core">
+      <UniqueIdentifier>{F7AF7581-94EC-3C02-BA1A-820785D95B60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine2d\math">
+      <UniqueIdentifier>{C3E0052A-EC96-3AFC-920C-7C8E7FDD76E0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine2d\pipeline">
+      <UniqueIdentifier>{7E60986E-17E4-3CA3-84FF-0D33DFA6BB82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine2d\render">
+      <UniqueIdentifier>{1CCABD8C-B9A9-357F-9FB7-A088128B033B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine2d\ui">
+      <UniqueIdentifier>{810DB74C-4A6D-3C78-A5E2-AB9A6E9A6633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="falling-sand">
+      <UniqueIdentifier>{EA821A21-8850-3237-97B8-1CBC737B5FD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="falling-sand\ui">
+      <UniqueIdentifier>{5EBCBA37-6B1C-3A8F-95EF-1C49D1BDB255}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

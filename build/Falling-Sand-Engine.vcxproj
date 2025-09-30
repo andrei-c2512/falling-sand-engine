@@ -86,13 +86,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -105,10 +105,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;UNICODE;_UNICODE;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -144,11 +144,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -163,10 +163,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -202,11 +202,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <Optimization>MinSpace</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -221,10 +221,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -260,12 +260,12 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -278,10 +278,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\include;C:\Users\Andrei C\Documents\Sandbox\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Andrei C\Documents\Sandbox\src;C:\Users\Andrei C\Documents\Sandbox\shaders;\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -328,7 +328,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\ExternalProject\shared_internal_commands.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\FetchContent.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Andrei C/Documents/Sandbox/CMakeLists.txt</Message>
@@ -341,7 +341,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\ExternalProject\shared_internal_commands.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\FetchContent.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Andrei C/Documents/Sandbox/CMakeLists.txt</Message>
@@ -354,7 +354,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\ExternalProject\shared_internal_commands.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\FetchContent.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Andrei C/Documents/Sandbox/CMakeLists.txt</Message>
@@ -367,80 +367,91 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCXXInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeCommonLanguageInclude.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeGenericSystem.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeInitializeConfigs.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeLanguageInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeRCInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInformation.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\CMakeSystemSpecificInitialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Compiler\MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\ExternalProject\shared_internal_commands.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\FetchContent.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-Initialize.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-C.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows-MSVC.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\Windows.cmake;C:\Strawberry\c\share\cmake-3.29\Modules\Platform\WindowsPaths.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeCXXCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeRCCompiler.cmake;C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\3.29.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Andrei C\Documents\Sandbox\build\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Button.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Chunk.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Creator.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\DXErr.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Element.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Entity.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Font.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\FrameTimer.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Game.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\GameSpeed.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Graphics.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Keyboard.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Main.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\MainWindow.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Mouse.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\NPC.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Player.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Projectile.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Rng.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Sandbox.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Sprite.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Weapon.cpp" />
-    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\Weather.cpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Attributes.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Bench.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\BlurProcessor.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Button.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Camera.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ChiliException.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ChiliWin.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Chunk.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CiobanuMath.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Colors.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CoordinateShower.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\CoordinateTransformer.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Creator.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\DXErr.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Dimensions.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Drawable.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Effects.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Element.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ElementRNG.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Entity.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Explosion.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Font.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\FrameTimer.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Game.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\GameSpeed.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Graphics.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Keyboard.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\MainWindow.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\MobList.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Mouse.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\NPC.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\ParticleEffect.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Player.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Projectile.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Rect.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Resource.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Rng.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Sandbox.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\SpecialBehaviour.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Sprite.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Timer.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Vec2D.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Weapon.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\Weather.hpp" />
-    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\include\World.hpp" />
+    <ClCompile Include="..\src\engine2d\math\Rng.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\DXErr.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Game.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Graphics.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Keyboard.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Main.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\MainWindow.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Mouse.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\FrameTimer.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Font.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Sprite.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\Button.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Chunk.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Element.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Entity.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\NPC.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Player.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Projectile.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Sandbox.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weapon.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weather.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\Creator.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\ElementButton.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\GameSpeed.cpp" />
+    <ClCompile Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\WeatherButton.cpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\ChiliException.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\ChiliWin.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Colors.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\DXErr.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Game.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Graphics.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Keyboard.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\MainWindow.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Mouse.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\chili\Resource.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\FrameTimer.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\Timer.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\Graphics.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\GraphicsAPI.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\KeyboardAPI.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\Mouse.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\core\MouseAPI.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Math.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Rect.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Rng.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Size.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\math\Vec2D.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\pipeline\Camera.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\pipeline\CoordinateTransformer.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\BlurProcessor.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Drawable.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Effects.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Font.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\render\Sprite.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\Bench.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\Button.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\engine2d\ui\CoordinateShower.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Attributes.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Chunk.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ColorUpdater.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Element.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Entity.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Explosion.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\FSConfig.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\FSConfigInit.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\MobList.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\NPC.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ParticleEffect.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Player.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Projectile.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Sandbox.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\SpecialBehaviour.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weapon.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\Weather.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\World.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\Creator.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\ElementButton.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\GameSpeed.hpp" />
+    <ClInclude Include="C:\Users\Andrei C\Documents\Sandbox\src\falling-sand\ui\WeatherButton.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\Andrei C\Documents\Sandbox\build\ZERO_CHECK.vcxproj">
