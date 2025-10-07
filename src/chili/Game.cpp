@@ -34,6 +34,8 @@ namespace chili {
 		Builder(e2d::RectI(10, 10, e2d::Vec2I(10, 400)), 0, World.GetWorld(), World.GetWeather()),
 		World(wnd.mouse, particle_list, cam)
 	{
+		sand::FSConfigReader reader("assets/config.toml");
+		fsConfig = reader.ParseFile();
 	}
 
 	Game::~Game() {
@@ -98,7 +100,7 @@ namespace chili {
 		Builder.ShowHoveredElement(wnd.mouse, gfx, cam);
 		Builder.DrawSpawnSurface(gfx, cam, wnd.mouse);
 
-		//FPS.DrawFrameCounter(gfx, cam , dt);
+		FPS.DrawFrameCounter(gfx, cam , dt);
 		particle_list.Draw(gfx, cam);
 
 		// for (auto& button : button_list)

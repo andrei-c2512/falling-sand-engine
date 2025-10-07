@@ -31,6 +31,10 @@
 #include "falling-sand/ParticleEffect.hpp"
 #include "engine2d/ui/Bench.hpp"
 
+/* for assets / initialisation */
+#include "falling-sand/FSConfigReader.hpp"
+
+
 
 namespace chili {
 	class Game
@@ -65,14 +69,13 @@ namespace chili {
 
 		e2d::Vec2I SpeedButton_pos = e2d::Vec2I(e2d::Renderer::ScreenWidth - 60, 60);
 
-		//std::vector<sand::GameSpeedButton> button_list;
 
 		float GameSpeed = 3.0f;
-		//GameSpeedButton GameSpeed_button = { Colors::Gray , Colors::White ,
-		//	RectI(30 , 60 , Vec2I(SpeedButton_pos)) };
 
 		/********************************/
 		/*  User Variables              */
 		/********************************/
+
+		sand::FSConfig fsConfig;
 	};
 }

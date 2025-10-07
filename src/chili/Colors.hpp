@@ -20,6 +20,9 @@
 ******************************************************************************************/
 #pragma once
 #include <algorithm>
+#include <string_view>
+#include <charconv>
+#include <stdexcept>
 
 namespace chili {
 	class Color
@@ -32,6 +35,25 @@ namespace chili {
 			:
 			dword(col.dword)
 		{}
+		Color(std::string_view hexCode) {
+			if (hexCode.size() && hexCode[0] == '#') {
+				hexCode = hexCode.substr(1);
+			}
+			if (!(hexCode.size() == 6 || hexCode.size() == 8)){
+				throw std::invalid_argument("Hex has to be in ARGB or RGB format.");
+			}
+
+			auto [ptr, ec] = std::from_chars(hexCode.data(), hexCode.data() + hexCode.size(), dword, 16);
+
+			if (ec != std::errc()) {
+				throw std::invalid_argument("Invalid hex string");
+			}
+			
+			if(hexCode.size() == 6){
+				dword = dword >> 8u;
+				SetX(255);
+			}
+		}
 		constexpr Color(unsigned int dw)
 			:
 			dword(dw)

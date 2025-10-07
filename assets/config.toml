@@ -1,4 +1,3 @@
-
 # default values for all particles
 [defaults]
     spread = 0
@@ -6,7 +5,8 @@
     color = "#FFFFFF"
     sink_chance = 0
     burn_chance = 0
-    
+    update_limit = 120
+    game_speed = 1.0
 
 # particle settings 
 [[particle]] 
@@ -107,8 +107,8 @@ name = "ToxicGas"
         color = ["#009B00", "#009600", "#00A000"]
         opacity = 0.5
         #########################################
-        [[particle.behaviour]]
-                [[particle.behaviour.
+        #[[particle.behaviour]]
+        #        [[particle.behaviour.
 
 [[particle]]
 name = "Steel"

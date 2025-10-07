@@ -9,12 +9,14 @@ include(FetchContent)
 
 ### 3rd party dependencies
 
+# toml dependency
 FetchContent_Declare(
 	tomlplusplus
 	GIT_REPOSITORY https://github.com/marzer/tomlplusplus
 	GIT_TAG master
 )
-# toml dependency
+
+FetchContent_MakeAvailable(tomlplusplus)
 
 # I do not need this for compilation, however I do it so that I get it shown in VS Community File tab
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
@@ -27,7 +29,7 @@ file(GLOB_RECURSE FALLING_SAND_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/falling-sand/
 # To satissfy some ChilliFramework stuff
 add_definitions(-DUNICODE -D_UNICODE)
 
-add_executable(Falling-Sand-Engine ${SRC_FILES} ${HEADERS})
+add_executable(Falling-Sand-Engine WIN32 ${SRC_FILES} ${HEADERS})
 target_include_directories(Falling-Sand-Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 target_include_directories(Falling-Sand-Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
 # 3rd party
@@ -44,4 +46,4 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src/chili PREFIX "chili" FILES ${C
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src/engine2d PREFIX "engine2d" FILES ${ENGINE_SRC})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src/falling-sand PREFIX "falling-sand" FILES ${FALLING_SAND_SRC})
 
-
+target_compile_definitions(Falling-Sand-Engine PRIVATE TOML_ENABLE_WINDOWS_COMPAT=0)

@@ -43,7 +43,8 @@ namespace sand {
 	class Element {
 		friend class Attributes;
 	public:
-		static constexpr chili::Color SandColorRange[3] = { { 255 , 220 , 0 } ,
+		static constexpr chili::Color SandColorRange[3] = 
+													 { { 255 , 220 , 0 } ,
 													 { 255 , 205 , 0 } ,
 													 { 255 , 190 , 0 } };
 
